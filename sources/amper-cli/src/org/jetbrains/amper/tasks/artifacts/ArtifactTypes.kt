@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package org.jetbrains.amper.tasks.artifacts
@@ -9,6 +9,7 @@ import org.jetbrains.amper.cli.context.AmperBuildOutputRoot
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.Fragment
 import org.jetbrains.amper.frontend.Platform
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.stdlib.io.path.listDirectoryEntriesIfExistsOrEmpty
 import org.jetbrains.amper.tasks.ProjectTasksBuilder.Companion.testSuffix
 import org.jetbrains.amper.tasks.artifacts.api.Artifact
@@ -111,7 +112,7 @@ open class CinteropDefFileArtifact internal constructor(
     buildOutputRoot: AmperBuildOutputRoot,
     fragment: Fragment,
     override val conventionPath: Path? = null,
-    internal val recommendedKotlinCompilerVersionOnFailingCinterop: ComparableVersion? = null,
+    internal val recommendedKotlinCompilerVersionOnFailingCinterop: KotlinVersion? = null,
     internal val macroNamesCollectingMode: NativeCInteropGenerateKlibTask.MacroNamesCollectingMode? = null,
 ) : FragmentScopedArtifact(buildOutputRoot, fragment) {
     constructor(

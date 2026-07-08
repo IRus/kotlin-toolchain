@@ -13,6 +13,7 @@ import org.jetbrains.amper.frontend.plugins.CustomCommandFromPlugin
 import org.jetbrains.amper.frontend.plugins.TaskFromPluginDescription
 import org.jetbrains.amper.frontend.schema.InternalSettings
 import org.jetbrains.amper.frontend.schema.JdkSettings
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.MavenPluginSettings
 import org.jetbrains.amper.frontend.schema.Module
 import org.jetbrains.amper.frontend.schema.ProductType
@@ -233,7 +234,7 @@ fun AmperModule.isArtifactSigningEnabled() = publishingSettings.signArtifacts
  * Returns the Kotlin version for this module's production code.
  */
 // We don't have to go through all fragments, the Kotlin version is platform-agnostic.
-val AmperModule.kotlinVersion: String get() = fragments.first { !it.isTest }.settings.kotlin.version
+val AmperModule.kotlinVersion: KotlinVersion get() = fragments.first { !it.isTest }.settings.kotlin.version
 
 /**
  * Returns the JDK settings for this module's production code.

@@ -4,13 +4,11 @@
 
 package org.jetbrains.amper.frontend.schema
 
-import org.apache.maven.artifact.versioning.ComparableVersion
-
 /**
  * The minimum versions supported by the Kotlin Toolchain for different components.
  */
 object MinVersions {
     val android: AndroidVersion = AndroidVersion(21)
     val jdk: Int = 17
-    val kotlin: ComparableVersion = ComparableVersion("2.2.20")
+    val kotlin: KotlinVersion = KotlinVersion("2.2.20")
 }

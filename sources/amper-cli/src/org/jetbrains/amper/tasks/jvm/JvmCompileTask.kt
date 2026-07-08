@@ -435,7 +435,7 @@ internal class JvmCompileTask(
 
         val errorsCollector = ErrorsCollectorKotlinLogger()
         val isCompilerMessageRendererAPIAvailable =
-            ComparableVersion(userSettings.kotlin.compilerVersion) >= ComparableVersion("2.4.0-Beta2")
+            userSettings.kotlin.compilerVersion.supportsCompilerMessageRendererInBTA()
         val compilationLogger = CombiningKotlinLogger(buildList {
             add(logger.asKotlinLogger())
             add(errorsCollector)
@@ -479,7 +479,7 @@ internal class JvmCompileTask(
             .setFragments(fragments)
             .setListAttribute("source-files", sourceFiles.map { it.pathString })
             .setListAttribute("compiler-args", compilerArgs)
-            .setAttribute("compiler-version", userSettings.kotlin.compilerVersion)
+            .setAttribute("compiler-version", userSettings.kotlin.compilerVersion.notation)
             .use {
                 // TODO maybe share the build session with the whole Amper build (across all JVM compile tasks)?
                 kotlinToolchains.createBuildSession().use { session ->

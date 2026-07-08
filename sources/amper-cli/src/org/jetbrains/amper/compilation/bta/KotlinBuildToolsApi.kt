@@ -13,6 +13,7 @@ import org.jetbrains.amper.cli.logging.withoutConsoleLogging
 import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
 import org.jetbrains.amper.concurrency.AsyncConcurrentMap
 import org.jetbrains.amper.frontend.AmperModule
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.problems.reporting.ProblemReporter
 import org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi
 import org.jetbrains.kotlin.buildtools.api.KotlinLogger
@@ -38,13 +39,13 @@ private val KotlinBuildToolsImplCache = AsyncConcurrentMap<String, KotlinToolcha
 @OptIn(ExperimentalBuildToolsApi::class)
 context(_: ProblemReporter)
 internal suspend fun KotlinToolchains.Companion.loadMaybeCachedImpl(
-    kotlinVersion: String,
+    kotlinVersion: KotlinVersion,
     downloader: KotlinArtifactsDownloader,
-): KotlinToolchains = KotlinBuildToolsImplCache.computeIfAbsent(kotlinVersion) {
+): KotlinToolchains = KotlinBuildToolsImplCache.computeIfAbsent(kotlinVersion.notation) {
     val effectiveJars = buildList {
         addAll(downloader.downloadKotlinBuildToolsImpl(kotlinVersion))
 
-        if (ComparableVersion(kotlinVersion) < ComparableVersion("2.3.0")) {
+        if (kotlinVersion.requiresBuildToolsApiCompatibilityModule()) {
             addAll(ExtraClasspath.KOTLIN_BUILD_TOOLS_COMPAT.findJarsInDistribution())
         }
     }

@@ -229,7 +229,7 @@ internal abstract class WebCompileKlibTask(
         spanBuilder("kotlin-${expectedPlatform.name.lowercase()}-compilation")
             .setAmperModule(module)
             .setListAttribute("source-dirs", sourceFiles.map { it.pathString })
-            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion)
+            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion.notation)
             .setListAttribute("compiler-args", compilerArgs)
             .use {
                 logger.infoNoConsole("Compiling module '${module.userReadableName}' for platform '${platform.pretty}'...")

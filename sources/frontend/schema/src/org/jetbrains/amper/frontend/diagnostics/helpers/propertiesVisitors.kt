@@ -48,6 +48,19 @@ inline fun <reified T : SchemaNode> TreeNode.visitStringProperties(
     visitSelected(keyValue, stringNode.value)
 }
 
+
+/**
+ * Visits the given [properties] in all instances of [T] within this [TreeNode] and its descendants.
+ * The given [properties] must be of a type that is representing as a [StringNode] in YAML (usually a wrapping value
+ * class).
+ */
+inline fun <reified T : SchemaNode> TreeNode.visitWrappedStringProperties(
+    vararg properties: KProperty1<T, *>,
+    noinline visitSelected: (KeyValue, String) -> Unit,
+) = visitProperties<T, StringNode>(*properties) { keyValue, stringNode ->
+    visitSelected(keyValue, stringNode.value)
+}
+
 /**
  * Visits the given [properties] in all instances of [T] within this [TreeNode] and its descendants.
  */

@@ -289,7 +289,7 @@ internal class MetadataCompileTask(
         spanBuilder("kotlin-native-metadata-compilation")
             .setAmperModule(module)
             .setListAttribute("source-dirs", sourceDirectories.map { it.pathString })
-            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion)
+            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion.notation)
             .setListAttribute("compiler-args", compilerArgs)
             .use {
                 logger.infoNoConsole("Compiling Native Kotlin metadata for '${fragment.identificationPhrase()})'...")
@@ -344,7 +344,7 @@ internal class MetadataCompileTask(
         spanBuilder("kotlin-common-metadata-compilation")
             .setAmperModule(module)
             .setListAttribute("source-dirs", sourceDirectories.map { it.pathString })
-            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion)
+            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion.notation)
             .setListAttribute("compiler-args", compilerArgs)
             .use {
                 logger.infoNoConsole("Compiling Kotlin metadata for module '${module.userReadableName}'...")

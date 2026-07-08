@@ -223,7 +223,7 @@ internal abstract class WebLinkTask(
         }
         spanBuilder("kotlin-${expectedPlatform.name.lowercase()}-link")
             .setAmperModule(module)
-            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion)
+            .setAttribute("compiler-version", kotlinUserSettings.compilerVersion.notation)
             .setListAttribute("compiler-args", compilerArgs)
             .use {
                 val result = context(processRunner) {

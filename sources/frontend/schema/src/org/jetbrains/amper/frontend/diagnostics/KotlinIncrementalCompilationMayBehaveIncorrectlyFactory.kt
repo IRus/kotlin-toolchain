@@ -4,13 +4,14 @@
 
 package org.jetbrains.amper.frontend.diagnostics
 
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.SchemaBundle
 import org.jetbrains.amper.frontend.api.Trace
 import org.jetbrains.amper.frontend.api.TraceableString
+import org.jetbrains.amper.frontend.api.TraceableValue
 import org.jetbrains.amper.frontend.api.asTraceableValue
 import org.jetbrains.amper.frontend.asBuildProblemSource
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.types.generated.*
 import org.jetbrains.amper.problems.reporting.BuildProblem
 import org.jetbrains.amper.problems.reporting.BuildProblemSource
@@ -21,15 +22,13 @@ import org.jetbrains.amper.problems.reporting.Level
 import org.jetbrains.amper.problems.reporting.MultipleLocationsBuildProblemSource
 import org.jetbrains.amper.problems.reporting.ProblemReporter
 
-private const val MinKotlinVersionForIC = "2.4.0"
-
 object KotlinIncrementalCompilationMayBehaveIncorrectlyFactory : AomSingleModuleDiagnosticFactory {
 
     override fun analyze(module: AmperModule, problemReporter: ProblemReporter) {
         val reportedPlaces = mutableSetOf<Pair<Trace, Trace>>()
         module.fragments.forEach { fragment ->
             val compileIncrementally = fragment.settings.kotlin.compileIncrementally
-            if (compileIncrementally && ComparableVersion(fragment.settings.kotlin.version) < ComparableVersion(MinKotlinVersionForIC)) {
+            if (compileIncrementally && !fragment.settings.kotlin.version.supportsIncrementalCompilationInBTA()) {
                 val alreadyReported = !reportedPlaces.add(Pair(
                     fragment.settings.kotlin.compileIncrementallyDelegate.trace,
                     fragment.settings.kotlin.versionDelegate.trace,
@@ -49,11 +48,11 @@ object KotlinIncrementalCompilationMayBehaveIncorrectlyFactory : AomSingleModule
 
 class KotlinIncrementalCompilationMayBehaveIncorrectly(
     val incrementalCompilationTrace: Trace,
-    val actualKotlinVersion: TraceableString,
+    val actualKotlinVersion: TraceableValue<KotlinVersion>,
 ) : BuildProblem {
 
     override val diagnosticId: DiagnosticId = FrontendDiagnosticId.KotlinIncrementalCompilationMayBehaveIncorrectly
-    override val message = SchemaBundle.message("kotlin.incremental.compilation.may.behave.incorrectly", actualKotlinVersion.value)
+    override val message = SchemaBundle.message("kotlin.incremental.compilation.may.behave.incorrectly", actualKotlinVersion.value.notation)
     override val level: Level = Level.Warning
     override val type: BuildProblemType = BuildProblemType.Generic
     override val source: BuildProblemSource = MultipleLocationsBuildProblemSource(

@@ -13,6 +13,7 @@ import org.jetbrains.amper.frontend.api.SchemaValueDelegate
 import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.api.TraceableVersion
 import org.jetbrains.amper.frontend.api.TransformedValueTrace
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.Settings
 import org.jetbrains.amper.frontend.types.generated.*
 import org.jetbrains.amper.system.info.SystemInfo
@@ -28,6 +29,10 @@ internal fun Settings.builtInCatalog(): VersionCatalog = BuiltInCatalog(
     springBootVersion = springBoot.versionDelegate.asTraceableVersion().takeIf { springBoot.enabled },
     composeHotReloadVersion = compose.experimental.hotReload.versionDelegate.asTraceableVersion(),
 )
+
+@JvmName("asTraceableKotlinVersion")
+private fun SchemaValueDelegate<KotlinVersion>.asTraceableVersion() =
+    TraceableVersion(value.notation, trace)
 
 private fun SchemaValueDelegate<String>.asTraceableVersion(): TraceableVersion = TraceableVersion(value, trace)
 

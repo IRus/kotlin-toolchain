@@ -11,6 +11,7 @@ import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.LeafFragment
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.isDescendantOf
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.tasks.rootFragment
 import org.jetbrains.kotlin.tooling.metadata.AndroidExtras
 import org.jetbrains.kotlin.tooling.metadata.JsExtras
@@ -87,7 +88,7 @@ internal fun kotlinToolingMetadataFor(module: AmperModule, konanAbiVersion: Stri
     )
 }
 
-private fun LeafFragment.toProjectTarget(kotlinVersion: String, konanAbiVersion: String?): ProjectTarget = when {
+private fun LeafFragment.toProjectTarget(kotlinVersion: KotlinVersion, konanAbiVersion: String?): ProjectTarget = when {
     platform == Platform.JVM -> ProjectTarget(
         target = KGP_JVM_TARGET,
         platformType = "jvm",
@@ -126,7 +127,7 @@ private fun LeafFragment.toProjectTarget(kotlinVersion: String, konanAbiVersion:
             TargetExtras(
                 native = NativeExtras(
                     konanTarget = platform.nameForCompiler,
-                    konanVersion = kotlinVersion,
+                    konanVersion = kotlinVersion.notation,
                     konanAbiVersion = it,
                 ),
             )

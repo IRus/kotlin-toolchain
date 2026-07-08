@@ -56,7 +56,7 @@ internal class KlibToolCommand : AmperSubcommand(name = "klib") {
             is ProjectCliContext -> {
                 setProjectSpecificState(cliContext)
                 val model = cliContext.preparePluginsAndReadModel()
-                model.modules.maxOf { ComparableVersion(it.kotlinVersion) }.canonical
+                model.modules.maxOf { it.kotlinVersion }.notation
             }
         }
 

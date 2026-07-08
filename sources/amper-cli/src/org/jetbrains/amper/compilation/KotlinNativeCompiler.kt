@@ -17,6 +17,7 @@ import org.jetbrains.amper.core.downloader.Downloader
 import org.jetbrains.amper.engine.TaskGraphExecutionContext
 import org.jetbrains.amper.events.sink.operationEventScope
 import org.jetbrains.amper.frontend.AmperModule
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.jdk.provisioning.Jdk
 import org.jetbrains.amper.jdk.provisioning.JdkProvider
 import org.jetbrains.amper.jdk.provisioning.majorVersion
@@ -40,7 +41,7 @@ import kotlin.io.path.pathString
 
 context(executionContext: TaskGraphExecutionContext)
 suspend fun downloadNativeCompiler(
-    kotlinVersion: String,
+    kotlinVersion: KotlinVersion,
     userCacheRoot: AmperUserCacheRoot,
     jdkProvider: JdkProvider,
 ): KotlinNativeCompiler {
@@ -48,7 +49,7 @@ suspend fun downloadNativeCompiler(
     //  (as well as for the location of downloading compiler distribution itself.
     //  See AMPER-5319.
     val konanDistribution = context(executionContext.eventSink) {
-        Downloader.downloadAndExtractKotlinNative(kotlinVersion, userCacheRoot)
+        Downloader.downloadAndExtractKotlinNative(kotlinVersion.notation, userCacheRoot)
             ?: error("kotlin native compiler is not available for the current platform")
     }
 
@@ -195,7 +196,7 @@ class KotlinNativeCompiler(
                     add("--enable-native-access=ALL-UNNAMED")
                 }
                 // Unsafe usages were removed in Kotlin 2.4.0
-                if (jdk.majorVersion >= 24 && ComparableVersion(konanDistribution.kotlinVersion) < KotlinCompiler.FirstKotlinVersionWithoutUnsafeUsages) {
+                if (jdk.majorVersion >= 24 && KotlinVersion(konanDistribution.kotlinVersion).hasSunMiscUnsafeUsages()) {
                     add("--sun-misc-unsafe-memory-access=allow")
                 }
             },

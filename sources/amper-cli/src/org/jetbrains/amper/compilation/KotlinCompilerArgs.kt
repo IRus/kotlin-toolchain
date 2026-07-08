@@ -4,7 +4,6 @@
 
 package org.jetbrains.amper.compilation
 
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.cli.context.AmperProjectTempRoot
 import org.jetbrains.amper.compilation.compiler.KotlinCompiler
 import org.jetbrains.amper.dependency.resolution.ResolutionPlatform
@@ -15,7 +14,8 @@ import org.jetbrains.amper.frontend.FragmentDependencyType
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.dr.resolver.flow.toPlatform
 import org.jetbrains.amper.frontend.isDescendantOf
-import org.jetbrains.amper.frontend.schema.kotlin.KotlinVersion
+import org.jetbrains.amper.frontend.schema.KotlinVersion
+import org.jetbrains.amper.frontend.schema.KotlinLanguageVersion
 import org.jetbrains.amper.system.info.SystemInfo
 import org.jetbrains.amper.tasks.SourceRoot
 import org.jetbrains.amper.tasks.ios.IosConventions
@@ -44,16 +44,10 @@ private fun kotlinCommonCompilerArgs(
     compilerPlugins: List<ResolvedCompilerPlugin>,
     isMetadataCompilation: Boolean = false,
 ): List<String> = buildList {
-    val languageVersion = kotlinUserSettings.languageVersion
-
     if (isMultiplatform) {
         add("-Xmulti-platform")
 
-        // When languageVersion == null, we don't pass anything to the compiler, so it uses its own default.
-        // This case is similar to languageVersion >= 2.0 because we forbid compiler versions < 2.0.0 in the frontend.
-        if (!isMetadataCompilation
-            && (languageVersion == null || languageVersion >= KotlinVersion.Kotlin20)
-        ) {
+        if (!isMetadataCompilation && kotlinUserSettings.effectiveLanguageVersion >= KotlinLanguageVersion.Kotlin20) {
             val additionalSourceRootsByFragmentName = additionalSourceRoots.groupBy(
                 keySelector = { it.fragmentName },
                 valueTransform = { it.path },
@@ -74,11 +68,11 @@ private fun kotlinCommonCompilerArgs(
         }
     }
 
-    if (languageVersion != null) {
-        add("-language-version=${languageVersion.schemaValue}")
+    if (kotlinUserSettings.languageVersion != null) {
+        add("-language-version=${kotlinUserSettings.languageVersion.notation}")
     }
-    kotlinUserSettings.apiVersion?.let { apiVersion ->
-        add("-api-version=${apiVersion.schemaValue}")
+    if (kotlinUserSettings.apiVersion != null) {
+        add("-api-version=${kotlinUserSettings.apiVersion.notation}")
     }
 
     if (kotlinUserSettings.allWarningsAsErrors) {
@@ -386,7 +380,7 @@ internal fun kotlinWasmCompilerArgs(
     include: Path?,
     cacheDirectory: Path? = null,
 ): List<String> = buildList {
-    if (ComparableVersion(kotlinUserSettings.compilerVersion) < KotlinCompiler.KotlinVersionWithSeparateWasmCompiler) {
+    if (!kotlinUserSettings.compilerVersion.hasSeparateWasmCompiler()) {
         add("-Xwasm")
     }
     add("-Xwasm-target=wasm-${wasmTarget.name.lowercase()}")
@@ -501,7 +495,7 @@ private fun kotlinWebCompilerArgs(
     if (compilationType == KotlinCompilationType.BINARY) {
         add("-Xir-produce-js")
     } else {
-        if (ComparableVersion(kotlinUserSettings.compilerVersion) < KotlinCompiler.KotlinVersionWithPackedKlibByDefault) {
+        if (!kotlinUserSettings.compilerVersion.compilesWebToKlibByDefault()) {
             add("-Xir-produce-klib-file")
         }
     }
@@ -538,7 +532,7 @@ internal fun kotlinMetadataCompilerArgs(
 
     add("-Xmetadata-klib")
 
-    val kotlinVersion = ComparableVersion(kotlinUserSettings.compilerVersion)
+    val kotlinVersion = kotlinUserSettings.compilerVersion
     val targetPlatforms = fragmentPlatforms.mapNotNull { it.toPlatform().toXTargetPlatform(kotlinVersion) }.toSet()
     if (targetPlatforms.isNotEmpty()) {
         add("-Xtarget-platform=${targetPlatforms.joinToString(",") { it.cliValue }}")
@@ -602,13 +596,13 @@ private enum class XTargetPlatform(val cliValue: String) {
     WasmWasi("WasmWasi"),
     Native("Native");
 
-    val since: ComparableVersion = ComparableVersion("2.3.20-Beta1")
+    val since: KotlinVersion = KotlinVersion("2.3.20-Beta1")
 }
 
 /**
  * All platforms supported by the compiler argument '-Xtarget-platform'
  */
-private fun Platform.toXTargetPlatform(kotlinVersion: ComparableVersion): XTargetPlatform? =
+private fun Platform.toXTargetPlatform(kotlinVersion: KotlinVersion): XTargetPlatform? =
     when {
         this == Platform.JVM  -> XTargetPlatform.JVM
         this == Platform.ANDROID -> XTargetPlatform.JVM

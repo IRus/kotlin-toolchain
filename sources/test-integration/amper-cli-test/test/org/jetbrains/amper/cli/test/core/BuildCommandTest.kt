@@ -612,7 +612,7 @@ class AmperBuildTest : CliTestBase() {
         val moduleFile = projectDir.resolve("module.yaml")
         moduleFile.writeText(
             moduleFile.readText()
-                .replace("{{MIN_KOTLIN_VERSION}}", MinVersions.kotlin.canonical)
+                .replace("{{MIN_KOTLIN_VERSION}}", MinVersions.kotlin.notation)
                 .replace("{{MIN_JDK_VERSION}}", MinVersions.jdk.toString())
         )
         val result = runCli(

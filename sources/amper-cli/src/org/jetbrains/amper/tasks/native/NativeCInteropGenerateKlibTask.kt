@@ -21,6 +21,7 @@ import org.jetbrains.amper.engine.TaskName
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.Fragment
 import org.jetbrains.amper.frontend.Platform
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.incrementalcache.executeForFiles
 import org.jetbrains.amper.jdk.provisioning.JdkProvider
@@ -103,7 +104,7 @@ internal class NativeCInteropGenerateKlibTask(
     ): TaskResult {
         class InputDefFile(
             val path: Path,
-            val recommendedKotlinCompilerVersionOnFailingCinterop: ComparableVersion? = null,
+            val recommendedKotlinCompilerVersionOnFailingCinterop: KotlinVersion? = null,
             val macroNamesCollectingMode: MacroNamesCollectingMode? = null,
         )
 
@@ -142,7 +143,7 @@ internal class NativeCInteropGenerateKlibTask(
                     key = "${taskName.id.value}-$cinteropName",
                     inputValues = mapOf(
                         "target" to platform.nameForCompiler,
-                        "kotlinVersion" to kotlinCompilerVersion,
+                        "kotlinVersion" to kotlinCompilerVersion.notation,
                         "macroNamesCollectingMode" to (defFile.macroNamesCollectingMode?.value ?: "none"),
                     ),
                     inputFiles = listOf(defFile.path) + listOfNotNull(includeDir),
@@ -167,7 +168,7 @@ internal class NativeCInteropGenerateKlibTask(
                             add("-compiler-option")
                             add("-I${it.absolutePathString()}")
                         }
-                        if (defFile.macroNamesCollectingMode != null && ComparableVersion(kotlinCompilerVersion) >= ComparableVersion("2.4.20-RC2")) {
+                        if (defFile.macroNamesCollectingMode != null && kotlinCompilerVersion >= KotlinVersion("2.4.20-RC2")) {
                             add(MacroNamesCollectingMode.OPTION)
                             add(defFile.macroNamesCollectingMode.value)
                         }
@@ -180,8 +181,8 @@ internal class NativeCInteropGenerateKlibTask(
                 }.single().let { CinteropResult(it) }
             } catch (e: UserReadableError) {
                 val message = buildString {
-                    if (defFile.recommendedKotlinCompilerVersionOnFailingCinterop != null && ComparableVersion(kotlinCompilerVersion) < defFile.recommendedKotlinCompilerVersionOnFailingCinterop) {
-                        appendLine("cinterop '${cinteropName}' should run with Kotlin version ${defFile.recommendedKotlinCompilerVersionOnFailingCinterop} or higher. Please update your Kotlin version.")
+                    if (defFile.recommendedKotlinCompilerVersionOnFailingCinterop != null && kotlinCompilerVersion < defFile.recommendedKotlinCompilerVersionOnFailingCinterop) {
+                        appendLine("cinterop '${cinteropName}' should run with Kotlin version ${defFile.recommendedKotlinCompilerVersionOnFailingCinterop.notation} or higher. Please update your Kotlin version.")
                     }
                     appendLine(e.message)
                 }

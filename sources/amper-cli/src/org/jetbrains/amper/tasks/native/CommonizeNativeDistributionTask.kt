@@ -19,6 +19,7 @@ import org.jetbrains.amper.engine.TaskName
 import org.jetbrains.amper.frontend.Model
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.isDescendantOf
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.jdk.provisioning.JdkProvider
 import org.jetbrains.amper.kotlin.native.asCommonizerTarget
@@ -67,7 +68,7 @@ class CommonizeNativeDistributionTask(
     }
 
     context(_: TaskGraphExecutionContext)
-    private suspend fun commonize(kotlinVersion: String, sharedPlatformSets: Set<List<Platform>>) {
+    private suspend fun commonize(kotlinVersion: KotlinVersion, sharedPlatformSets: Set<List<Platform>>) {
         val sharedPlatforms = sharedPlatformSets.map { it.asCommonizerTarget() }.toSet()
 
         // TODO Maybe this should be separated into something more than a suspend function.
@@ -83,7 +84,7 @@ class CommonizeNativeDistributionTask(
             }
 
             spanBuilder("kotlin-native-distribution-commonize")
-                .setAttribute("compiler-version", kotlinVersion)
+                .setAttribute("compiler-version", kotlinVersion.notation)
                 .setListAttribute("commonizer-args", commonizerArgs)
                 .use {
                     incrementalCache.execute(
@@ -114,8 +115,8 @@ class CommonizeNativeDistributionTask(
         }
     }
 
-    private fun Model.nativePlatformSetsToCommonizeByKotlinVersion(): Map<String, Set<List<Platform>>> {
-        val sharedPlatformSetsByKotlinVersion = mutableMapOf<String, MutableSet<List<Platform>>>()
+    private fun Model.nativePlatformSetsToCommonizeByKotlinVersion(): Map<KotlinVersion, Set<List<Platform>>> {
+        val sharedPlatformSetsByKotlinVersion = mutableMapOf<KotlinVersion, MutableSet<List<Platform>>>()
         for (module in modules) {
             for (fragment in module.fragments) {
                 val platforms = fragment.platforms.filter { it.isDescendantOf(Platform.NATIVE) }

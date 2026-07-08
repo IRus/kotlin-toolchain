@@ -575,7 +575,7 @@ class PluginsTest : CliTestBase() {
                 "${pluginYaml}:24:7: Unknown property `unknownProperty5` (inferred type `string`) in `someAction`",
                 "${pluginYaml}:25:7: Unknown property `unknownProperty6` (inferred type `<undefined-type>`) in `someAction`",
                 "${pluginYaml}:25:34: Referencing `settings` is not allowed",
-                "${pluginYaml}:26:7: Unknown property `unknownProperty7` (inferred type `KotlinVersion | null`) in `someAction`",
+                "${pluginYaml}:26:7: Unknown property `unknownProperty7` (inferred type `string | null`) in `someAction`",
                 "${pluginYaml}:28:7: Unknown property `unknownProperty8` (inferred type `path`) in `someAction`",
                 "${pluginYaml}:29:7: Unknown property `unknownProperty9` (inferred type `path`) in `someAction`",
                 "${pluginYaml}:30:7: Unknown property `unknownProperty10` (inferred type `path`) in `someAction`",

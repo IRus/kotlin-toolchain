@@ -5,13 +5,11 @@
 package org.jetbrains.amper.frontend.schema.kotlin
 
 import org.apache.maven.artifact.versioning.ComparableVersion
-import org.jetbrains.amper.frontend.EnumMap
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.SchemaEnum
 import org.jetbrains.amper.frontend.api.CanBeReferenced
 import org.jetbrains.amper.frontend.api.DeprecatedSchema
-import org.jetbrains.amper.frontend.api.EnumOrderSensitive
-import org.jetbrains.amper.frontend.api.EnumValueFilter
+import org.jetbrains.amper.frontend.api.KnownStringValues
 import org.jetbrains.amper.frontend.api.Misnomers
 import org.jetbrains.amper.frontend.api.NotBlank
 import org.jetbrains.amper.frontend.api.PlatformAgnostic
@@ -20,6 +18,8 @@ import org.jetbrains.amper.frontend.api.SchemaDoc
 import org.jetbrains.amper.frontend.api.SchemaNode
 import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.schema.DefaultVersions
+import org.jetbrains.amper.frontend.schema.KotlinLanguageVersion
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.KspSettings
 import org.jetbrains.amper.frontend.schema.kotlin.plugins.AllOpenSettings
 import org.jetbrains.amper.frontend.schema.kotlin.plugins.DataFrameSettings
@@ -32,30 +32,6 @@ import org.jetbrains.amper.frontend.schema.kotlin.plugins.ThirdPartyCompilerPlug
 import org.jetbrains.amper.frontend.tree.ReferenceNode
 import org.jetbrains.amper.frontend.tree.RefinedTreeNode
 import org.jetbrains.amper.frontend.tree.StringNode
-
-/**
- * The expected pattern for the Kotlin compiler version setting.
- * It's used in diagnostics and to extract the default language version from the compiler version string.
- */
-val KotlinCompilerVersionPattern = Regex("""(?<languageVersion>\d+\.\d+)\..*""")
-
-@EnumOrderSensitive(reverse = true)
-@EnumValueFilter("outdated", isNegated = true)
-enum class KotlinVersion(override val schemaValue: String, override val outdated: Boolean = false) : SchemaEnum {
-    // https://github.com/JetBrains/kotlin/blob/693c44ee79f62895a9b92bdd60fdd7a9bc29a975/compiler/util/src/org/jetbrains/kotlin/config/LanguageVersionSettings.kt#L633-L648
-    Kotlin18("1.8", outdated = true), // oldest supported version in Kotlin 2.2.20, which is our minimum
-    Kotlin19("1.9", outdated = true),
-    Kotlin20("2.0"),
-    Kotlin21("2.1"),
-    Kotlin22("2.2"),
-    Kotlin23("2.3"),
-    Kotlin24("2.4"),
-    Kotlin25("2.5"),
-    ;
-
-    override fun toString(): String = schemaValue
-    companion object Index : EnumMap<KotlinVersion, String>(KotlinVersion::values, KotlinVersion::schemaValue)
-}
 
 /**
  * The [explicit API mode](https://kotlinlang.org/docs/whatsnew14.html#explicit-api-mode-for-library-authors) of the
@@ -84,13 +60,14 @@ class KotlinSettings : SchemaNode() {
     @Misnomers("compiler")
     @SchemaDoc("The version of the Kotlin compiler and standard library to use")
     @NotBlank
-    val version by value(DefaultVersions.kotlin)
+    val version by value(KotlinVersion(DefaultVersions.kotlin))
 
     @CanBeReferenced  // by apiVersion
     @PlatformAgnostic
     @Misnomers("language-version")
     @SchemaDoc("Source compatibility with the specified version of Kotlin")
-    val languageVersion by nullableValue<KotlinVersion>()
+    @KnownStringValues("2.5", "2.4", "2.3", "2.2", "2.1", "2.0")
+    val languageVersion by nullableValue<KotlinLanguageVersion>()
 
     @PlatformAgnostic
     @Misnomers("api-version", "sdkVersion", "sdk")

@@ -4,8 +4,8 @@
 
 package org.jetbrains.amper.compilation
 
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.frontend.Platform
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.kotlin.native.KonanDistribution
 import org.jetbrains.amper.kotlin.native.konanHostPlatform
 import org.jetbrains.amper.kotlin.native.supportsCompilerCachesFor
@@ -74,7 +74,7 @@ internal data class NativeCompilerCaches(
  * * when optimizations are enabled, because the compiler ignores all caches "with global optimizations"
  * * when the Kotlin/Native distribution doesn't advertise cache support for [target] on this host
  * * when [dependencyCacheRoots] is empty, which is how the caller disables the caches entirely
- * * when the compiler might crash while caching dependencies (see [canCacheDependencies])
+ * * when the compiler might crash while caching dependencies (see [KotlinVersion.canCacheNativeDependencies])
  * * when a path involved in caching contains whitespace on a Linux host (see [cacheBuilderSupports])
  *
  * Caching the dependencies and incremental linking are two tiers of the same compiler feature and
@@ -96,14 +96,25 @@ internal fun nativeCompilerCachesFor(
     if (compilationType == KotlinCompilationType.LIBRARY) return null
     if (optimizationEnabled) return null
     if (dependencyCacheRoots.isEmpty()) return null
-    if (!canCacheDependencies(konanDistribution.kotlinVersion)) return null
+    val kotlinVersion = KotlinVersion(konanDistribution.kotlinVersion)
+    if (!kotlinVersion.canCacheNativeDependencies()) {
+        logger.debug(
+            "Disabling the Kotlin/Native compiler caches, because caching dependencies might crash the Kotlin {} compiler " +
+                "(see https://youtrack.jetbrains.com/issue/KT-88316)", kotlinVersion,
+        )
+        return null
+    }
 
     val host = konanHostPlatform(system) ?: return null
     if (!konanDistribution.supportsCompilerCachesFor(target = target.toKonanPlatform(), host = host)) return null
 
     // The paths the cache builder reads the klibs from and writes the caches to.
-    val cachePaths = dependencyCacheRoots + konanDistribution.homeDir + incrementalCacheDir
-    if (!cacheBuilderSupports(cachePaths, system, konanDistribution.kotlinVersion)) return null
+    val cachePaths = buildList {
+        addAll(dependencyCacheRoots)
+        addAll(konanDistribution.homeDir)
+        addAll(incrementalCacheDir)
+    }
+    if (!cacheBuilderSupports(cachePaths, system, kotlinVersion)) return null
 
     return NativeCompilerCaches(
         autoCacheableFrom = dependencyCacheRoots,
@@ -112,47 +123,16 @@ internal fun nativeCompilerCachesFor(
 }
 
 /**
- * The first Kotlin version that can cache external dependencies without crashing.
- * See https://youtrack.jetbrains.com/issue/KT-88316
- * TODO KT-88316 cache dependencies unconditionally once the minimum supported Kotlin version reaches 2.4.20-RC2.
- */
-private val MinKotlinVersionForCachingDependencies = ComparableVersion("2.4.20-RC2")
-
-/**
- * Whether the compiler of the given [kotlinVersion] can build caches for external dependencies without crashing.
- */
-private fun canCacheDependencies(kotlinVersion: String): Boolean {
-    if (ComparableVersion(kotlinVersion) >= MinKotlinVersionForCachingDependencies) return true
-
-    logger.debug(
-        "Disabling the Kotlin/Native compiler caches, because caching dependencies might crash the Kotlin {} compiler " +
-                "(see https://youtrack.jetbrains.com/issue/KT-88316)", kotlinVersion,
-    )
-    return false
-}
-
-/**
- * The first Kotlin version whose Linux cache builder supports whitespace in paths (fixed in KT-86824).
- *
- * todo (AB):
- *  Note that the fix of KT-86824 is tagged for a cherry-pick, so an earlier 2.4.x version may support it as well.
- *  Condition might be relaxed after fix is backported.
- */
-private val MinKotlinVersionSupportingSpacesOnLinux = ComparableVersion("2.4.20-Beta2")
-
-/**
  * Whether the Kotlin/Native cache builder of the given [kotlinVersion] can handle the given [paths] on a host with
  * the given [system].
  *
- * Note: no version currently reaches this check without passing it, because [MinKotlinVersionForCachingDependencies]
- * is higher than [MinKotlinVersionSupportingSpacesOnLinux]. This is kept for the case where the former is lowered
- * after a backport of the KT-88316 fix.
- *
- * TODO KT-86824 remove this workaround once we require Kotlin >= 2.4.20
+ * Note: no version currently reaches this check without passing it, because [KotlinVersion.canCacheNativeDependencies]
+ * is only true for higher versions than the one with the whitespace bugfix.
+ * This function is kept for the case where the former is lowered after a backport of the KT-88316 fix.
  */
-private fun cacheBuilderSupports(paths: List<Path>, system: SystemInfo, kotlinVersion: String): Boolean {
+private fun cacheBuilderSupports(paths: List<Path>, system: SystemInfo, kotlinVersion: KotlinVersion): Boolean {
     if (system.family != OsFamily.Linux) return true
-    if (ComparableVersion(kotlinVersion) >= MinKotlinVersionSupportingSpacesOnLinux) return true
+    if (kotlinVersion.supportsSpaceInNativeCacheOnLinux()) return true
 
     val unsupportedPaths = paths.filter { path -> path.pathString.any { it.isWhitespace() } }
     if (unsupportedPaths.isEmpty()) return true

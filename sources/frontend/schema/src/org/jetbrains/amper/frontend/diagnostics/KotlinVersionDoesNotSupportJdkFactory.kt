@@ -4,13 +4,14 @@
 
 package org.jetbrains.amper.frontend.diagnostics
 
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.SchemaBundle
 import org.jetbrains.amper.frontend.api.Trace
 import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.api.TraceableValue
+import org.jetbrains.amper.frontend.api.asTraceableValue
 import org.jetbrains.amper.frontend.asBuildProblemSource
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.types.generated.*
 import org.jetbrains.amper.problems.reporting.BuildProblem
 import org.jetbrains.amper.problems.reporting.BuildProblemSource
@@ -24,7 +25,8 @@ import org.jetbrains.amper.problems.reporting.ProblemReporter
 /**
  * Well-known mapping of Kotlin compiler versions to the maximum JDK (JVM bytecode target) they support.
  *
- * Each rule states that starting with [minKotlinVersion], the compiler can target up to (and including) JDK [maxJdk].
+ * Each rule states that starting with [minKotlinVersion][KotlinJdkSupportRule.minKotlinVersion], the compiler can
+ * target up to (and including) JDK [maxJdk][KotlinJdkSupportRule.maxJdk].
  * Add new entries here as new Kotlin versions extend JDK support.
  */
 private val KotlinJdkSupportRules: List<KotlinJdkSupportRule> = listOf(
@@ -50,9 +52,10 @@ private val KotlinJdkSupportRules: List<KotlinJdkSupportRule> = listOf(
     ), // this is a stub for the last "range".
 )
 
-private data class KotlinJdkSupportRule(val minKotlinVersion: ComparableVersion, val maxJdk: Int?) {
-    constructor(minKotlinVersion: String, maxJdk: Int?) : this(ComparableVersion(minKotlinVersion), maxJdk)
-}
+private fun KotlinJdkSupportRule(minKotlinVersion: String, maxJdk: Int?): KotlinJdkSupportRule =
+    KotlinJdkSupportRule(KotlinVersion(minKotlinVersion), maxJdk)
+
+private data class KotlinJdkSupportRule(val minKotlinVersion: KotlinVersion, val maxJdk: Int?)
 
 /**
  * Detects unsupported combinations of the Kotlin compiler version and upper JDK version, based on the well-known
@@ -67,7 +70,7 @@ object KotlinVersionDoesNotSupportJdkFactory : AomSingleModuleDiagnosticFactory 
         val reportedPlaces = mutableSetOf<Pair<Trace, Trace>>()
         module.fragments.forEach { fragment ->
             val settings = fragment.settings
-            val kotlinVersion = ComparableVersion(settings.kotlin.version)
+            val kotlinVersion = settings.kotlin.version
             val jdkVersion = settings.jvm.jdk.version
 
             // We should know something about Kotlin version used, or just drop this diagnostic.
@@ -82,10 +85,7 @@ object KotlinVersionDoesNotSupportJdkFactory : AomSingleModuleDiagnosticFactory 
             if (!alreadyReported) {
                 problemReporter.reportMessage(
                     KotlinVersionDoesNotSupportJdk(
-                        actualKotlinVersion = TraceableString(
-                            value = settings.kotlin.version,
-                            trace = settings.kotlin.versionDelegate.trace,
-                        ),
+                        actualKotlinVersion = settings.kotlin.versionDelegate.asTraceableValue(),
                         actualJdkVersion = TraceableValue(
                             value = jdkVersion,
                             trace = settings.jvm.jdk.versionDelegate.trace,
@@ -98,7 +98,7 @@ object KotlinVersionDoesNotSupportJdkFactory : AomSingleModuleDiagnosticFactory 
         }
     }
 
-    private fun maxSupportedJdkFor(kotlinVersion: ComparableVersion): Int? {
+    private fun maxSupportedJdkFor(kotlinVersion: KotlinVersion): Int? {
         for ((index, value) in KotlinJdkSupportRules.withIndex()) {
             val lowerBound = value.minKotlinVersion
             val upperBound = KotlinJdkSupportRules.getOrNull(index + 1)?.minKotlinVersion ?: continue
@@ -112,11 +112,11 @@ object KotlinVersionDoesNotSupportJdkFactory : AomSingleModuleDiagnosticFactory 
             .filter { it.maxJdk != null && it.maxJdk >= jdkVersion }
             .minByOrNull { it.minKotlinVersion }
             ?.minKotlinVersion
-            ?.toString()
+            ?.notation
 }
 
 class KotlinVersionDoesNotSupportJdk(
-    val actualKotlinVersion: TraceableString,
+    val actualKotlinVersion: TraceableValue<KotlinVersion>,
     val actualJdkVersion: TraceableValue<Int>,
     val maxSupportedJdk: Int,
     val minKotlinVersionForJdk: String?,
@@ -126,10 +126,10 @@ class KotlinVersionDoesNotSupportJdk(
     override val message = if (minKotlinVersionForJdk != null)
         SchemaBundle.message(
             messageKey = "kotlin.version.does.not.support.jdk",
-            actualKotlinVersion.value, maxSupportedJdk, actualJdkVersion.value, minKotlinVersionForJdk,
+            actualKotlinVersion.value.notation, maxSupportedJdk, actualJdkVersion.value, minKotlinVersionForJdk,
         ) else SchemaBundle.message(
         messageKey = "kotlin.version.does.not.support.jdk.unknown.jdk.version",
-        actualKotlinVersion.value, maxSupportedJdk, actualJdkVersion.value,
+        actualKotlinVersion.value.notation, maxSupportedJdk, actualJdkVersion.value,
     )
     override val level: Level = Level.Error
     override val type: BuildProblemType = BuildProblemType.InconsistentConfiguration

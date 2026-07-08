@@ -12,6 +12,7 @@ import org.jetbrains.amper.dependency.resolution.Repository
 import org.jetbrains.amper.dependency.resolution.ResolutionPlatform
 import org.jetbrains.amper.dependency.resolution.ResolutionScope
 import org.jetbrains.amper.frontend.dr.resolver.toIncrementalCacheResult
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.problems.reporting.ProblemReporter
 import java.nio.file.Path
@@ -30,10 +31,10 @@ internal class KotlinArtifactsDownloader(
      * that will be used behind the scenes.
      */
     context(_: ProblemReporter)
-    suspend fun downloadKotlinBuildToolsImpl(version: String): Collection<Path> = downloadMavenArtifact(
+    suspend fun downloadKotlinBuildToolsImpl(version: KotlinVersion): Collection<Path> = downloadMavenArtifact(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-build-tools-impl",
-        version = version,
+        version = version.notation,
     )
 
     /**
@@ -43,20 +44,20 @@ internal class KotlinArtifactsDownloader(
      * that will be used behind the scenes.
      */
     context(_: ProblemReporter)
-    suspend fun downloadKotlinCompilerEmbeddable(version: String): List<Path> = downloadMavenArtifact(
+    suspend fun downloadKotlinCompilerEmbeddable(version: KotlinVersion): List<Path> = downloadMavenArtifact(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-compiler-embeddable",
-        version = version,
+        version = version.notation,
     )
 
     /**
      * Downloads the implementation of the embeddable Kotlin commonizer in the given [version].
      */
     context(_: ProblemReporter)
-    suspend fun downloadKotlinCommonizerEmbeddable(version: String): List<Path> = downloadMavenArtifact(
+    suspend fun downloadKotlinCommonizerEmbeddable(version: KotlinVersion): List<Path> = downloadMavenArtifact(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-klib-commonizer-embeddable",
-        version = version,
+        version = version.notation,
     )
 
     context(_: ProblemReporter)

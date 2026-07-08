@@ -26,6 +26,7 @@ test-dependencies:
 
 settings:
   kotlin:
+    serialization: enabled
     optIns:
       - org.jetbrains.amper.frontend.schema.DiscouragedDirectDefaultVersionAccess # the frontend API is the intended place for it
   jvm:

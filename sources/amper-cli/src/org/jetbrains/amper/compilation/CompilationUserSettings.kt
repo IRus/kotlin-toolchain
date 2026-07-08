@@ -9,7 +9,8 @@ import org.jetbrains.amper.frontend.Fragment
 import org.jetbrains.amper.frontend.LeafFragment
 import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.schema.kotlin.ExplicitApiMode
-import org.jetbrains.amper.frontend.schema.kotlin.KotlinVersion
+import org.jetbrains.amper.frontend.schema.KotlinLanguageVersion
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 
 @Serializable // makes it convenient to include in the input properties of the incremental cache state
 internal data class CompilationUserSettings(
@@ -20,9 +21,9 @@ internal data class CompilationUserSettings(
 
 @Serializable
 internal data class KotlinUserSettings(
-    val compilerVersion: String,
-    val languageVersion: KotlinVersion?,
-    val apiVersion: KotlinVersion?,
+    val compilerVersion: KotlinVersion,
+    val languageVersion: KotlinLanguageVersion?,
+    val apiVersion: KotlinLanguageVersion?,
     val compileIncrementally: Boolean,
     val allWarningsAsErrors: Boolean,
     val suppressWarnings: Boolean,
@@ -37,7 +38,9 @@ internal data class KotlinUserSettings(
     val storeJavaParameterNames: Boolean,
     val freeCompilerArgs: List<String>,
     val compilerPlugins: List<SCompilerPluginConfig>,
-)
+) {
+    val effectiveLanguageVersion get() = languageVersion ?: compilerVersion.languageVersion
+}
 
 @Serializable
 internal data class JavaUserSettings(

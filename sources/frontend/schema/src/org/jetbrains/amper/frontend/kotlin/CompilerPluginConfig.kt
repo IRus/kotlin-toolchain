@@ -6,6 +6,7 @@ package org.jetbrains.amper.frontend.kotlin
 
 import org.jetbrains.amper.core.UsedInIdePlugin
 import org.jetbrains.amper.frontend.kotlin.CompilerPluginConfig.Option
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 
 private const val KOTLIN_GROUP_ID = "org.jetbrains.kotlin"
 
@@ -40,19 +41,19 @@ sealed interface CompilerPluginConfig {
     )
 }
 
-data class SerializationCompilerPluginConfig(val kotlinVersion: String) : CompilerPluginConfig {
+data class SerializationCompilerPluginConfig(val kotlinVersion: KotlinVersion) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/cb4652c3452c43aa5060407c0dc26746ca01eabb/libraries/tools/kotlin-serialization/src/common/kotlin/org/jetbrains/kotlinx/serialization/gradle/SerializationSubplugin.kt#L44
     override val id = "org.jetbrains.kotlinx.serialization"
     override val options = emptyList<Option>()
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-serialization-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class AllOpenCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
     val annotations: List<String>,
     val presets: List<String>,
 ) : CompilerPluginConfig {
@@ -65,12 +66,12 @@ data class AllOpenCompilerPluginConfig(
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-allopen-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class NoArgCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
     val annotations: List<String>,
     val presets: List<String>,
     val invokeInitializers: Boolean,
@@ -85,12 +86,12 @@ data class NoArgCompilerPluginConfig(
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-noarg-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class DataFrameCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
 ) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/1b436477389b6087581cd6fd8cf95c40c6982519/plugins/kotlin-dataframe/kotlin-dataframe.cli/src/org/jetbrains/kotlinx/dataframe/plugin/FirDataFrameComponentRegistrar.kt#L127
     override val id = "org.jetbrains.kotlin.dataframe"
@@ -105,12 +106,12 @@ data class DataFrameCompilerPluginConfig(
         groupId = KOTLIN_GROUP_ID,
         // https://github.com/JetBrains/kotlin/blob/1b436477389b6087581cd6fd8cf95c40c6982519/plugins/kotlin-dataframe/build.gradle.kts#L59
         artifactId = "kotlin-dataframe-compiler-plugin-experimental",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class JsPlainObjectsCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
 ) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/cb4652c3452c43aa5060407c0dc26746ca01eabb/libraries/tools/js-plain-objects/src/common/kotlin/org/jetbrains/kotlinx/jso/gradle/JsPlainObjectsKotlinGradleSubplugin.kt#L43
     override val id = "org.jetbrains.kotlinx.js-plain-objects"
@@ -119,12 +120,12 @@ data class JsPlainObjectsCompilerPluginConfig(
         groupId = KOTLIN_GROUP_ID,
         // https://github.com/JetBrains/kotlin/blob/cb4652c3452c43aa5060407c0dc26746ca01eabb/libraries/tools/js-plain-objects/src/common/kotlin/org/jetbrains/kotlinx/jso/gradle/JsPlainObjectsKotlinGradleSubplugin.kt#L25
         artifactId = "kotlinx-js-plain-objects-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class PowerAssertCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
     val functions: List<String>,
 ) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/4788eb845b46d8639afafa1674f7e81028dcbfb8/plugins/power-assert/power-assert.cli/src/org/jetbrains/kotlin/powerassert/PowerAssertCommandLineProcessor.kt#L28
@@ -136,12 +137,12 @@ data class PowerAssertCompilerPluginConfig(
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-power-assert-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 data class ParcelizeCompilerPluginConfig(
-    val kotlinVersion: String,
+    val kotlinVersion: KotlinVersion,
     val additionalAnnotations: List<String>,
 ) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/cb4652c3452c43aa5060407c0dc26746ca01eabb/libraries/tools/kotlin-gradle-plugin/src/common/kotlin/org/jetbrains/kotlin/gradle/targets/android/internal/ParcelizeSubplugin.kt#L44
@@ -152,11 +153,11 @@ data class ParcelizeCompilerPluginConfig(
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-parcelize-compiler",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
-data class ComposeCompilerPluginConfig(val kotlinVersion: String) : CompilerPluginConfig {
+data class ComposeCompilerPluginConfig(val kotlinVersion: KotlinVersion) : CompilerPluginConfig {
     // https://github.com/JetBrains/kotlin/blob/cb4652c3452c43aa5060407c0dc26746ca01eabb/libraries/tools/kotlin-compose-compiler/src/common/kotlin/org/jetbrains/kotlin/compose/compiler/gradle/ComposeCompilerSubplugin.kt#L146
     override val id = "androidx.compose.compiler.plugins.kotlin"
     override val options = listOf(
@@ -167,22 +168,22 @@ data class ComposeCompilerPluginConfig(val kotlinVersion: String) : CompilerPlug
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-compose-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
-data class LombokCompilerPluginConfig(val kotlinVersion: String) : CompilerPluginConfig {
+data class LombokCompilerPluginConfig(val kotlinVersion: KotlinVersion) : CompilerPluginConfig {
     override val id = "org.jetbrains.kotlin.lombok"
     override val options = emptyList<Option>()
     override val mavenCoordinates = CompilerPluginConfig.MavenCoordinates(
         groupId = KOTLIN_GROUP_ID,
         artifactId = "kotlin-lombok-compiler-plugin-embeddable",
-        version = kotlinVersion,
+        version = kotlinVersion.notation,
     )
 }
 
 fun kotlinxRpcCompilerPlugins(
-    kotlinVersion: String,
+    kotlinVersion: KotlinVersion,
     kotlinxRpcVersion: String,
     annotationTypeSafetyEnabled: Boolean,
 ): List<CompilerPluginConfig> = buildList {
@@ -204,7 +205,7 @@ fun kotlinxRpcCompilerPlugins(
                     // + the suffix added there: https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/gradle-plugin/src/main/kotlin/kotlinx/rpc/compilerPlugins.kt#L13-L26
                     artifactId = "kotlinx-rpc-compiler-plugin-$subpluginName",
                     // https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/gradle-plugin/src/main/kotlin/kotlinx/rpc/RpcPluginConst.kt#L22
-                    version = "$kotlinVersion-$kotlinxRpcVersion",
+                    version = "${kotlinVersion.notation}-$kotlinxRpcVersion",
                 )
             )
         )

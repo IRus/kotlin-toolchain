@@ -6,7 +6,7 @@ package org.jetbrains.amper.ksp
 
 import org.jetbrains.amper.compilation.CompilationUserSettings
 import org.jetbrains.amper.compilation.JavaVersion
-import org.jetbrains.amper.frontend.schema.kotlin.KotlinCompilerVersionPattern
+import org.jetbrains.amper.frontend.schema.KotlinLanguageVersion
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.pathString
@@ -46,8 +46,8 @@ internal sealed interface KspConfig {
     val libraries: List<Path>
 
     val processorOptions: Map<String, String>
-    val languageVersion: String
-    val apiVersion: String
+    val languageVersion: KotlinLanguageVersion
+    val apiVersion: KotlinLanguageVersion
     val allWarningsAsErrors: Boolean
     val mapAnnotationArgumentsInJava: Boolean // TODO find what that means
 
@@ -85,8 +85,8 @@ internal sealed interface KspConfig {
         addPaths("-libraries", libraries, workDir, legacyListMode)
 
         addList("-processor-options", processorOptions.map { "${it.key}=${it.value}" }, legacyListMode)
-        add("-language-version=$languageVersion")
-        add("-api-version=$apiVersion")
+        add("-language-version=${languageVersion.notation}")
+        add("-api-version=${apiVersion.notation}")
         add("-all-warnings-as-errors=$allWarningsAsErrors")
         add("-map-annotation-arguments-in-java=$mapAnnotationArgumentsInJava")
 
@@ -118,9 +118,9 @@ internal sealed interface KspConfig {
         override lateinit var libraries: List<Path>
 
         override var processorOptions: Map<String, String> = emptyMap()
-        override var languageVersion: String = compilationSettings.kotlin.languageVersion?.schemaValue
-            ?: defaultLanguageVersionFor(compilationSettings.kotlin.compilerVersion)
-        override var apiVersion: String = compilationSettings.kotlin.apiVersion?.schemaValue ?: languageVersion
+        override var languageVersion: KotlinLanguageVersion = compilationSettings.kotlin.languageVersion
+            ?: compilationSettings.kotlin.compilerVersion.languageVersion
+        override var apiVersion: KotlinLanguageVersion = compilationSettings.kotlin.apiVersion ?: languageVersion
         override var allWarningsAsErrors: Boolean = compilationSettings.kotlin.allWarningsAsErrors
         override var mapAnnotationArgumentsInJava: Boolean = false // TODO map this to a setting?
 
@@ -160,15 +160,6 @@ private fun MutableList<String>.addPaths(argName: String, paths: List<Path>, wor
         paths.map { it.pathString }
     }
     addList(argName, effectivePaths, legacyListMode)
-}
-
-private fun defaultLanguageVersionFor(compilerVersion: String): String {
-    val match = KotlinCompilerVersionPattern.matchEntire(compilerVersion)
-        ?: error("Invalid Kotlin compiler version '$compilerVersion'") // already checked in the frontend
-    val languageVersionGroup = match.groups["languageVersion"]
-        ?: error("The 'languageVersion' capturing group should be present and mandatory in the Kotlin version regex," +
-                "but got: ${KotlinCompilerVersionPattern.pattern}")
-    return languageVersionGroup.value
 }
 
 internal interface KspJvmConfig : KspConfig {

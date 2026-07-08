@@ -16,12 +16,15 @@ import org.jetbrains.amper.frontend.ancestralPath
 import org.jetbrains.amper.frontend.aomBuilder.DefaultFragment
 import org.jetbrains.amper.frontend.aomBuilder.DefaultModule
 import org.jetbrains.amper.frontend.api.DefaultTrace
+import org.jetbrains.amper.frontend.api.SchemaValueDelegate
 import org.jetbrains.amper.frontend.api.Trace
 import org.jetbrains.amper.frontend.api.TraceableString
+import org.jetbrains.amper.frontend.api.TraceableValue
 import org.jetbrains.amper.frontend.api.TransformedValueTrace
 import org.jetbrains.amper.frontend.api.asTraceableValue
 import org.jetbrains.amper.frontend.api.isExplicitlySet
 import org.jetbrains.amper.frontend.schema.JUnitVersion
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.ProductType
 import org.jetbrains.amper.frontend.schema.Repository.Companion.SpecialMavenLocalUrl
 import org.jetbrains.amper.frontend.schema.kotlin.plugins.legacySerializationFormatNone
@@ -147,7 +150,7 @@ private fun Fragment.allExternalMavenDependencies() = ancestralPath()
     .filterIsInstance<MavenDependencyBase>()
 
 private fun Fragment.calculateImplicitDependencies(): List<MavenDependencyBase> = buildList {
-    val kotlinVersion = settings.kotlin.versionDelegate.asTraceableValue()
+    val kotlinVersion = settings.kotlin.versionDelegate.asTraceableString()
     add(kotlinDependencyOf("kotlin-stdlib", kotlinVersion, DefaultTrace))
 
     // hack for avoiding classpath clashes in android dependencies, until DR support dependency constraints from
@@ -309,7 +312,7 @@ private fun Fragment.calculateImplicitDependencies(): List<MavenDependencyBase> 
 }
 
 private fun Fragment.inferredTestDependencies(): List<MavenDependency> = buildList {
-    val kotlinVersion = settings.kotlin.versionDelegate.asTraceableValue()
+    val kotlinVersion = settings.kotlin.versionDelegate.asTraceableString()
     if (platforms.size == 1 && platforms.single().supportsJvmTestFrameworks()) {
         val junitTrace = TransformedValueTrace(
             description = "because the test engine is ${settings.junit.schemaValue}",
@@ -327,6 +330,8 @@ private fun Fragment.inferredTestDependencies(): List<MavenDependency> = buildLi
         add(kotlinDependencyOf("kotlin-test-annotations-common", kotlinVersion, DefaultTrace))
     }
 }
+
+private fun SchemaValueDelegate<KotlinVersion>.asTraceableString() = TraceableValue(value.notation, trace)
 
 private fun Platform.supportsJvmTestFrameworks() = this == Platform.JVM || this == Platform.ANDROID
 

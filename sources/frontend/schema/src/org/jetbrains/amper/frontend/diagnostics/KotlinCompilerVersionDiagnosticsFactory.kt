@@ -9,11 +9,12 @@ import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.frontend.SchemaBundle
 import org.jetbrains.amper.frontend.api.Trace
 import org.jetbrains.amper.frontend.contexts.MinimalModule
-import org.jetbrains.amper.frontend.diagnostics.helpers.visitStringProperties
+import org.jetbrains.amper.frontend.diagnostics.helpers.visitWrappedStringProperties
 import org.jetbrains.amper.frontend.messages.PsiBuildProblem
 import org.jetbrains.amper.frontend.messages.extractPsiElementOrNull
+import org.jetbrains.amper.frontend.schema.KotlinCompilerVersionPattern
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.MinVersions
-import org.jetbrains.amper.frontend.schema.kotlin.KotlinCompilerVersionPattern
 import org.jetbrains.amper.frontend.schema.kotlin.KotlinSettings
 import org.jetbrains.amper.frontend.tree.TreeNode
 import org.jetbrains.amper.problems.reporting.BuildProblemType
@@ -25,21 +26,21 @@ object KotlinCompilerVersionDiagnosticsFactory : TreeDiagnosticFactory {
 
     override fun analyze(root: TreeNode, minimalModule: MinimalModule, problemReporter: ProblemReporter) {
         val reportedPlaces = mutableSetOf<Trace>() // somehow the computed properties lead to duplicate reports
-        root.visitStringProperties<KotlinSettings>(KotlinSettings::version) { prop, value ->
+        root.visitWrappedStringProperties(KotlinSettings::version) { prop, value ->
             val versionTrace = prop.value.trace
             if (!KotlinCompilerVersionPattern.matches(value) && reportedPlaces.add(versionTrace)) {
                 problemReporter.reportMessage(
                     InvalidKotlinCompilerVersion(
-                        element = versionTrace.extractPsiElementOrNull() ?: return@visitStringProperties,
+                        element = versionTrace.extractPsiElementOrNull() ?: return@visitWrappedStringProperties,
                         actualVersion = value,
                     )
                 )
-            } else if (ComparableVersion(value) < MinVersions.kotlin && reportedPlaces.add(versionTrace)) {
+            } else if (KotlinVersion(value) < MinVersions.kotlin && reportedPlaces.add(versionTrace)) {
                 problemReporter.reportMessage(
                     KotlinCompilerVersionTooLow(
-                        element = versionTrace.extractPsiElementOrNull() ?: return@visitStringProperties,
+                        element = versionTrace.extractPsiElementOrNull() ?: return@visitWrappedStringProperties,
                         actualVersion = value,
-                        minVersion = MinVersions.kotlin.toString(),
+                        minVersion = MinVersions.kotlin.notation,
                     )
                 )
             }

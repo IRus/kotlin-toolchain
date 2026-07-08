@@ -10,6 +10,8 @@ import org.jetbrains.amper.cli.test.utils.readTelemetrySpans
 import org.jetbrains.amper.cli.test.utils.runSlowTest
 import org.jetbrains.amper.cli.test.utils.withTelemetrySpans
 import org.jetbrains.amper.frontend.schema.DefaultVersions
+import org.jetbrains.amper.frontend.schema.KotlinLanguageVersion
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.frontend.schema.MinVersions
 import org.jetbrains.amper.test.WindowsOnly
 import org.jetbrains.amper.test.spans.assertEachKotlinJvmCompilationSpan
@@ -23,26 +25,28 @@ import kotlin.io.path.readText
 import kotlin.io.path.walk
 import kotlin.io.path.writeText
 
-data class CustomVersionCombination(val kotlinCompiler: String, val jdk: Int)
+data class CustomVersionCombination(val kotlinCompiler: KotlinVersion, val jdk: Int)
 
 @Tag("cli-test-group-core")
 class KotlinVersionTest : CliTestBase() {
 
     companion object {
         @JvmStatic
-        private fun kotlinVersionsCombinations() = [
+        private fun kotlinVersionsCombinations(): List<CustomVersionCombination> = [
             // Kotlin 2.2.20 supports only up to JDK 24, so we pin to the max LTS that fits
-            CustomVersionCombination(kotlinCompiler = MinVersions.kotlin.canonical, jdk = 21),
+            CustomVersionCombination(kotlinCompiler = MinVersions.kotlin, jdk = 21),
             // Kotlin 2.3 supports up to JDK 25, so we pin this LTS
-            CustomVersionCombination(kotlinCompiler = "2.3.21", jdk = 25),
+            CustomVersionCombination(kotlinCompiler = KotlinVersion("2.3.21"), jdk = 25),
             // Kotlin 2.4 supports up to JDK 26, so we pin to the max LTS that fits
-            CustomVersionCombination(kotlinCompiler = DefaultVersions.kotlin, jdk = 25),
+            CustomVersionCombination(kotlinCompiler = KotlinVersion("2.4.0"), jdk = 25),
             // Kotlin 2.4 supports up to JDK 26, so we pin to the max LTS that fits
-            CustomVersionCombination(kotlinCompiler = "2.4.20", jdk = 25),
+            CustomVersionCombination(kotlinCompiler = KotlinVersion("2.4.20"), jdk = 25),
+            // We also want to test our default combination
+            CustomVersionCombination(kotlinCompiler = KotlinVersion(DefaultVersions.kotlin), jdk = DefaultVersions.jdk),
         ]
 
         @JvmStatic
-        private fun languageVersions() = [ "2.2", "2.3", "2.4" ]
+        private fun languageVersions(): List<String> = ["2.2", "2.3", "2.4", "2.5"]
     }
 
     @ParameterizedTest
@@ -52,7 +56,7 @@ class KotlinVersionTest : CliTestBase() {
         val moduleFile = projectDir.resolve("module.yaml")
         moduleFile.writeText(
             moduleFile.readText()
-                .replace("{{KOTLIN_COMPILER_VERSION}}", version.kotlinCompiler)
+                .replace("{{KOTLIN_COMPILER_VERSION}}", version.kotlinCompiler.notation)
                 .replace("{{JDK_VERSION}}", version.jdk.toString())
         )
         val result = runCli(projectDir = projectDir, "run")
@@ -71,9 +75,9 @@ class KotlinVersionTest : CliTestBase() {
         val templateFile = projectDir.resolve("common.module-template.yaml")
         templateFile.writeText(
             templateFile.readText()
-                .replace("{{KOTLIN_COMPILER_VERSION}}", version.kotlinCompiler)
+                .replace("{{KOTLIN_COMPILER_VERSION}}", version.kotlinCompiler.notation)
                 .replace("{{JDK_VERSION}}", version.jdk.toString())
-                .replace("languageVersion: {{LANGUAGE_VERSION}}", "") // make it unspecified
+                .replace("{{LANGUAGE_VERSION}}", version.kotlinCompiler.languageVersion.notation)
         )
 
         runCli(projectDir = projectDir, "build", configureAndroidHome = true)

@@ -4,12 +4,12 @@
 
 package org.jetbrains.amper.compilation.compiler
 
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.ProcessRunner
 import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
 import org.jetbrains.amper.compilation.ProblemReportingCompilerOutputListener
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.Platform
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.jdk.provisioning.Jdk
 import org.jetbrains.amper.jdk.provisioning.majorVersion
 import org.jetbrains.amper.problems.reporting.ProblemReporter
@@ -30,40 +30,25 @@ import kotlin.io.path.Path
  * that will be used behind the scenes.
  */
 context(_: ProblemReporter)
-internal suspend fun KotlinArtifactsDownloader.downloadKotlinCompiler(version: String, jdk: Jdk): KotlinCompiler =
-    KotlinCompiler(
-        compilerJars = downloadKotlinCompilerEmbeddable(version),
-        kotlinVersion = ComparableVersion(version),
-        jdk = jdk,
-    )
+internal suspend fun KotlinArtifactsDownloader.downloadKotlinCompiler(
+    version: KotlinVersion,
+    jdk: Jdk,
+): KotlinCompiler = KotlinCompiler(
+    compilerJars = downloadKotlinCompilerEmbeddable(version),
+    kotlinVersion = version,
+    jdk = jdk,
+)
 
 /**
  * A type-safe wrapper around the Kotlin compiler CLI.
  */
 internal class KotlinCompiler(
     private val compilerJars: List<Path>,
-    private val kotlinVersion: ComparableVersion,
+    private val kotlinVersion: KotlinVersion,
     private val jdk: Jdk,
 ) {
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(KotlinCompiler::class.java)
-
-        /**
-         * The first Kotlin version that brings the dedicated Kotlin/Wasm compiler (as a different main class).
-         * Starting in this version, the `-Xwasm` compiler option is deprecated and shouldn't be used.
-         */
-        val KotlinVersionWithSeparateWasmCompiler = ComparableVersion("2.4.0")
-
-        /**
-         * The version of the Kotlin compiler in which the `-Xir-produce-klib-file` option became the default
-         * (and produces a warning if specified explicitly).
-         */
-        val KotlinVersionWithPackedKlibByDefault = ComparableVersion("2.4.20")
-
-        /**
-         * The first compiler version without sun.misc.Unsafe usages.
-         */
-        val FirstKotlinVersionWithoutUnsafeUsages = ComparableVersion("2.4.0")
     }
 
     private val compilerWorkingDir = Path(".")
@@ -102,8 +87,7 @@ internal class KotlinCompiler(
         entryPoint = when (webPlatform) {
             Platform.JS -> CompilerEntryPoint.JavaScript
             Platform.WASM_JS,
-            Platform.WASM_WASI -> if (kotlinVersion >= KotlinVersionWithSeparateWasmCompiler) {
-                // The separate KotlinWasmCompiler main class was only introduced in 2.4.0 (see KT-56850)
+            Platform.WASM_WASI -> if (kotlinVersion.hasSeparateWasmCompiler()) {
                 CompilerEntryPoint.WebAssembly
             } else {
                 CompilerEntryPoint.JavaScript
@@ -147,7 +131,7 @@ internal class KotlinCompiler(
                 add("--enable-native-access=ALL-UNNAMED")
             }
             // Unsafe usages were removed in Kotlin 2.4.0
-            if (jdk.majorVersion >= 24 && kotlinVersion < FirstKotlinVersionWithoutUnsafeUsages) {
+            if (jdk.majorVersion >= 24 && kotlinVersion.hasSunMiscUnsafeUsages()) {
                 add("--sun-misc-unsafe-memory-access=allow")
             }
             addAll(extraJvmArgs)

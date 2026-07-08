@@ -20,6 +20,7 @@ import org.jetbrains.amper.engine.TaskName
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.LeafFragment
 import org.jetbrains.amper.frontend.Platform
+import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.incrementalcache.executeForFiles
 import org.jetbrains.amper.processes.LoggingProcessOutputListener
@@ -110,7 +111,7 @@ internal class SwiftPMImportTask(
                 fragment = appleFragment,
                 conventionPath = defFileOutputPath(appleFragment),
                 // Some SwiftPM dependencies import C++ code which requires "skipNonImportableModules" support
-                recommendedKotlinCompilerVersionOnFailingCinterop = ComparableVersion("2.4.0"),
+                recommendedKotlinCompilerVersionOnFailingCinterop = KotlinVersion("2.4.0"),
                 macroNamesCollectingMode = NativeCInteropGenerateKlibTask.MacroNamesCollectingMode.LIBCLANGEXT_PARALLEL,
             )
         }

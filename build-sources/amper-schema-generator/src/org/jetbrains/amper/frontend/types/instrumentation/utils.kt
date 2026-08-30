@@ -18,8 +18,9 @@ import java.nio.file.Path
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 
 internal fun FileSpec.Builder.addGeneratedComment() = addFileComment(
@@ -80,8 +81,11 @@ internal fun defaultToCode(default: Any?): CodeBlock = when (default) {
     else -> {
         val clazz = default::class
         if (clazz.isValue) {
-            val value = clazz.memberProperties.single().call(default)
-            return CodeBlock.of("%T(%L)", clazz, defaultToCode(value))
+            val primaryConstructor = clazz.primaryConstructor ?: error("Value classes must have a primary constructor")
+            val constructorPropName = primaryConstructor.parameters.single().name
+            val constructorProp = clazz.declaredMemberProperties.single { it.name == constructorPropName }
+            val constructorPropValueOnDefaultInstance = constructorProp.call(default)
+            return CodeBlock.of("%T(%L)", clazz, defaultToCode(constructorPropValueOnDefaultInstance))
         }
         error("Unexpected default value: $default")
     }

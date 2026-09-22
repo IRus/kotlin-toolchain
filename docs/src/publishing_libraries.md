@@ -1,7 +1,7 @@
 ---
 description: |
-  In this section, we'll cover all the puzzle pieces of a successful library publication to Maven Central or other 
-  Maven repositories: PGP signing, sources/javadoc JARs, Central Publish portal credentials, and more.
+  Learn how to publish a library to Maven Central or another Maven repository, including PGP signing, sources and
+  javadoc JARs, and Central Portal credentials.
 ---
 # Publishing libraries
 

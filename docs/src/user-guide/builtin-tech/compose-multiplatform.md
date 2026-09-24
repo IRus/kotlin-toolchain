@@ -146,6 +146,32 @@ settings:
     `artifactId`. Modules without a `group` still differ from Gradle, though: Gradle derives a default group from the
     root project name and the project path, while the Kotlin Toolchain uses the module name alone.
 
+### Customizing `Res` object name
+
+By default, generated resources accessors are extension of the `<resources-package-name>.Res` object.
+You can customize the name of this object via the `settings.compose.resources.nameOfResClass` property:
+```yaml
+settings:
+  compose:
+    resources:
+      nameOfResClass: Resources
+```
+Then the resources can be accessed like `Resources.string.hello` instead of `Res.string.hello`.
+
+### Making resource accessors public
+
+Generated `Res` object and the accessors are `internal` by default,
+so they are only visible in the module that has the resources.
+If you want to expose your resources to the consumers of your module and make them part of the module's API,
+you can use `settings.compose.resources.exposedAccessors` property:
+```yaml
+settings:
+  compose:
+    resources:
+      exposedAccessors: true
+```
+This will make the generated accessors and the `Res` class `public`.
+
 ## :jetbrains-compose-hot-reload: Compose Hot Reload (experimental)
 
 The Kotlin Toolchain supports [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload), allowing you to see UI changes in

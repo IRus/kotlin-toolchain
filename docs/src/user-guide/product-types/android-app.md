@@ -22,9 +22,13 @@ The application's entry point is specified in the `AndroidManifest.xml` file acc
 [official Android documentation](https://developer.android.com/guide/topics/manifest/manifest-intro):
 
 ```xml title="src/AndroidManifest.xml"
-<manifest ... >
-  <application ... >
-    <activity android:name="com.example.myapp.MainActivity" ... >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <activity android:name="com.example.myapp.MainActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
     </activity>
   </application>
 </manifest>

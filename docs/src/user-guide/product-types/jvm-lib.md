@@ -9,7 +9,7 @@ Use the `jvm/lib` product type in a module to build a JVM library.
 
 Here is an overview of the module layout for a JVM library:
 
-```shell
+```text
 my-module/
 ├─ resources/ # (1)!
 │  ╰─ logback.xml # (2)!

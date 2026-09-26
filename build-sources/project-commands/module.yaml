@@ -67,6 +67,6 @@ plugins:
         # https://github.com/ktorio/ktor/releases
         ktor: 3.6.0
         # https://projectlombok.org/download
-        lombok: 1.18.46
+        lombok: 1.18.48
         # https://spring.io/projects/spring-boot#learn
         springBoot: 4.1.1

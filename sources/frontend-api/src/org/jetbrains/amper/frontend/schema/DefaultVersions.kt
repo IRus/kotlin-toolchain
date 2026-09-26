@@ -34,6 +34,6 @@ object DefaultVersions {
     /*managed_default*/ val kotlinxSerialization = "1.11.0"
     /*managed_default*/ val ksp = "2.3.12"
     /*managed_default*/ val ktor = "3.6.0"
-    /*managed_default*/ val lombok = "1.18.46"
+    /*managed_default*/ val lombok = "1.18.48"
     /*managed_default*/ val springBoot = "4.1.1"
 }

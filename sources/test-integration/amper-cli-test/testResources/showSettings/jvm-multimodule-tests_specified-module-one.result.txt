@@ -81,7 +81,7 @@ settings@jvm:
     version: 3.6.0  # default
   lombok:
     enabled: false  # default
-    version: 1.18.46  # default
+    version: 1.18.48  # default
   publishing:
     artifactId: null  # default, from ${name}
     checksums:

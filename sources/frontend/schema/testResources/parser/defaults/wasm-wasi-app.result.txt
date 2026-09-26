@@ -156,7 +156,7 @@ Fragments:
       }
       lombok: <default> {
         enabled: <default> false
-        version: <default> 1.18.46
+        version: <default> 1.18.48
       }
       native: <default> null
       publishing: <default> {
@@ -357,7 +357,7 @@ Fragments:
       }
       lombok: <default> {
         enabled: <default> false
-        version: <default> 1.18.46
+        version: <default> 1.18.48
       }
       native: <default> null
       publishing: <default> {
@@ -556,7 +556,7 @@ Fragments:
       }
       lombok: <default> {
         enabled: <default> false
-        version: <default> 1.18.46
+        version: <default> 1.18.48
       }
       native: <default> null
       publishing: <default> {
@@ -758,7 +758,7 @@ Fragments:
       }
       lombok: <default> {
         enabled: <default> false
-        version: <default> 1.18.46
+        version: <default> 1.18.48
       }
       native: <default> null
       publishing: <default> {

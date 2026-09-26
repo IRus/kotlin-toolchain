@@ -800,7 +800,7 @@ settings:
 | Attribute          | Default   | Description                                         |
 |--------------------|-----------|-----------------------------------------------------|
 | `enabled: boolean` | `false`   | Enable Lombok                                       |  
-| `version: string`  | `1.18.46` | Lombok version for runtime and annotation processor |
+| `version: string`  | `1.18.48` | Lombok version for runtime and annotation processor |
 
 Example:
 

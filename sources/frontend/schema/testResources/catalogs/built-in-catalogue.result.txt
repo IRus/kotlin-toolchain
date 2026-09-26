@@ -1,7 +1,7 @@
 Fragments:
   main
     External dependencies:
-      BomDependency(coordinates=io.ktor:ktor-bom:3.5.2, trace=PsiTrace(psiElement=YAML mapping, precedingValue=null))
+      BomDependency(coordinates=io.ktor:ktor-bom:3.6.0, trace=PsiTrace(psiElement=YAML mapping, precedingValue=null))
       MavenDependency(coordinates=org.jetbrains.compose.animation:animation-graphics:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)
       MavenDependency(coordinates=org.jetbrains.compose.animation:animation:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)
       MavenDependency(coordinates=org.jetbrains.compose.components:components-animatedimage:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)
@@ -46,7 +46,7 @@ Fragments:
 
   test
     External dependencies:
-      BomDependency(coordinates=io.ktor:ktor-bom:3.5.2, trace=PsiTrace(psiElement=YAML mapping, precedingValue=null))
+      BomDependency(coordinates=io.ktor:ktor-bom:3.6.0, trace=PsiTrace(psiElement=YAML mapping, precedingValue=null))
       MavenDependency(coordinates=org.jetbrains.compose.animation:animation-graphics:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)
       MavenDependency(coordinates=org.jetbrains.compose.animation:animation:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)
       MavenDependency(coordinates=org.jetbrains.compose.components:components-animatedimage:1.12.1, trace=PsiTrace(psiElement=YAML plain scalar text, precedingValue=null), compile=true, runtime=true, exported=false)

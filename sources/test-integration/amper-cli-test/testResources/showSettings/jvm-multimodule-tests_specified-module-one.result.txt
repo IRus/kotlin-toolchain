@@ -78,7 +78,7 @@ settings@jvm:
   ktor:
     applyBom: true  # default
     enabled: false  # default
-    version: 3.5.2  # default
+    version: 3.6.0  # default
   lombok:
     enabled: false  # default
     version: 1.18.46  # default

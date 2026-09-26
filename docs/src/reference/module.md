@@ -781,7 +781,7 @@ which enriches assertion failure messages with intermediate values.
 | Attribute           | Default | Description                                                                                                          |
 |---------------------|---------|----------------------------------------------------------------------------------------------------------------------|
 | `enabled: boolean`  | `false` | Enable the Ktor server framework. This is just a convenience to generate library catalog entries for Ktor libraries. |  
-| `version: string`   | `3.5.2` | The Ktor version used for the BOM and in the generated library catalog entries                                       |  
+| `version: string`   | `3.6.0` | The Ktor version used for the BOM and in the generated library catalog entries                                       |  
 | `applyBom: boolean` | `true`  | Whether to apply the Ktor BOM                                                                                        |
 
 Example:

@@ -3,27 +3,27 @@ Module app
 │ - scope = COMPILE
 │ - platforms = [jvm]
 ├─── Module B
-│    ├─── B:common:io.ktor:ktor-client-core:3.5.2
-│    │    ╰─── io.ktor:ktor-client-core:3.5.2
-│    │         ╰─── io.ktor:ktor-client-core-jvm:3.5.2
-│    │              ├─── org.slf4j:slf4j-api:2.0.18
+│    ├─── B:common:io.ktor:ktor-client-core:3.6.0
+│    │    ╰─── io.ktor:ktor-client-core:3.6.0
+│    │         ╰─── io.ktor:ktor-client-core-jvm:3.6.0
+│    │              ├─── org.slf4j:slf4j-api:2.0.19
 │    │              ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0
 │    │              │    ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0
 │    │              │         ├─── org.jetbrains:annotations:23.0.0
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion
 │    │              │              ╰─── org.jetbrains:annotations:13.0 -> 23.0.0
-│    │              ├─── io.ktor:ktor-http:3.5.2
-│    │              │    ╰─── io.ktor:ktor-http-jvm:3.5.2
-│    │              │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              ├─── io.ktor:ktor-http:3.6.0
+│    │              │    ╰─── io.ktor:ktor-http-jvm:3.6.0
+│    │              │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         ├─── io.ktor:ktor-utils:3.5.2
-│    │              │         │    ╰─── io.ktor:ktor-utils-jvm:3.5.2
-│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              │         ├─── io.ktor:ktor-utils:3.6.0
+│    │              │         │    ╰─── io.ktor:ktor-utils-jvm:3.6.0
+│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         │         ├─── io.ktor:ktor-io:3.5.2
-│    │              │         │         │    ╰─── io.ktor:ktor-io-jvm:3.5.2
-│    │              │         │         │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              │         │         ├─── io.ktor:ktor-io:3.6.0
+│    │              │         │         │    ╰─── io.ktor:ktor-io-jvm:3.6.0
+│    │              │         │         │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
 │    │              │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-io-core:0.9.1
 │    │              │         │         │         │    ╰─── org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.9.1
@@ -39,54 +39,54 @@ Module app
 │    │              │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0 (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
-│    │              ├─── io.ktor:ktor-http-cio:3.5.2
-│    │              │    ╰─── io.ktor:ktor-http-cio-jvm:3.5.2
-│    │              │         ├─── org.slf4j:slf4j-api:2.0.18
-│    │              │         ├─── io.ktor:ktor-network:3.5.2
-│    │              │         │    ╰─── io.ktor:ktor-network-jvm:3.5.2
-│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              ├─── io.ktor:ktor-http-cio:3.6.0
+│    │              │    ╰─── io.ktor:ktor-http-cio-jvm:3.6.0
+│    │              │         ├─── org.slf4j:slf4j-api:2.0.19
+│    │              │         ├─── io.ktor:ktor-network:3.6.0
+│    │              │         │    ╰─── io.ktor:ktor-network-jvm:3.6.0
+│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         │         ├─── io.ktor:ktor-utils:3.5.2 (*)
+│    │              │         │         ├─── io.ktor:ktor-utils:3.6.0 (*)
 │    │              │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         ├─── io.ktor:ktor-http:3.5.2 (*)
-│    │              │         ├─── io.ktor:ktor-io:3.5.2 (*)
+│    │              │         ├─── io.ktor:ktor-http:3.6.0 (*)
+│    │              │         ├─── io.ktor:ktor-io:3.6.0 (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
-│    │              ├─── io.ktor:ktor-events:3.5.2
-│    │              │    ╰─── io.ktor:ktor-events-jvm:3.5.2
-│    │              │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              ├─── io.ktor:ktor-events:3.6.0
+│    │              │    ╰─── io.ktor:ktor-events-jvm:3.6.0
+│    │              │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         ├─── io.ktor:ktor-utils:3.5.2 (*)
+│    │              │         ├─── io.ktor:ktor-utils:3.6.0 (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
-│    │              ├─── io.ktor:ktor-websocket-serialization:3.5.2
-│    │              │    ╰─── io.ktor:ktor-websocket-serialization-jvm:3.5.2
-│    │              │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              ├─── io.ktor:ktor-websocket-serialization:3.6.0
+│    │              │    ╰─── io.ktor:ktor-websocket-serialization-jvm:3.6.0
+│    │              │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         ├─── io.ktor:ktor-serialization:3.5.2
-│    │              │         │    ╰─── io.ktor:ktor-serialization-jvm:3.5.2
-│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              │         ├─── io.ktor:ktor-serialization:3.6.0
+│    │              │         │    ╰─── io.ktor:ktor-serialization-jvm:3.6.0
+│    │              │         │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         │         ├─── io.ktor:ktor-websockets:3.5.2
-│    │              │         │         │    ╰─── io.ktor:ktor-websockets-jvm:3.5.2
-│    │              │         │         │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              │         │         ├─── io.ktor:ktor-websockets:3.6.0
+│    │              │         │         │    ╰─── io.ktor:ktor-websockets-jvm:3.6.0
+│    │              │         │         │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         │         │         ├─── io.ktor:ktor-utils:3.5.2 (*)
-│    │              │         │         │         ├─── io.ktor:ktor-http:3.5.2 (*)
+│    │              │         │         │         ├─── io.ktor:ktor-utils:3.6.0 (*)
+│    │              │         │         │         ├─── io.ktor:ktor-http:3.6.0 (*)
 │    │              │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
 │    │              │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
-│    │              ├─── io.ktor:ktor-sse:3.5.2
-│    │              │    ╰─── io.ktor:ktor-sse-jvm:3.5.2
-│    │              │         ├─── org.slf4j:slf4j-api:2.0.18
+│    │              ├─── io.ktor:ktor-sse:3.6.0
+│    │              │    ╰─── io.ktor:ktor-sse-jvm:3.6.0
+│    │              │         ├─── org.slf4j:slf4j-api:2.0.19
 │    │              │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0 (*)
-│    │              │         ├─── io.ktor:ktor-utils:3.5.2 (*)
+│    │              │         ├─── io.ktor:ktor-utils:3.6.0 (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
 │    │              ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.21 -> #kotlinVersion (*)
-│    ├─── B:jvm:io.ktor:ktor-client-core:3.5.2
-│    │    ╰─── io.ktor:ktor-client-core:3.5.2 (*)
-│    ├─── B:common:io.ktor:ktor-bom:3.5.2, implicit (because Ktor is enabled and ktor.applyBom=true)
-│    │    ╰─── io.ktor:ktor-bom:3.5.2
-│    ╰─── B:jvm:io.ktor:ktor-bom:3.5.2, implicit (because Ktor is enabled and ktor.applyBom=true)
-│         ╰─── io.ktor:ktor-bom:3.5.2
+│    ├─── B:jvm:io.ktor:ktor-client-core:3.6.0
+│    │    ╰─── io.ktor:ktor-client-core:3.6.0 (*)
+│    ├─── B:common:io.ktor:ktor-bom:3.6.0, implicit (because Ktor is enabled and ktor.applyBom=true)
+│    │    ╰─── io.ktor:ktor-bom:3.6.0
+│    ╰─── B:jvm:io.ktor:ktor-bom:3.6.0, implicit (because Ktor is enabled and ktor.applyBom=true)
+│         ╰─── io.ktor:ktor-bom:3.6.0
 ╰─── app:main:org.jetbrains.kotlin:kotlin-stdlib:#kotlinVersion, implicit
      ╰─── org.jetbrains.kotlin:kotlin-stdlib:#kotlinVersion (*)

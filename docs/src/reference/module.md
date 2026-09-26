@@ -878,7 +878,7 @@ Maven Central publication, and is usually the same for the whole project, thus c
 | Attribute           | Default | Description                          |
 |---------------------|---------|--------------------------------------|
 | `enabled: boolean`  | `false` | Enable Spring Boot                   |  
-| `version: string`   | `4.1.0` | Spring Boot version                  |  
+| `version: string`   | `4.1.1` | Spring Boot version                  |  
 | `applyBom: boolean` | `true`  | Whether to apply the Spring Boot BOM |
 
 Example:

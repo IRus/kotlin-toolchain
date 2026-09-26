@@ -109,4 +109,4 @@ settings@jvm:
   springBoot:
     applyBom: true  # default
     enabled: false  # default
-    version: 4.1.0  # default
+    version: 4.1.1  # default

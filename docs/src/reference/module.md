@@ -771,7 +771,7 @@ which enriches assertion failure messages with intermediate values.
 |----------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `enabled: boolean`                     | `false`  | Enable the kotlinx.rpc compiler plugin                                                                                                                   |  
 | `applyBom: boolean`                    | `true`   | Apply the kotlinx.rpc BOM to enforce dependency version alignment                                                                                        |  
-| `version: string`                      | `0.10.3` | The version of kotlinx.rpc to use                                                                                                                        |  
+| `version: string`                      | `0.10.4` | The version of kotlinx.rpc to use                                                                                                                        |  
 | `annotationTypeSafetyEnabled: boolean` | `true`   | Controls `@Rpc` annotation type-safety compile-time checkers. Disabling is considered unsafe and is only needed when type-safety analysis fails on valid code. |  
 
 ### `settings.ktor`

@@ -30,7 +30,7 @@ object DefaultVersions {
     /*managed_default*/ val jdk = 25
     /*managed_default*/ val junitPlatform = "6.1.3"
     /*managed_default*/ val kotlin = "2.4.10"
-    /*managed_default*/ val kotlinxRpc = "0.10.3"
+    /*managed_default*/ val kotlinxRpc = "0.10.4"
     /*managed_default*/ val kotlinxSerialization = "1.11.0"
     /*managed_default*/ val ksp = "2.3.12"
     /*managed_default*/ val ktor = "3.6.0"

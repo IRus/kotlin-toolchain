@@ -89,7 +89,7 @@ settings@android:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -199,7 +199,7 @@ settings@jvm:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -309,7 +309,7 @@ settings@iosArm64+iosSimulatorArm64:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -432,7 +432,7 @@ settings@jvm+android+iosArm64+iosSimulatorArm64:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -550,7 +550,7 @@ settings@jvm:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -679,7 +679,7 @@ settings@android:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -784,7 +784,7 @@ settings@iosArm64:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default
@@ -886,7 +886,7 @@ settings@iosSimulatorArm64:
       annotationTypeSafetyEnabled: true  # default
       applyBom: true  # default
       enabled: false  # default
-      version: 0.10.3  # default
+      version: 0.10.4  # default
     serialization:
       enabled: false  # default, based on ${format}: enabled when specified
       format: null  # default

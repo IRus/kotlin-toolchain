@@ -749,7 +749,7 @@ which allows processing Kotlin source code with custom processors (usually to ge
 
 | Attribute                               | Default | Description                                                                                                              |
 |-----------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------|
-| `version: string`                       | `2.3.11` | The version of KSP to use                                                                                               |  
+| `version: string`                       | `2.3.12` | The version of KSP to use                                                                                               |  
 | `processors: string list`               | `[]`    | The list of KSP processors to use. Each item can be a path to a local module, a catalog reference, or maven coordinates. |  
 | `processorOptions: map<string, string>` | `{}`    | Some options to pass to KSP processors. Refer to each processor documentation for details.                               |  
 

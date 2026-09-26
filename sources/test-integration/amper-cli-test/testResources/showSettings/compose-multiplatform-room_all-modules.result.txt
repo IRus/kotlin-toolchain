@@ -71,7 +71,7 @@ settings@android:
     ksp:
       processorOptions: {}  # default
       processors: []  # default
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -181,7 +181,7 @@ settings@jvm:
     ksp:
       processorOptions: {}  # default
       processors: []  # default
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -291,7 +291,7 @@ settings@iosArm64+iosSimulatorArm64:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -414,7 +414,7 @@ settings@jvm+android+iosArm64+iosSimulatorArm64:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -532,7 +532,7 @@ settings@jvm:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -661,7 +661,7 @@ settings@android:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -766,7 +766,7 @@ settings@iosArm64:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:
@@ -868,7 +868,7 @@ settings@iosSimulatorArm64:
           groupId: androidx.room3  # from $libs.androidx.room3.compiler @ libs.versions.toml
           packagingType: null  # default
           version: 3.0.1  # from $libs.androidx.room3.compiler @ libs.versions.toml
-      version: 2.3.11  # default
+      version: 2.3.12  # default
     languageFeatures: null  # default
     languageVersion: null  # default
     noArg:

@@ -22,11 +22,11 @@ Module ios-app
 │              │         │         │    ╰─── androidx.collection:collection:1.5.0 (*)
 │              │         │         ├─── org.jetbrains.compose.runtime:runtime:#composeDefaultVersion
 │              │         │         │    ╰─── org.jetbrains.compose.runtime:runtime-iosarm64:#composeDefaultVersion
-│              │         │         │         ├─── androidx.compose.runtime:runtime:1.11.2
-│              │         │         │         │    ╰─── androidx.compose.runtime:runtime-iosarm64:1.11.2
+│              │         │         │         ├─── androidx.compose.runtime:runtime:1.12.1
+│              │         │         │         │    ╰─── androidx.compose.runtime:runtime-iosarm64:1.12.1
 │              │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         │         │         │         ├─── androidx.compose.runtime:runtime-annotation:1.11.2
-│              │         │         │         │         │    ╰─── androidx.compose.runtime:runtime-annotation-iosarm64:1.11.2
+│              │         │         │         │         ├─── androidx.compose.runtime:runtime-annotation:1.12.1
+│              │         │         │         │         │    ╰─── androidx.compose.runtime:runtime-annotation-iosarm64:1.12.1
 │              │         │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0
@@ -42,86 +42,122 @@ Module ios-app
 │              │         │         │    ╰─── org.jetbrains.compose.ui:ui-iosarm64:#composeDefaultVersion
 │              │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
 │              │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         │         │         ├─── androidx.compose.runtime:runtime-retain:1.11.2
-│              │         │         │         │    ╰─── androidx.compose.runtime:runtime-retain-iosarm64:1.11.2
+│              │         │         │         ├─── androidx.compose.runtime:runtime-retain:1.12.1
+│              │         │         │         │    ╰─── androidx.compose.runtime:runtime-retain-iosarm64:1.12.1
 │              │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         │         │         │         ├─── androidx.compose.runtime:runtime:1.11.2 (*)
+│              │         │         │         │         ├─── androidx.compose.runtime:runtime:1.12.1 (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
 │              │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
-│              │         │         │         ├─── androidx.navigationevent:navigationevent:1.0.1
-│              │         │         │         │    ╰─── androidx.navigationevent:navigationevent-iosarm64:1.0.1
+│              │         │         │         ├─── androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0
+│              │         │         │         │    ╰─── androidx.lifecycle:lifecycle-viewmodel-compose-iosarm64:2.11.0
 │              │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │         ├─── androidx.compose.runtime:runtime-annotation:1.9.0 -> 1.11.2 (*)
-│              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
-│              │         │         │         ├─── androidx.savedstate:savedstate-compose:1.4.0
-│              │         │         │         │    ╰─── androidx.savedstate:savedstate-compose-iosarm64:1.4.0
-│              │         │         │         │         ├─── androidx.compose.runtime:runtime:1.9.0 -> 1.11.2 (*)
-│              │         │         │         │         ╰─── androidx.savedstate:savedstate:1.4.0
-│              │         │         │         │              ╰─── androidx.savedstate:savedstate-iosarm64:1.4.0
-│              │         │         │         │                   ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │                   ├─── androidx.lifecycle:lifecycle-common:2.9.2 -> 2.9.4
-│              │         │         │         │                   │    ╰─── androidx.lifecycle:lifecycle-common-iosarm64:2.9.4
-│              │         │         │         │                   │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │                   │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │                   │         ├─── org.jetbrains.kotlinx:atomicfu:0.27.0 -> 0.28.0 (*)
-│              │         │         │         │                   │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1 -> 1.9.0 (*)
-│              │         │         │         │                   ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │                   ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
-│              │         │         │         │                   ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0
-│              │         │         │         │                        ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core-iosarm64:1.11.0
-│              │         │         │         │                             ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.20 -> #kotlinVersion (*)
-│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.6
-│              │         │         │         │    ╰─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-uikitarm64:2.9.6
-│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime-compose:2.9.4
-│              │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-runtime-compose-iosarm64:2.9.4
+│              │         │         │         │         ├─── androidx.compose.runtime:runtime:1.11.0 -> 1.12.1 (*)
+│              │         │         │         │         ├─── androidx.compose.runtime:runtime-saveable:1.11.0 -> 1.12.1
+│              │         │         │         │         │    ╰─── androidx.compose.runtime:runtime-saveable-iosarm64:1.12.1
+│              │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
+│              │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.12.1 (*)
+│              │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime-compose:2.9.4 -> 2.11.0
+│              │         │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-runtime-compose-iosarm64:2.11.0
+│              │         │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.11.0 -> 1.12.1 (*)
+│              │         │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime:2.11.0
+│              │         │         │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-runtime-iosarm64:2.11.0
+│              │         │         │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
+│              │         │         │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-common:2.11.0
+│              │         │         │         │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-common-iosarm64:2.11.0
+│              │         │         │         │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
+│              │         │         │         │         │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         ├─── androidx.savedstate:savedstate-compose:1.3.2 -> 1.4.0
+│              │         │         │         │         │         │    ╰─── androidx.savedstate:savedstate-compose-iosarm64:1.4.0
+│              │         │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.9.0 -> 1.12.1 (*)
+│              │         │         │         │         │         │         ╰─── androidx.savedstate:savedstate:1.4.0
+│              │         │         │         │         │         │              ╰─── androidx.savedstate:savedstate-iosarm64:1.4.0
+│              │         │         │         │         │         │                   ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         │                   ├─── androidx.lifecycle:lifecycle-common:2.9.2 -> 2.11.0 (*)
+│              │         │         │         │         │         │                   ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
+│              │         │         │         │         │         │                   ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         │         │                   ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0
+│              │         │         │         │         │         │                        ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core-iosarm64:1.11.0
+│              │         │         │         │         │         │                             ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.3.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-common:2.11.0 (*)
+│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime-compose:2.11.0 (*)
+│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-viewmodel:2.11.0
+│              │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-viewmodel-iosarm64:2.11.0
 │              │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.9.0 -> 1.11.2 (*)
-│              │         │         │         │         │         ╰─── androidx.lifecycle:lifecycle-runtime:2.9.4
-│              │         │         │         │         │              ╰─── androidx.lifecycle:lifecycle-runtime-iosarm64:2.9.4
-│              │         │         │         │         │                   ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │         │                   ├─── androidx.lifecycle:lifecycle-common:2.9.4 (*)
-│              │         │         │         │         │                   ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.6
-│              │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-common:2.9.4 (*)
-│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.9.6
-│              │         │         │         │         │    ├─── androidx.lifecycle:lifecycle-runtime:2.9.4 (*)
-│              │         │         │         │         │    ╰─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.6 (*)
-│              │         │         │         │         ╰─── org.jetbrains.compose.runtime:runtime:1.9.3 -> #composeDefaultVersion (*)
-│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.6
-│              │         │         │         │    ╰─── androidx.lifecycle:lifecycle-viewmodel:2.9.4
-│              │         │         │         │         ╰─── androidx.lifecycle:lifecycle-viewmodel-iosarm64:2.9.4
-│              │         │         │         │              ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │              ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │              ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1 -> 1.9.0 (*)
-│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.6
-│              │         │         │         │    ├─── androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.4
-│              │         │         │         │    │    ╰─── androidx.lifecycle:lifecycle-viewmodel-savedstate-iosarm64:2.9.4
-│              │         │         │         │    │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │    │         ├─── androidx.lifecycle:lifecycle-common:2.9.4 (*)
-│              │         │         │         │    │         ├─── androidx.lifecycle:lifecycle-viewmodel:2.9.4 (*)
-│              │         │         │         │    │         ├─── androidx.savedstate:savedstate:1.3.1 -> 1.4.0 (*)
-│              │         │         │         │    │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              │         │         │         │    │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1 -> 1.9.0 (*)
-│              │         │         │         │    │         ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0 (*)
-│              │         │         │         │    ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.6 (*)
-│              │         │         │         │    ╰─── org.jetbrains.androidx.savedstate:savedstate:1.3.6
-│              │         │         │         │         ╰─── androidx.savedstate:savedstate:1.3.3 -> 1.4.0 (*)
+│              │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
+│              │         │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
+│              │         │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.0
+│              │         │         │         │         │    ╰─── androidx.lifecycle:lifecycle-viewmodel-savedstate-iosarm64:2.11.0
+│              │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
+│              │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-common:2.11.0 (*)
+│              │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-viewmodel:2.11.0 (*)
+│              │         │         │         │         │         ├─── androidx.savedstate:savedstate:1.4.0 (*)
+│              │         │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0 (*)
+│              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0 (*)
+│              │         │         │         │         ╰─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0-beta01 (c)
+│              │         │         │         ├─── androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.0 (*)
+│              │         │         │         ├─── androidx.savedstate:savedstate-compose:1.4.0 (*)
+│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.6 -> 2.11.0-beta01
+│              │         │         │         │    ╰─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-iosarm64:2.11.0-beta01
+│              │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime-compose:2.11.0-beta01 -> 2.11.0 (*)
+│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.11.0-beta01
+│              │         │         │         │         │    ├─── androidx.lifecycle:lifecycle-common:2.11.0-beta01 -> 2.11.0 (*)
+│              │         │         │         │         │    ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.11.0-beta01
+│              │         │         │         │         │    ├─── androidx.lifecycle:lifecycle-runtime:2.11.0-beta01 -> 2.11.0 (*)
+│              │         │         │         │         │    ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.11.0-beta01 (*)
+│              │         │         │         │         │    ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         │         ├─── org.jetbrains.compose.runtime:runtime:1.9.3 -> #composeDefaultVersion (*)
+│              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         │         ╰─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0-beta01 (c)
+│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.6 -> 2.11.0-beta01
+│              │         │         │         │    ├─── androidx.lifecycle:lifecycle-viewmodel:2.11.0-beta01 -> 2.11.0 (*)
+│              │         │         │         │    ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.6 -> 2.11.0-beta01
+│              │         │         │         │    ├─── androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.0-beta01 -> 2.11.0 (*)
+│              │         │         │         │    ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.11.0-beta01 (*)
+│              │         │         │         │    ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.11.0-beta01 (*)
+│              │         │         │         │    ├─── org.jetbrains.androidx.savedstate:savedstate:1.3.6
+│              │         │         │         │    │    ╰─── androidx.savedstate:savedstate:1.3.3 -> 1.4.0 (*)
+│              │         │         │         │    ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         ├─── org.jetbrains.androidx.navigationevent:navigationevent-compose:1.1.0
+│              │         │         │         │    ╰─── org.jetbrains.androidx.navigationevent:navigationevent-compose-iosarm64:1.1.0
+│              │         │         │         │         ├─── androidx.navigationevent:navigationevent-compose:1.1.1
+│              │         │         │         │         │    ╰─── androidx.navigationevent:navigationevent-compose-iosarm64:1.1.1
+│              │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.11.0-rc01 -> 1.12.1 (*)
+│              │         │         │         │         │         ├─── androidx.navigationevent:navigationevent:1.1.1
+│              │         │         │         │         │         │    ╰─── androidx.navigationevent:navigationevent-iosarm64:1.1.1
+│              │         │         │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
+│              │         │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
+│              │         │         │         │         │         │         ├─── androidx.compose.runtime:runtime-annotation:1.9.0 -> 1.12.1 (*)
+│              │         │         │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
+│              │         │         │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
+│              │         │         │         │         │         ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
+│              │         │         │         │         ├─── org.jetbrains.compose.runtime:runtime:1.11.0 -> #composeDefaultVersion (*)
+│              │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │              │         │         │         ├─── org.jetbrains.compose.annotation-internal:annotation:1.10.0
 │              │         │         │         │    ╰─── androidx.annotation:annotation:1.9.1 (*)
 │              │         │         │         ├─── org.jetbrains.compose.collection-internal:collection:1.10.0 (*)
 │              │         │         │         ├─── org.jetbrains.compose.runtime:runtime:#composeDefaultVersion (*)
 │              │         │         │         ├─── org.jetbrains.compose.runtime:runtime-saveable:#composeDefaultVersion
 │              │         │         │         │    ╰─── org.jetbrains.compose.runtime:runtime-saveable-iosarm64:#composeDefaultVersion
-│              │         │         │         │         ├─── androidx.compose.runtime:runtime-saveable:1.11.2
-│              │         │         │         │         │    ╰─── androidx.compose.runtime:runtime-saveable-iosarm64:1.11.2
-│              │         │         │         │         │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         │         │         │         │         ├─── androidx.compose.runtime:runtime:1.11.2 (*)
-│              │         │         │         │         │         ├─── androidx.lifecycle:lifecycle-runtime-compose:2.9.4 (*)
-│              │         │         │         │         │         ├─── androidx.savedstate:savedstate-compose:1.3.2 -> 1.4.0 (*)
-│              │         │         │         │         │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.1.20 -> #kotlinVersion (*)
-│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.6 (*)
+│              │         │         │         │         ├─── androidx.compose.runtime:runtime-saveable:1.12.1 (*)
+│              │         │         │         │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.6 -> 2.11.0-beta01 (*)
 │              │         │         │         │         ├─── org.jetbrains.androidx.savedstate:savedstate-compose:1.3.6
 │              │         │         │         │         │    ╰─── org.jetbrains.androidx.savedstate:savedstate-compose-uikitarm64:1.3.6
 │              │         │         │         │         │         ├─── androidx.savedstate:savedstate-compose:1.3.3 -> 1.4.0 (*)
@@ -132,7 +168,7 @@ Module ios-app
 │              │         │         │         ├─── org.jetbrains.compose.ui:ui-backhandler:#composeDefaultVersion
 │              │         │         │         │    ╰─── org.jetbrains.compose.ui:ui-backhandler-iosarm64:#composeDefaultVersion
 │              │         │         │         │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         │         │         │         ├─── androidx.navigationevent:navigationevent:1.0.1 (*)
+│              │         │         │         │         ├─── org.jetbrains.androidx.navigationevent:navigationevent-compose:1.1.0 (*)
 │              │         │         │         │         ├─── org.jetbrains.compose.runtime:runtime:#composeDefaultVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.compose.ui:ui-util:#composeDefaultVersion
 │              │         │         │         │         │    ╰─── org.jetbrains.compose.ui:ui-util-iosarm64:#composeDefaultVersion
@@ -169,9 +205,9 @@ Module ios-app
 │              │         │         │         │         │         ╰─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
 │              │         │         │         │         ├─── org.jetbrains.compose.ui:ui-util:#composeDefaultVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
-│              │         │         │         │         ╰─── org.jetbrains.skiko:skiko:0.144.6
-│              │         │         │         │              ╰─── org.jetbrains.skiko:skiko-iosarm64:0.144.6
-│              │         │         │         │                   ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         │         │         │         ╰─── org.jetbrains.skiko:skiko:0.150.1
+│              │         │         │         │              ╰─── org.jetbrains.skiko:skiko-iosarm64:0.150.1
+│              │         │         │         │                   ├─── org.jetbrains.kotlin:kotlin-stdlib:2.3.20 -> #kotlinVersion (*)
 │              │         │         │         │                   ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0 -> 1.9.0 (*)
 │              │         │         │         ├─── org.jetbrains.compose.ui:ui-text:#composeDefaultVersion
 │              │         │         │         │    ╰─── org.jetbrains.compose.ui:ui-text-iosarm64:#composeDefaultVersion
@@ -185,14 +221,14 @@ Module ios-app
 │              │         │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
 │              │         │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
-│              │         │         │         │         ╰─── org.jetbrains.skiko:skiko:0.144.6 (*)
+│              │         │         │         │         ╰─── org.jetbrains.skiko:skiko:0.150.1 (*)
 │              │         │         │         ├─── org.jetbrains.compose.ui:ui-uikit:#composeDefaultVersion (*)
 │              │         │         │         ├─── org.jetbrains.compose.ui:ui-unit:#composeDefaultVersion (*)
 │              │         │         │         ├─── org.jetbrains.compose.ui:ui-util:#composeDefaultVersion (*)
 │              │         │         │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │              │         │         │         ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
 │              │         │         │         ├─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0 (*)
-│              │         │         │         ╰─── org.jetbrains.skiko:skiko:0.144.6 (*)
+│              │         │         │         ╰─── org.jetbrains.skiko:skiko:0.150.1 (*)
 │              │         │         ├─── org.jetbrains.compose.ui:ui-graphics:#composeDefaultVersion (*)
 │              │         │         ├─── org.jetbrains.compose.ui:ui-unit:#composeDefaultVersion (*)
 │              │         │         ├─── org.jetbrains.compose.ui:ui-util:#composeDefaultVersion (*)
@@ -221,32 +257,32 @@ Module ios-app
 │              ├─── org.jetbrains.compose.ui:ui-util:#composeDefaultVersion (*)
 │              ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │              ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
-│              ╰─── org.jetbrains.skiko:skiko:0.144.6 (*)
-├─── ios-app:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│         ╰─── org.jetbrains.compose.material3:material3-iosarm64:1.11.0-alpha07
+│              ╰─── org.jetbrains.skiko:skiko:0.150.1 (*)
+├─── ios-app:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│         ╰─── org.jetbrains.compose.material3:material3-iosarm64:1.12.0-alpha03
 │              ├─── androidx.collection:collection:1.5.0 (*)
 │              ├─── androidx.graphics:graphics-shapes:1.1.0
 │              │    ╰─── androidx.graphics:graphics-shapes-iosarm64:1.1.0
 │              │         ├─── androidx.annotation:annotation:1.9.1 (*)
 │              │         ├─── androidx.collection:collection:1.5.0 (*)
 │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.0.21 -> #kotlinVersion (*)
-│              ├─── org.jetbrains.compose.animation:animation-core:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.foundation:foundation:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.foundation:foundation-layout:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.material:material-ripple:1.11.0-beta03
-│              │    ╰─── org.jetbrains.compose.material:material-ripple-iosarm64:1.11.0-beta03
+│              ├─── org.jetbrains.compose.animation:animation-core:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.foundation:foundation:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.foundation:foundation-layout:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.material:material-ripple:1.12.0-beta01
+│              │    ╰─── org.jetbrains.compose.material:material-ripple-iosarm64:1.12.0-beta01
 │              │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         ├─── org.jetbrains.compose.animation:animation:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              │         ├─── org.jetbrains.compose.foundation:foundation:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              │         ├─── org.jetbrains.compose.runtime:runtime:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              │         ├─── org.jetbrains.compose.ui:ui-util:1.11.0-beta03 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.compose.animation:animation:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.compose.foundation:foundation:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.compose.runtime:runtime:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.compose.ui:ui-util:1.12.0-beta01 -> #composeDefaultVersion (*)
 │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
-│              ├─── org.jetbrains.compose.runtime:runtime:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.ui:ui:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.ui:ui-backhandler:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.ui:ui-text:1.11.0-beta03 -> #composeDefaultVersion (*)
-│              ├─── org.jetbrains.compose.ui:ui-util:1.11.0-beta03 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.runtime:runtime:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.ui:ui:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.ui:ui-backhandler:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.ui:ui-text:1.12.0-beta01 -> #composeDefaultVersion (*)
+│              ├─── org.jetbrains.compose.ui:ui-util:1.12.0-beta01 -> #composeDefaultVersion (*)
 │              ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │              ├─── org.jetbrains.kotlinx:atomicfu:0.28.0 (*)
 │              ╰─── org.jetbrains.kotlinx:kotlinx-datetime:0.7.1
@@ -258,28 +294,28 @@ Module ios-app
 │         ╰─── org.jetbrains.androidx.navigation:navigation-compose-uikitarm64:2.9.1
 │              ├─── androidx.annotation:annotation:1.9.1 (*)
 │              ├─── androidx.collection:collection:1.5.0 (*)
-│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.9.6 (*)
-│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.5 -> 2.9.6 (*)
-│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.9.6 (*)
-│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5
-│              │    ╰─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-uikitarm64:2.9.5
-│              │         ├─── androidx.annotation:annotation:1.9.1 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.compose.runtime:runtime:1.9.0 -> #composeDefaultVersion (*)
-│              │         ├─── org.jetbrains.compose.ui:ui:1.8.2 -> #composeDefaultVersion (*)
-│              │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.21 -> #kotlinVersion (*)
-│              │         ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0 (*)
-│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.9.6 (*)
+│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.11.0-beta01 (*)
+│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.5 -> 2.11.0-beta01 (*)
+│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.11.0-beta01 (*)
+│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5 -> 2.11.0-beta01
+│              │    ╰─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-iosarm64:2.11.0-beta01
+│              │         ├─── androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0-beta01 -> 2.11.0 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.compose.runtime:runtime:1.11.0-rc01 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.compose.runtime:runtime-saveable:1.11.0-rc01 -> #composeDefaultVersion (*)
+│              │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
+│              │         ╰─── org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.11.0-beta01 (c)
+│              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.11.0-beta01 (*)
 │              ├─── org.jetbrains.androidx.navigation:navigation-common:2.9.1
 │              │    ╰─── org.jetbrains.androidx.navigation:navigation-common-iosarm64:2.9.1
 │              │         ├─── androidx.annotation:annotation:1.9.1 (*)
 │              │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.9.6 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.11.0-beta01 (*)
 │              │         ├─── org.jetbrains.androidx.savedstate:savedstate:1.3.5 -> 1.3.6 (*)
 │              │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.21 -> #kotlinVersion (*)
 │              │         ╰─── org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3 -> 1.11.0 (*)
@@ -287,10 +323,10 @@ Module ios-app
 │              │    ╰─── org.jetbrains.androidx.navigation:navigation-runtime-iosarm64:2.9.1
 │              │         ├─── androidx.annotation:annotation:1.9.1 (*)
 │              │         ├─── androidx.collection:collection:1.5.0 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.9.6 (*)
-│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.9.6 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-common:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-runtime:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.11.0-beta01 (*)
+│              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.11.0-beta01 (*)
 │              │         ├─── org.jetbrains.androidx.navigation:navigation-common:2.9.1 (*)
 │              │         ├─── org.jetbrains.androidx.savedstate:savedstate:1.3.5 -> 1.3.6 (*)
 │              │         ├─── org.jetbrains.kotlin:kotlin-stdlib:2.1.21 -> #kotlinVersion (*)
@@ -320,32 +356,32 @@ Module ios-app
 │              ╰─── org.jetbrains.compose.ui:ui-graphics:1.7.3 -> #composeDefaultVersion (*)
 ├─── ios-app:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-├─── ios-app:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+├─── ios-app:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 ├─── ios-app:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 ├─── ios-app:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
 │    ╰─── org.jetbrains.compose.material:material-icons-extended:1.7.3 (*)
 ├─── ios-app:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-├─── ios-app:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+├─── ios-app:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 ├─── ios-app:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 ├─── ios-app:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
 │    ╰─── org.jetbrains.compose.material:material-icons-extended:1.7.3 (*)
 ├─── ios-app:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-├─── ios-app:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+├─── ios-app:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 ├─── ios-app:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 ├─── ios-app:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
 │    ╰─── org.jetbrains.compose.material:material-icons-extended:1.7.3 (*)
 ├─── ios-app:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-├─── ios-app:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+├─── ios-app:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 ├─── ios-app:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 ├─── ios-app:native:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -379,10 +415,10 @@ Module ios-app
 │    │              ├─── io.insert-koin:koin-core-viewmodel:4.2.0-alpha2
 │    │              │    ╰─── io.insert-koin:koin-core-viewmodel-iosarm64:4.2.0-alpha2
 │    │              │         ├─── io.insert-koin:koin-core:4.2.0-alpha2 (*)
-│    │              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.9.6 (*)
-│    │              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.9.6 (*)
+│    │              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5 -> 2.11.0-beta01 (*)
+│    │              │         ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate:2.9.5 -> 2.11.0-beta01 (*)
 │    │              │         ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
-│    │              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5 (*)
+│    │              ├─── org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5 -> 2.11.0-beta01 (*)
 │    │              ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │    ├─── shared:iosArm64:io.insert-koin:koin-compose-viewmodel-navigation:unspecified
 │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2
@@ -392,8 +428,8 @@ Module ios-app
 │    │              ╰─── org.jetbrains.kotlin:kotlin-stdlib:2.2.20 -> #kotlinVersion (*)
 │    ├─── shared:iosArm64:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    ├─── shared:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    ├─── shared:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    ├─── shared:iosArm64:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    ├─── shared:iosArm64:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -408,8 +444,8 @@ Module ios-app
 │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    ├─── shared:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    ├─── shared:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    ├─── shared:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    ├─── shared:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    ├─── shared:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -424,8 +460,8 @@ Module ios-app
 │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    ├─── shared:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    ├─── shared:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    ├─── shared:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    ├─── shared:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    ├─── shared:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -440,8 +476,8 @@ Module ios-app
 │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    ├─── shared:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    ├─── shared:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    ├─── shared:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    ├─── shared:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    ├─── shared:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -456,8 +492,8 @@ Module ios-app
 │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    ├─── shared:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    ├─── shared:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    ├─── shared:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    ├─── shared:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    ├─── shared:native:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -470,8 +506,8 @@ Module ios-app
 │    ├─── Module ui
 │    │    ├─── ui:iosArm64:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── ui:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── ui:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── ui:iosArm64:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── ui:iosArm64:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -486,8 +522,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── ui:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── ui:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── ui:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── ui:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── ui:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -502,8 +538,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── ui:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── ui:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── ui:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── ui:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── ui:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -518,8 +554,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── ui:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── ui:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── ui:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── ui:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── ui:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -534,8 +570,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── ui:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── ui:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── ui:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── ui:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── ui:native:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -637,8 +673,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── fyp:iosArm64:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── fyp:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── fyp:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── fyp:iosArm64:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── fyp:iosArm64:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -653,8 +689,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── fyp:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── fyp:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── fyp:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── fyp:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── fyp:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -669,8 +705,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── fyp:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── fyp:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── fyp:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── fyp:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── fyp:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -685,8 +721,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── fyp:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── fyp:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── fyp:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── fyp:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── fyp:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -701,8 +737,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── fyp:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── fyp:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── fyp:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── fyp:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── fyp:native:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -788,8 +824,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── list:iosArm64:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── list:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── list:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── list:iosArm64:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── list:iosArm64:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -804,8 +840,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── list:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── list:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── list:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── list:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── list:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -820,8 +856,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── list:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── list:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── list:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── list:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── list:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -836,8 +872,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── list:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── list:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── list:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── list:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── list:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -852,8 +888,8 @@ Module ios-app
 │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    ├─── list:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    ├─── list:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    ├─── list:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    ├─── list:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    ├─── list:native:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -873,8 +909,8 @@ Module ios-app
 │    │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    │    ├─── model:iosArm64:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    │    ├─── model:iosArm64:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    │    ├─── model:iosArm64:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    │    ├─── model:iosArm64:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    │    ├─── model:iosArm64:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -889,8 +925,8 @@ Module ios-app
 │    │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    │    ├─── model:apple:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    │    ├─── model:apple:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    │    ├─── model:apple:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    │    ├─── model:apple:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    │    ├─── model:apple:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -905,8 +941,8 @@ Module ios-app
 │    │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    │    ├─── model:common:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    │    ├─── model:common:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    │    ├─── model:common:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    │    ├─── model:common:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    │    ├─── model:common:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -921,8 +957,8 @@ Module ios-app
 │    │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    │    ├─── model:ios:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    │    ├─── model:ios:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    │    ├─── model:ios:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    │    ├─── model:ios:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    │    ├─── model:ios:org.jetbrains.compose.material:material-icons-extended:1.7.3
@@ -937,8 +973,8 @@ Module ios-app
 │    │    │    │    ╰─── io.insert-koin:koin-compose-viewmodel-navigation:unspecified -> 4.2.0-alpha2 (*)
 │    │    │    ├─── model:native:org.jetbrains.compose.foundation:foundation:#composeDefaultVersion
 │    │    │    │    ╰─── org.jetbrains.compose.foundation:foundation:#composeDefaultVersion (*)
-│    │    │    ├─── model:native:org.jetbrains.compose.material3:material3:1.11.0-alpha07
-│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.11.0-alpha07 (*)
+│    │    │    ├─── model:native:org.jetbrains.compose.material3:material3:1.12.0-alpha03
+│    │    │    │    ╰─── org.jetbrains.compose.material3:material3:1.12.0-alpha03 (*)
 │    │    │    ├─── model:native:org.jetbrains.androidx.navigation:navigation-compose:2.9.1
 │    │    │    │    ╰─── org.jetbrains.androidx.navigation:navigation-compose:2.9.1 (*)
 │    │    │    ├─── model:native:org.jetbrains.compose.material:material-icons-extended:1.7.3

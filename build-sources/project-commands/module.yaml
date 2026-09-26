@@ -45,7 +45,7 @@ plugins:
           minApiLevel: 24
         # https://github.com/JetBrains/compose-multiplatform/releases
         # Also, update the mapping between Compose and Material3 versions in composeMaterial3VersionForCMPVersion()
-        compose: 1.11.1
+        compose: 1.12.1
         # https://github.com/JetBrains/compose-hot-reload/releases
         composeHotReload: 1.2.0
         # https://github.com/Kotlin/dataframe/releases

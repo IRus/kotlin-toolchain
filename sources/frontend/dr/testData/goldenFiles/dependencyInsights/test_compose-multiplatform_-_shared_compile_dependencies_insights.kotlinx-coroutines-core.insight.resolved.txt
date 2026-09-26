@@ -21,8 +21,8 @@ Module shared
 ├─── shared:iosArm64:org.jetbrains.compose.runtime:runtime:#composeDefaultVersion, implicit (because Compose is enabled)
 │    ╰─── org.jetbrains.compose.runtime:runtime:#composeDefaultVersion
 │         ╰─── org.jetbrains.compose.runtime:runtime-iosarm64:#composeDefaultVersion
-│              ╰─── androidx.compose.runtime:runtime:1.11.2
-│                   ╰─── androidx.compose.runtime:runtime-iosarm64:1.11.2
+│              ╰─── androidx.compose.runtime:runtime:1.12.1
+│                   ╰─── androidx.compose.runtime:runtime-iosarm64:1.12.1
 │                        ╰─── org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0
 ├─── shared:iosArm64:org.jetbrains.compose.components:components-resources:#composeDefaultVersion, implicit (because Compose is enabled)
 │    ╰─── org.jetbrains.compose.components:components-resources:#composeDefaultVersion

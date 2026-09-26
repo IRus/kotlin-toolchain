@@ -24,7 +24,7 @@ object DefaultVersions {
     /*managed_default*/ val androidBuildTools = "37.0.0"
     /*managed_default*/ val androidCompileApiLevel = 37
     /*managed_default*/ val androidMinApiLevel = 24
-    /*managed_default*/ val compose = "1.11.1"
+    /*managed_default*/ val compose = "1.12.1"
     /*managed_default*/ val composeHotReload = "1.2.0"
     /*managed_default*/ val dataframe = "1.0.0-rc01"
     /*managed_default*/ val jdk = 25

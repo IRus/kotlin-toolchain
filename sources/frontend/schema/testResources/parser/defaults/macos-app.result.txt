@@ -53,7 +53,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -255,7 +255,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -453,7 +453,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -654,7 +654,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -853,7 +853,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -1052,7 +1052,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -1254,7 +1254,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -1456,7 +1456,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -1655,7 +1655,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {
@@ -1857,7 +1857,7 @@ Fragments:
           nameOfResClass: <default> Res
           packageName: <default>
         }
-        version: <default> 1.11.1
+        version: <default> 1.12.1
       }
       java: <default> {
         annotationProcessing: <default> {

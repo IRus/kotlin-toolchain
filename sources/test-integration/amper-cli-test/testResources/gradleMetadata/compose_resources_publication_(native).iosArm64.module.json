@@ -30,7 +30,7 @@
           "group": "org.jetbrains.compose.material3",
           "module": "material3",
           "version": {
-            "requires": "1.11.0-alpha07"
+            "requires": "1.12.0-alpha03"
           }
         },
         {
@@ -51,14 +51,14 @@
           "group": "org.jetbrains.compose.runtime",
           "module": "runtime",
           "version": {
-            "requires": "1.11.1"
+            "requires": "1.12.1"
           }
         },
         {
           "group": "org.jetbrains.compose.components",
           "module": "components-resources",
           "version": {
-            "requires": "1.11.1"
+            "requires": "1.12.1"
           }
         }
       ],
@@ -90,7 +90,7 @@
           "group": "org.jetbrains.compose.material3",
           "module": "material3",
           "version": {
-            "requires": "1.11.0-alpha07"
+            "requires": "1.12.0-alpha03"
           }
         },
         {
@@ -111,14 +111,14 @@
           "group": "org.jetbrains.compose.runtime",
           "module": "runtime",
           "version": {
-            "requires": "1.11.1"
+            "requires": "1.12.1"
           }
         },
         {
           "group": "org.jetbrains.compose.components",
           "module": "components-resources",
           "version": {
-            "requires": "1.11.1"
+            "requires": "1.12.1"
           }
         }
       ],

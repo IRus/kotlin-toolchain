@@ -229,7 +229,7 @@ class ModuleDependenciesGraphMultiplatformTest : BaseModuleDrTest() {
                 "org.jetbrains.compose.runtime:runtime:${DefaultVersions.compose}" to "org.jetbrains.compose.runtime:runtime-desktop:${DefaultVersions.compose}",
                 "org.jetbrains.compose.foundation:foundation:${DefaultVersions.compose}" to "org.jetbrains.compose.foundation:foundation-desktop:${DefaultVersions.compose}",
                 // Note: this has to be updated when changing the 'compose' version. See composeMaterial3VersionForCMPVersion() in catalog.kt
-                "org.jetbrains.compose.material3:material3:1.11.0-alpha07" to "org.jetbrains.compose.material3:material3-desktop:1.11.0-alpha07",
+                "org.jetbrains.compose.material3:material3:1.12.0-alpha03" to "org.jetbrains.compose.material3:material3-desktop:1.12.0-alpha03",
             )
         )
     }

@@ -1,4 +1,7 @@
 modules:
   - ./*-cli
+  - js-app
   - shared
   - utils
+  - wasmJs-app
+  - wasmWasi-app

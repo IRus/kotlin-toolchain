@@ -1,3 +1,7 @@
 settings:
+  jvm:
+    jdk:
+      version: {{JDK_VERSION}}
   kotlin:
+    version: {{KOTLIN_COMPILER_VERSION}}
     languageVersion: {{LANGUAGE_VERSION}}

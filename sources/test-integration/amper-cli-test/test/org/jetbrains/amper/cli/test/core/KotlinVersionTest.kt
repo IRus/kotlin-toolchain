@@ -38,7 +38,7 @@ class KotlinVersionTest : CliTestBase() {
             // Kotlin 2.4 supports up to JDK 26, so we pin to the max LTS that fits
             CustomVersionCombination(kotlinCompiler = DefaultVersions.kotlin, jdk = 25),
             // Kotlin 2.4 supports up to JDK 26, so we pin to the max LTS that fits
-            CustomVersionCombination(kotlinCompiler = "2.4.20-Beta1", jdk = 25),
+            CustomVersionCombination(kotlinCompiler = "2.4.20", jdk = 25),
         ]
 
         @JvmStatic
@@ -47,7 +47,7 @@ class KotlinVersionTest : CliTestBase() {
 
     @ParameterizedTest
     @MethodSource("kotlinVersionsCombinations")
-    fun `run kotlin hello world with custom compiler version`(version: CustomVersionCombination) = runSlowTest {
+    fun `run JVM hello world with custom compiler version`(version: CustomVersionCombination) = runSlowTest {
         val projectDir = testProject("kotlin-jvm-helloworld-custom-version")
         val moduleFile = projectDir.resolve("module.yaml")
         moduleFile.writeText(
@@ -62,6 +62,21 @@ class KotlinVersionTest : CliTestBase() {
             doesNotHaveCompilerArgument("-api-version")
             hasAmperModule("kotlin-jvm-helloworld-custom-version")
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("kotlinVersionsCombinations")
+    fun `build multiplatform with custom compiler version`(version: CustomVersionCombination) = runSlowTest {
+        val projectDir = testProject("multiplatform-custom-language-version")
+        val templateFile = projectDir.resolve("common.module-template.yaml")
+        templateFile.writeText(
+            templateFile.readText()
+                .replace("{{KOTLIN_COMPILER_VERSION}}", version.kotlinCompiler)
+                .replace("{{JDK_VERSION}}", version.jdk.toString())
+                .replace("languageVersion: {{LANGUAGE_VERSION}}", "") // make it unspecified
+        )
+
+        runCli(projectDir = projectDir, "build", configureAndroidHome = true)
     }
 
     @ParameterizedTest
@@ -119,9 +134,14 @@ class KotlinVersionTest : CliTestBase() {
     fun `build multiplatform with custom language version`(languageVersion: String) = runSlowTest {
         val projectDir = testProject("multiplatform-custom-language-version")
         val templateFile = projectDir.resolve("common.module-template.yaml")
-        templateFile.writeText(templateFile.readText().replace("{{LANGUAGE_VERSION}}", languageVersion))
+        templateFile.writeText(
+            templateFile.readText()
+                .replace("{{KOTLIN_COMPILER_VERSION}}", DefaultVersions.kotlin)
+                .replace("{{LANGUAGE_VERSION}}", languageVersion)
+                .replace("{{JDK_VERSION}}", DefaultVersions.jdk.toString())
+        )
 
-        val result = runCli(projectDir = projectDir, "build")
+        val result = runCli(projectDir = projectDir, "build", configureAndroidHome = true)
         result.withTelemetrySpans {
             assertEachKotlinJvmCompilationSpan {
                 hasCompilerArgument("-language-version=$languageVersion")

@@ -34,6 +34,7 @@ import org.jetbrains.amper.telemetry.spanBuilder
 import org.jetbrains.amper.telemetry.use
 import org.jetbrains.amper.util.ShellQuoting
 import org.slf4j.LoggerFactory
+import java.nio.file.Path
 import kotlin.io.path.div
 import kotlin.io.path.pathString
 
@@ -69,6 +70,9 @@ class KotlinNativeCompiler(
         private val logger = LoggerFactory.getLogger(KotlinNativeCompiler::class.java)
     }
 
+    private val compilerWorkingDir: Path
+        get() = konanDistribution.homeDir
+
     context(problemReporter: ProblemReporter)
     suspend fun compile(
         processRunner: ProcessRunner,
@@ -93,7 +97,7 @@ class KotlinNativeCompiler(
                         outputListener = ProblemReportingCompilerOutputListener(
                             reporter = problemReporter,
                             moduleName = module.userReadableName,
-                            workingDir = konanDistribution.homeDir,
+                            workingDir = compilerWorkingDir,
                             logger = logger,
                         ),
                     )
@@ -170,7 +174,7 @@ class KotlinNativeCompiler(
         // TODO in the future we'll switch to kotlin tooling api and remove this raw java exec anyway
         return processRunner.runJava(
             jdk = jdk,
-            workingDir = konanDistribution.homeDir,
+            workingDir = compilerWorkingDir,
             mainClass = "org.jetbrains.kotlin.cli.utilities.MainKt",
             classpath = listOf(
                 konanDistribution.konanLibDir / "kotlin-native-compiler-embeddable.jar",

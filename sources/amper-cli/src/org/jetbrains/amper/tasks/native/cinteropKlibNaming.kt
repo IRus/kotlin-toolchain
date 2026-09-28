@@ -6,8 +6,8 @@ package org.jetbrains.amper.tasks.native
 
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.publishingSettings
+import org.jetbrains.amper.frontend.schema.effectiveArtifactId
 import java.nio.file.Path
-import kotlin.io.path.nameWithoutExtension
 
 private const val CINTEROP_INFIX = "-cinterop-"
 
@@ -22,7 +22,7 @@ private const val CINTEROP_INFIX = "-cinterop-"
  * module has no publishing group configured, just like KGP omits an empty Gradle project group.
  */
 internal fun AmperModule.cinteropKlibModuleName(cinteropName: String): String {
-    val baseName = "${publishingSettings.artifactId ?: userReadableName}$CINTEROP_INFIX$cinteropName"
+    val baseName = "${publishingSettings.effectiveArtifactId(this)}$CINTEROP_INFIX$cinteropName"
     val group = publishingSettings.group
     return if (group.isNullOrBlank()) baseName else "$group:$baseName"
 }

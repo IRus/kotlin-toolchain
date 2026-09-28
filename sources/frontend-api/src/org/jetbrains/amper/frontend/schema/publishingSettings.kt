@@ -4,6 +4,7 @@
 
 package org.jetbrains.amper.frontend.schema
 
+import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.SchemaEnum
 import org.jetbrains.amper.frontend.api.DeprecatedSchema
 import org.jetbrains.amper.frontend.api.KnownStringValues
@@ -30,9 +31,14 @@ class PublishingSettings : SchemaNode() {
     @NotBlank
     val version by nullableValue<String>()
 
+    /**
+     * NB: in cases where the non-null artifactId is expected, use [effectiveArtifactId].
+     */
     @Misnomers("name")
-    @SchemaDoc("Base artifact ID of the published Maven artifacts (for multiplatform libraries, a suffix may be " +
-            "appended to distinguish artifacts from different platforms)")
+    @SchemaDoc(
+        "Base artifact ID of the published Maven artifacts (for multiplatform libraries, a suffix may be " +
+                "appended to distinguish artifacts from different platforms)"
+    )
     @Suppress("DEPRECATION_ERROR") // it's the only allowed usage for the transition
     @NotBlank
     val artifactId by referenceValue(::name)
@@ -45,13 +51,15 @@ class PublishingSettings : SchemaNode() {
     @SchemaDoc("Custom metadata to configure in the published `pom.xml` file.")
     val pom by nested<PomSettings>()
 
-    @SchemaDoc("If set to true, artifacts published to Maven repositories are signed with a private PGP signing key," +
-            "and these signatures are published as extra artifacts." +
-            "\n\n" +
-            "The private PGP signing key must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY` environment variable in the " +
-            "ASCII-armored format.\n" +
-            "If the key is encrypted, its passphrase must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE` " +
-            "environment variable.")
+    @SchemaDoc(
+        "If set to true, artifacts published to Maven repositories are signed with a private PGP signing key," +
+                "and these signatures are published as extra artifacts." +
+                "\n\n" +
+                "The private PGP signing key must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY` environment variable in the " +
+                "ASCII-armored format.\n" +
+                "If the key is encrypted, its passphrase must be specified via the `KOTLIN_TOOLCHAIN_SIGNING_KEY_PASSPHRASE` " +
+                "environment variable."
+    )
     val signArtifacts by value(default = false)
 
     @SchemaDoc("If set to true, JARs with sources for each platform are published as extra artifacts.")
@@ -101,9 +109,10 @@ enum class PublishingMode(override val schemaValue: String) : SchemaEnum {
     @SchemaDoc(
         "After validation of the uploaded deployment bundle (containing the artifacts), the publication process " +
                 "pauses and awaits a manual user trigger. " +
-            "The user then has to publish the deployment from the Central Portal UI, or via a separate API call.",
+                "The user then has to publish the deployment from the Central Portal UI, or via a separate API call.",
     )
     Manual("manual"),
+
     @SchemaDoc(
         "After validation of the uploaded deployment bundle (containing the artifacts), the publication process " +
                 "automatically continues and publishes the deployment to Maven Central without manual intervention.",
@@ -254,3 +263,11 @@ class DeveloperInfo : SchemaNode() {
     @SchemaDoc("The URL to the website of this developer's organization.")
     val organizationUrl by nullableValue<String>()
 }
+
+/**
+ * The artifact ID to use for publishing this module.
+ *
+ * NB: Can be removed when/if we can reference properties from other parts of the objects
+ */
+fun PublishingSettings.effectiveArtifactId(module: AmperModule): String =
+    artifactId ?: module.userReadableName

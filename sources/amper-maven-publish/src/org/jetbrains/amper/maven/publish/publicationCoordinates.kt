@@ -9,7 +9,7 @@ import org.jetbrains.amper.dependency.resolution.mavenCoordinatesTrimmed
 import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.Fragment
 import org.jetbrains.amper.frontend.Platform
-import org.jetbrains.amper.frontend.schema.ProductType
+import org.jetbrains.amper.frontend.schema.effectiveArtifactId
 
 /**
  * Returns the Maven coordinates that should be used to publish this module's artifacts for the given platform.
@@ -46,7 +46,7 @@ private fun AmperModule.rootPublicationCoordinates(): MavenCoordinates {
 private fun Fragment.mavenCoordinates(artifactIdSuffix: String): MavenCoordinates = mavenCoordinatesTrimmed(
     groupId = settings.publishing.group
         ?: error("Missing 'group' in publishing settings of fragment '${name}' of module '${module.userReadableName}'"),
-    artifactId = (settings.publishing.artifactId ?: module.userReadableName.lowercase()) + artifactIdSuffix,
+    artifactId = (settings.publishing.effectiveArtifactId(module)) + artifactIdSuffix,
     version = settings.publishing.version
         ?: error("Missing 'version' in publishing settings of fragment '${name}' of module '${module.userReadableName}'")
 )

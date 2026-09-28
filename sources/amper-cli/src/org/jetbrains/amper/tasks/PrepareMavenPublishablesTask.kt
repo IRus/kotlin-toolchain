@@ -26,6 +26,7 @@ import org.jetbrains.amper.frontend.isArtifactSigningEnabled
 import org.jetbrains.amper.frontend.isDescendantOf
 import org.jetbrains.amper.frontend.publishingSettings
 import org.jetbrains.amper.frontend.schema.Checksum
+import org.jetbrains.amper.frontend.schema.effectiveArtifactId
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.incrementalcache.executeForSerializable
 import org.jetbrains.amper.incrementalcache.getDynamicInputs
@@ -334,7 +335,7 @@ class PrepareMavenPublishablesTask(
         overrides: PublicationCoordinatesOverrides,
         hasMainArtifact: Boolean,
     ): Path {
-        val artifactId = module.publishingSettings.artifactId ?: module.userReadableName
+        val artifactId = module.publishingSettings.effectiveArtifactId(module)
         val tempPath = taskOutputRoot.path.resolve("$artifactId-${platform.pretty}.pom")
         tempPath.writePomFor(module, platform, overrides, gradleMetadataComment = true, hasMainArtifact = hasMainArtifact)
         return tempPath

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package org.jetbrains.amper.tasks.compose
@@ -8,6 +8,7 @@ import org.jetbrains.amper.BuildPrimitives
 import org.jetbrains.amper.core.AmperUserCacheRoot
 import org.jetbrains.amper.core.extract.extractFileToCacheLocation
 import org.jetbrains.amper.frontend.AmperModule
+import org.jetbrains.amper.frontend.schema.effectiveArtifactId
 import org.jetbrains.amper.tasks.ResolveExternalDependenciesTask
 import org.jetbrains.amper.tasks.TaskResult
 import org.jetbrains.amper.tasks.rootFragment
@@ -62,7 +63,7 @@ internal fun AmperModule.composeResourcesPackagingDir(): String =
 private fun AmperModule.inferPackageNameFromPublishing(): List<String>? {
     val publishing = commonSettings.publishing
     val group = publishing.group?.takeIf(String::isNotBlank) ?: return null
-    return listOf(group, publishing.artifactId ?: userReadableName)
+    return listOf(group, publishing.effectiveArtifactId(this))
 }
 
 /**

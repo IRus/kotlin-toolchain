@@ -18,6 +18,7 @@ import org.apache.maven.project.MavenProject
 import org.apache.maven.session.scope.internal.SessionScope
 import org.codehaus.plexus.PlexusContainer
 import org.jetbrains.amper.frontend.AmperModule
+import org.jetbrains.amper.frontend.schema.effectiveArtifactId
 import org.jetbrains.amper.tasks.rootFragment
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
@@ -94,7 +95,7 @@ fun DefaultMavenArtifact(
 
 fun AmperModule.asMavenArtifact(scope: String, artifactIdSuffix: String = "") = DefaultMavenArtifact(
     groupId = rootFragment.settings.publishing.group ?: "unspecified",
-    artifactId = (rootFragment.settings.publishing.artifactId ?: userReadableName) + artifactIdSuffix,
+    artifactId = (rootFragment.settings.publishing.effectiveArtifactId(this)) + artifactIdSuffix,
     version = rootFragment.settings.publishing.version ?: "unspecified",
     scope = scope,
     type = "jar",

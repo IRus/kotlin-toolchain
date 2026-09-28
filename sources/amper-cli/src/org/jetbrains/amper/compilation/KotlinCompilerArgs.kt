@@ -6,6 +6,7 @@ package org.jetbrains.amper.compilation
 
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.cli.context.AmperProjectTempRoot
+import org.jetbrains.amper.compilation.compiler.KotlinCompiler
 import org.jetbrains.amper.dependency.resolution.ResolutionPlatform
 import org.jetbrains.amper.engine.BuildTask
 import org.jetbrains.amper.frontend.AmperModule
@@ -385,7 +386,9 @@ internal fun kotlinWasmCompilerArgs(
     include: Path?,
     cacheDirectory: Path? = null,
 ): List<String> = buildList {
-    add("-Xwasm")
+    if (ComparableVersion(kotlinUserSettings.compilerVersion) < KotlinCompiler.KotlinVersionWithSeparateWasmCompiler) {
+        add("-Xwasm")
+    }
     add("-Xwasm-target=wasm-${wasmTarget.name.lowercase()}")
 
     addAll(
@@ -498,7 +501,9 @@ private fun kotlinWebCompilerArgs(
     if (compilationType == KotlinCompilationType.BINARY) {
         add("-Xir-produce-js")
     } else {
-        add("-Xir-produce-klib-file")
+        if (ComparableVersion(kotlinUserSettings.compilerVersion) < KotlinCompiler.KotlinVersionWithPackedKlibByDefault) {
+            add("-Xir-produce-klib-file")
+        }
     }
 
     cacheDirectory?.let { add("-Xcache-directory=${it.pathString}") }

@@ -46,7 +46,17 @@ internal class KotlinCompiler(
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(KotlinCompiler::class.java)
 
-        private val KotlinVersionWithSeparateWasmCompiler = ComparableVersion("2.4.0")
+        /**
+         * The first Kotlin version that brings the dedicated Kotlin/Wasm compiler (as a different main class).
+         * Starting in this version, the `-Xwasm` compiler option is deprecated and shouldn't be used.
+         */
+        val KotlinVersionWithSeparateWasmCompiler = ComparableVersion("2.4.0")
+
+        /**
+         * The version of the Kotlin compiler in which the `-Xir-produce-klib-file` option became the default
+         * (and produces a warning if specified explicitly).
+         */
+        val KotlinVersionWithPackedKlibByDefault = ComparableVersion("2.4.20")
     }
 
     context(processRunner: ProcessRunner)

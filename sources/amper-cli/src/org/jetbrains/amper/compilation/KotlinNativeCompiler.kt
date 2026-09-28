@@ -5,11 +5,13 @@
 package org.jetbrains.amper.compilation
 
 import io.opentelemetry.api.trace.Span
+import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.ProcessRunner
 import org.jetbrains.amper.cli.context.AmperProjectTempRoot
 import org.jetbrains.amper.cli.telemetry.setAmperModule
 import org.jetbrains.amper.cli.telemetry.setProcessResultAttributes
 import org.jetbrains.amper.cli.userReadableError
+import org.jetbrains.amper.compilation.compiler.KotlinCompiler
 import org.jetbrains.amper.core.AmperUserCacheRoot
 import org.jetbrains.amper.core.downloader.Downloader
 import org.jetbrains.amper.engine.TaskGraphExecutionContext
@@ -187,6 +189,10 @@ class KotlinNativeCompiler(
                     // The native compiler needs native access for some of its business:
                     // "java.lang.System::load has been called by kotlinx.cinterop.JvmUtilsKt"
                     add("--enable-native-access=ALL-UNNAMED")
+                }
+                // Unsafe usages were removed in Kotlin 2.4.0
+                if (jdk.majorVersion >= 24 && ComparableVersion(konanDistribution.kotlinVersion) < KotlinCompiler.FirstKotlinVersionWithoutUnsafeUsages) {
+                    add("--sun-misc-unsafe-memory-access=allow")
                 }
             },
             outputMode = ProcessOutputMode.listen(outputListener),

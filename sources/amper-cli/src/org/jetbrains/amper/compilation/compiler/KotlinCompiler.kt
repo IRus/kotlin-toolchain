@@ -57,6 +57,11 @@ internal class KotlinCompiler(
          * (and produces a warning if specified explicitly).
          */
         val KotlinVersionWithPackedKlibByDefault = ComparableVersion("2.4.20")
+
+        /**
+         * The first compiler version without sun.misc.Unsafe usages.
+         */
+        val FirstKotlinVersionWithoutUnsafeUsages = ComparableVersion("2.4.0")
     }
 
     context(processRunner: ProcessRunner)
@@ -126,6 +131,10 @@ internal class KotlinCompiler(
                 // We can't specify the Jansi module specifically when using a classpath (we would need module path),
                 // so we go for `ALL-UNNAMED`.
                 add("--enable-native-access=ALL-UNNAMED")
+            }
+            // Unsafe usages were removed in Kotlin 2.4.0
+            if (jdk.majorVersion >= 24 && kotlinVersion < FirstKotlinVersionWithoutUnsafeUsages) {
+                add("--sun-misc-unsafe-memory-access=allow")
             }
             addAll(extraJvmArgs)
         },

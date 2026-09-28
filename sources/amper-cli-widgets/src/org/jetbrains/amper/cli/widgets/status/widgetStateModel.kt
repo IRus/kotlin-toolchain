@@ -39,7 +39,7 @@ internal interface BuildState {
     /**
      * Currently running tasks within the build.
      */
-    val taskStates: Collection<TaskStatusEntryState>
+    val taskStates: Collection<StatusEntryState>
 }
 
 internal interface HasNestedStatusEntryStates {
@@ -75,12 +75,7 @@ internal interface StatusEntryState : HasNestedStatusEntryStates {
      * Progress status.
      */
     val progressState: ProgressState
-}
 
-/**
- * State for task executions.
- */
-internal interface TaskStatusEntryState : StatusEntryState {
     /**
      * Whether this operation hosts an interactive (inherited IO) external process which needs full terminal
      * access.
@@ -94,7 +89,6 @@ internal interface TestStatistics {
      * A good condition to understand when to show test statistics info to the user.
      */
     val started: Boolean
-
     /**
      * Number of successfully completed tests.
      */
@@ -109,4 +103,8 @@ internal interface TestStatistics {
      * Number of skipped (+ aborted) tests.
      */
     val skipped: Int
+
 }
+
+internal fun StatusEntryState.isInteractiveOrHasInteractiveChildren(): Boolean =
+    isInteractive || nestedEntries.any { it.isInteractiveOrHasInteractiveChildren() }

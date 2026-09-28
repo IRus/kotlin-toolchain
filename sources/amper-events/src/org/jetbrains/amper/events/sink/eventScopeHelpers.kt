@@ -61,6 +61,7 @@ inline fun <R> taskEventScope(
 context(sink: OperationEventSink)
 inline fun <R> operationEventScope(
     moniker: String,
+    isInteractive: Boolean = false,
     block: context(OperationEventSink) () -> R,
 ): R {
     contract {
@@ -68,7 +69,7 @@ inline fun <R> operationEventScope(
     }
 
     val newId = OperationId()
-    sink.emit(OperationScopedEvent.Started(newId, moniker))
+    sink.emit(OperationScopedEvent.Started(newId, moniker, isInteractive))
     val nestedSink = OperationEventSink(sink, newId)
     return try {
         block(nestedSink)

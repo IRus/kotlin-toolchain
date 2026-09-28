@@ -32,6 +32,7 @@ sealed interface OperationScopedEvent : Event {
     data class Started(
         val id: OperationId,
         val moniker: String,
+        val isInteractive: Boolean,
     ) : OperationScopedEvent
 
     /**

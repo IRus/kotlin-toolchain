@@ -18,6 +18,7 @@ import kotlin.time.ComparableTimeMark
 internal open class StatusEntryStateTrackerSink(
     delegate: StatusTrackerDelegate,
     override val renderedMoniker: String,
+    override val isInteractive: Boolean,
 ) : NestedStatusEntriesStateTrackerSink(delegate), StatusEntryState {
     private val _progressState = AtomicReference<ProgressState>(ProgressState.Indeterminate)
 

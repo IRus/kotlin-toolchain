@@ -47,7 +47,7 @@ class OperationProgressWidgetSink(
                         (timeSource.markNow() - lastUpdated) >= WidgetTimings.WidgetMaxFrameUpdateInterval
                     ) {
                         val entries = stateTracker.nestedEntries
-                        if (entries.isEmpty()) {
+                        if (entries.isEmpty() || entries.any { it.isInteractiveOrHasInteractiveChildren() }) {
                             // Clear the widget if no operations are active
                             hideAnimation()
                         } else {

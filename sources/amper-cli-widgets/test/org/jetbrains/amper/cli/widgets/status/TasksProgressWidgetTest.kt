@@ -41,7 +41,7 @@ class TasksProgressWidgetTest {
     }
 
     private fun buildState(
-        tasks: List<TaskStatusEntryState>,
+        tasks: List<StatusEntryState>,
         totalTasksCount: Int = 10,
         completeTasksCount: Int = 0,
         testStatistics: TestStatistics = object : TestStatistics {
@@ -63,7 +63,7 @@ class TasksProgressWidgetTest {
         moniker: String,
         children: List<StatusEntryState> = [],
         showImmediately: Boolean = true,
-    ) = object : TaskStatusEntryState {
+    ) = object : StatusEntryState {
         override val renderedMoniker = moniker
         override val startTime = timeSource.markNow()
         override val isInteractive = false

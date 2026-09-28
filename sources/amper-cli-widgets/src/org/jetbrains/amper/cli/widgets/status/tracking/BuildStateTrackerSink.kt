@@ -33,7 +33,7 @@ internal class BuildStateTrackerSink(
     private val _testsFailed = AtomicInteger(0)
 
     private val _completeTasksCount = AtomicInteger(0)
-    private val taskStatesMap = ConcurrentHashMap<TaskExecutionId, TaskStatusEntryStateTrackerSink>()
+    private val taskStatesMap = ConcurrentHashMap<TaskExecutionId, StatusEntryStateTrackerSink>()
 
     override val startTime = delegate.timeSource.markNow()
     override val testStatistics get() = this
@@ -48,7 +48,7 @@ internal class BuildStateTrackerSink(
     override fun emit(event: BuildScopedEvent) {
         when (event) {
             is BuildScopedEvent.TaskStarted -> {
-                taskStatesMap[event.id] = TaskStatusEntryStateTrackerSink(
+                taskStatesMap[event.id] = StatusEntryStateTrackerSink(
                     delegate = delegate,
                     renderedMoniker = event.monikerSpec.render(terminal = delegate.terminal),
                     isInteractive = event.isInteractive,

@@ -17,4 +17,5 @@ internal class TestStatusEntryStateTrackerSink(
     override val showImmediately get() = true
     override val progressState get() = ProgressState.Indeterminate
     override val startTime: ComparableTimeMark = delegate.timeSource.markNow()
+    override val isInteractive: Boolean = false
 }

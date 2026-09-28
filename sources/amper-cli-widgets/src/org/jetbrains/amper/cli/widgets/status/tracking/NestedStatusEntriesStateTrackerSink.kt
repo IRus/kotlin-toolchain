@@ -33,6 +33,7 @@ internal open class NestedStatusEntriesStateTrackerSink(
                 operationsMap[event.id] = StatusEntryStateTrackerSink(
                     delegate = delegate,
                     renderedMoniker = event.moniker,
+                    isInteractive = event.isInteractive,
                 )
                 delegate.onStateUpdated()
             }

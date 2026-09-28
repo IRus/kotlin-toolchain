@@ -49,7 +49,7 @@ class ProgressWidgetSink(
                         val build = stateTracker.builds.maxByOrNull { it.startTime }
                         // Clear the widget if no build is active
                         // or any task requires interactive access to the terminal
-                        if (build == null || build.taskStates.any { it.isInteractive }) {
+                        if (build == null || build.taskStates.any { it.isInteractiveOrHasInteractiveChildren() }) {
                             // Quick-fix: before the `RunTask` implementors are properly refactored to not be tasks,
                             // we simply cancel the widget to not mess with the potentially interactive processes
                             // that are launched from the task.

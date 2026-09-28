@@ -220,5 +220,5 @@ private fun PublishingSettings.toAndroidNamespace(module: AmperModule): String? 
  */
 private fun String.sanitizeToJavaIdentifier(): String =
     replace("-", "_").let {
-        if (it[0].isJavaIdentifierStart()) "_$it" else it
+        if (!it[0].isJavaIdentifierStart()) "_$it" else it
     }

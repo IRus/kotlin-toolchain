@@ -1,0 +1,9 @@
+product:
+  type: kmp/lib
+  platforms:
+    - android
+
+settings:
+  publishing:
+    enabled: true
+    group: org.group

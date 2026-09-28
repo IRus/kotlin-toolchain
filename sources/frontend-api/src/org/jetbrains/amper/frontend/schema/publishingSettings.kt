@@ -266,8 +266,7 @@ class DeveloperInfo : SchemaNode() {
 
 /**
  * The artifact ID to use for publishing this module.
- *
- * NB: Can be removed when/if we can reference properties from other parts of the objects
  */
+// TODO remove when/if we can reference properties from other parts of the objects
 fun PublishingSettings.effectiveArtifactId(module: AmperModule): String =
     artifactId ?: module.userReadableName

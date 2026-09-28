@@ -1,0 +1,12 @@
+product:
+  type: kmp/lib
+  platforms:
+    - android
+
+settings:
+  android:
+    namespace: org.group.explicit.namespace
+  publishing:
+    enabled: true
+    group: org.group
+    artifactId: artifact

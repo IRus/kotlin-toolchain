@@ -1,0 +1,6 @@
+modules:
+  - artifact-id-requires-sanitize
+  - not-published
+  - published-with-artifact-id
+  - published-without-artifact-id
+  - set-namespace

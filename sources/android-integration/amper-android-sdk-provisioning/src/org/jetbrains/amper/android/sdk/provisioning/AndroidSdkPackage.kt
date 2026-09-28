@@ -4,6 +4,7 @@
 
 package org.jetbrains.amper.android.sdk.provisioning
 
+import org.jetbrains.amper.core.UsedInIdePlugin
 import java.nio.file.Path
 
 /**
@@ -15,10 +16,12 @@ import java.nio.file.Path
  * - `build-tools;37.0.0`
  */
 @JvmInline
+@UsedInIdePlugin
 value class PackagePath(val path: String) {
     override fun toString(): String = path
 }
 
+@UsedInIdePlugin
 data class AndroidSdkPackage(
     /**
      * Notation of the package.
@@ -34,8 +37,25 @@ data class AndroidSdkPackage(
     val license: AndroidLicense,
 )
 
+@JvmInline
+@UsedInIdePlugin
+value class AndroidLicenseId(val value: String) {
+    override fun toString(): String = value
+}
+
+@UsedInIdePlugin
 interface AndroidLicense {
+    val licenseId: AndroidLicenseId
+
+    @Deprecated(
+        "Use value class for referencing the ID instead.",
+        replaceWith = ReplaceWith("licenseId.value"),
+        level = DeprecationLevel.ERROR,
+    )
     val id: String
+        get() = licenseId.value
+
+    val text: String
 
     fun isAccepted(): Boolean
 }

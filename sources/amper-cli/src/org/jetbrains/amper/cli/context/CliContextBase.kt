@@ -6,6 +6,7 @@ package org.jetbrains.amper.cli.context
 
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.OpenTelemetry
+import org.jetbrains.amper.android.AndroidTerminalLicenseHandler
 import org.jetbrains.amper.android.sdk.provisioning.AndroidSdkDetector
 import org.jetbrains.amper.android.sdk.provisioning.AndroidSdkProvider
 import org.jetbrains.amper.jdk.provisioning.JdkProvider
@@ -27,6 +28,7 @@ sealed class CliContextBase : CliContext {
             incrementalCache = incrementalCache,
             openTelemetry = openTelemetry,
             sdkRoot = androidHomeRoot.path,
+            unacceptedLicenseHandler = AndroidTerminalLicenseHandler(terminal),
         )
     }
 

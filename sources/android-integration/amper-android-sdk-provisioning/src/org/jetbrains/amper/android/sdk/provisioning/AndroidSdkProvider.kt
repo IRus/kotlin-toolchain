@@ -17,9 +17,13 @@ import com.android.sdklib.repository.AndroidSdkHandler
 import com.android.sdklib.repository.meta.DetailsTypes
 import io.ktor.http.*
 import io.opentelemetry.api.OpenTelemetry
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.withLock
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.concurrency.AsyncConcurrentMap
 import org.jetbrains.amper.concurrency.StripedFileMutexGroup
+import org.jetbrains.amper.concurrency.StripedMutex
 import org.jetbrains.amper.concurrency.withDoubleLock
 import org.jetbrains.amper.core.AmperUserCacheRoot
 import org.jetbrains.amper.core.UsedInIdePlugin
@@ -29,9 +33,17 @@ import org.jetbrains.amper.core.extract.extractFileToLocation
 import org.jetbrains.amper.events.sink.OperationEventSink
 import org.jetbrains.amper.events.sink.operationEventScope
 import org.jetbrains.amper.incrementalcache.IncrementalCache
+import org.jetbrains.amper.problems.reporting.BuildProblem
+import org.jetbrains.amper.problems.reporting.BuildProblemSource
+import org.jetbrains.amper.problems.reporting.BuildProblemType
+import org.jetbrains.amper.problems.reporting.DiagnosticId
+import org.jetbrains.amper.problems.reporting.GlobalBuildProblemSource
+import org.jetbrains.amper.problems.reporting.Level
+import org.jetbrains.amper.problems.reporting.NonIdealDiagnostic
 import org.jetbrains.amper.problems.reporting.ProblemReporter
 import org.jetbrains.amper.telemetry.use
 import org.jetbrains.amper.telemetry.useWithoutCoroutines
+import org.jetbrains.annotations.Nls
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Path
@@ -47,6 +59,24 @@ import kotlin.io.path.name
 import kotlin.io.path.outputStream
 import kotlin.io.path.relativeTo
 
+data object FailedToAcceptAndroidLicenseId : DiagnosticId
+
+@OptIn(NonIdealDiagnostic::class)
+data class FailedToAcceptAndroidLicense(
+    val licenseId: AndroidLicenseId,
+    val sdkRoot: Path,
+) : BuildProblem {
+    override val diagnosticId: DiagnosticId = FailedToAcceptAndroidLicenseId
+    override val source: BuildProblemSource = GlobalBuildProblemSource
+    override val message: @Nls String = AndroidSdkProvisioningBundle.message(
+        "android.license.accept.failed",
+        licenseId,
+        sdkRoot / License.LICENSE_DIR,
+    )
+    override val level: Level = Level.Error
+    override val type: BuildProblemType = BuildProblemType.Generic
+}
+
 /**
  * Provisions Android SDK packages into [sdkRoot].
  *
@@ -58,6 +88,7 @@ class AndroidSdkProvider(
     private val incrementalCache: IncrementalCache,
     openTelemetry: OpenTelemetry = OpenTelemetry.noop(),
     val sdkRoot: Path = AndroidSdkDetector.detectSdkPath(),
+    val unacceptedLicenseHandler: AndroidUnacceptedLicenseHandler = AndroidUnacceptedLicenseHandler.DontAccept,
 ) {
     private val tracer = openTelemetry.getTracer("org.jetbrains.amper.android.sdk.provisioning")
     private val repositoryXmlListsProvider = AndroidSdkRepositoryXmlListsProvider(
@@ -68,6 +99,8 @@ class AndroidSdkProvider(
     private val repositories = AsyncConcurrentMap<AndroidSdkRepository, Repository>()
     private val packages = AsyncConcurrentMap<AndroidSdkPackageRequest, AndroidSdkResult>()
     private val packagesMutexGroup = StripedFileMutexGroup(256)
+    private val licenseHandlingMutex = StripedMutex()
+    private val handledLicenses = mutableSetOf<AndroidLicenseId>()
 
     init {
         sdkRoot.createDirectories()
@@ -90,20 +123,25 @@ class AndroidSdkProvider(
                     span.setAttribute("from-memory-cache", false)
                     val installedPackage = install(request)
                         ?: return@computeIfAbsent AndroidSdkResult.Error("Failed to provision ${request.displayName}")
+                    val license = AndroidSdkBackedLicense(sdkRoot, installedPackage.license)
+                    handlePackageLicense(installedPackage.detailedDisplayName, license)
 
                     AndroidSdkResult.Success(
                         AndroidSdkPackage(
                             packagePath = installedPackage.packagePath,
                             location = installedPackage.packagePath.toLocalPath(),
-                            license = AndroidSdkBackedLicense(sdkRoot, installedPackage.license),
+                            license = license,
                         )
                     )
                 }
             }
 
-    private class AndroidSdkBackedLicense(private val sdkRoot: Path, private val license: License) : AndroidLicense {
-        override val id: String
-            get() = license.id
+    private class AndroidSdkBackedLicense(private val sdkRoot: Path, val license: License) : AndroidLicense {
+        override val licenseId
+            get() = AndroidLicenseId(license.id)
+
+        override val text: String
+            get() = license.value
 
         override fun isAccepted(): Boolean = license.checkAccepted(sdkRoot)
     }
@@ -139,6 +177,27 @@ class AndroidSdkProvider(
             )
             is AndroidSdkPackageRequest.SystemImage -> installSystemImage(request)
         }
+
+    /**
+     * Passes previously unmet unaccepted licenses to [unacceptedLicenseHandler].
+     *
+     * If the handler returned `true`, marks the license as accepted.
+     */
+    context(problemReporter: ProblemReporter, _: OperationEventSink)
+    private suspend fun handlePackageLicense(
+        packageDisplayName: String,
+        license: AndroidSdkBackedLicense,
+    ) = licenseHandlingMutex.getMutex(license.licenseId.hashCode()).withLock {
+        if (!license.isAccepted() && handledLicenses.add(license.licenseId)) {
+            val accepted = unacceptedLicenseHandler.onUnacceptedLicense(packageDisplayName, license)
+            if (accepted) {
+                val success = license.license.setAccepted(sdkRoot)
+                if (!success) {
+                    problemReporter.reportMessage(FailedToAcceptAndroidLicense(license.licenseId, sdkRoot))
+                }
+            }
+        }
+    }
 
     private val AndroidSdkPackageRequest.Platform.packagePath: PackagePath
         get() = PackagePath(buildString {
@@ -211,14 +270,22 @@ class AndroidSdkProvider(
             packageManifest.readRepository().localPackage
         }
 
-    context(_: OperationEventSink)
+    context(_: ProblemReporter, _: OperationEventSink)
     private suspend fun installPackageFromRemote(
         packagePath: PackagePath,
         remotePackages: List<RemotePackage>,
         repository: AndroidSdkRepository,
     ): RepoPackage? {
         val pkg = remotePackages.firstOrNull { it.path == packagePath.path } ?: return null
-        return installRemotePackage(pkg, URLBuilder(repository.baseUrl))
+        return coroutineScope {
+            // Ask for the license acceptance right away before downloading in non-blocking manner
+            val licenseHandlingJob =
+                async { handlePackageLicense(pkg.displayName, AndroidSdkBackedLicense(sdkRoot, pkg.license)) }
+            val remotePackage = installRemotePackage(pkg, URLBuilder(repository.baseUrl))
+            // Await for the license handling result before returning the package
+            licenseHandlingJob.await()
+            remotePackage
+        }
     }
 
     context(_: OperationEventSink)

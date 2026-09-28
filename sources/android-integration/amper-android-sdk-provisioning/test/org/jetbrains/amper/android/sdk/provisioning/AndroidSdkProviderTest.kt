@@ -345,7 +345,7 @@ class AndroidSdkProviderTest {
         }.also { androidPackage ->
             assertTrue(androidPackage.location.isDirectory())
             assertTrue(androidPackage.location.listDirectoryEntries().isNotEmpty())
-            assertTrue(androidPackage.license.id.isNotBlank())
+            assertTrue(androidPackage.license.licenseId.value.isNotBlank())
         }
     }
 

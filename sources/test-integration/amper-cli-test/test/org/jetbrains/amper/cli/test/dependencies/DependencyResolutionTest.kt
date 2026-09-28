@@ -39,11 +39,10 @@ class DependencyResolutionTest : CliTestBase() {
             assertEmptyStdErr = false,
         )
 
+        // The JVM and JS/Wasm compilers have different case for this error message
         val expectedDiagnostic = when (platform) {
-            // The JVM compilation reports diagnostics through Kotlin Toolchain's own problem reporter...
             "jvm" -> "ERROR: Unresolved reference 'Model'."
-            // ...while the KLIB compilations forward the raw Kotlin compiler output.
-            else -> "LeakingConsumer.kt:2:22: error: unresolved reference 'Model'."
+            else -> "ERROR: unresolved reference 'Model'."
         }
         result.assertSomeStderrLineContains(expectedDiagnostic)
     }
@@ -59,7 +58,7 @@ class DependencyResolutionTest : CliTestBase() {
 
         val expectedDiagnostic = when (platform) {
             "jvm" -> "ERROR: Unresolved reference 'kotlinx'."
-            else -> "LeakingExternalConsumer.kt:6:27: error: unresolved reference 'kotlinx'."
+            else -> "ERROR: unresolved reference 'kotlinx'."
         }
         result.assertSomeStderrLineContains(expectedDiagnostic)
     }

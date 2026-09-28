@@ -128,7 +128,7 @@ internal abstract class WebLinkTask(
             }
 
             userReadableError("Unable to link WASM application: there are no sources in ${fragments.identificationPhrase()}.\n" +
-                              "In 'wasm/app' modules, the main() function has to be in the module's own sources – it cannot be provided by dependencies.")
+                              "In `wasmJs/app` and `js/app` modules, the main() function has to be in the module's own sources – it cannot be provided by dependencies.")
         }
 
         val compileKLibDependencies = dependenciesResult
@@ -231,6 +231,7 @@ internal abstract class WebLinkTask(
                         compilerArgs = compilerArgs,
                         argsMode = ArgsMode.ArgFile(tempRoot = tempRoot),
                         webPlatform = expectedPlatform,
+                        module = module,
                     )
                 }
                 if (result.exitCode.value != 0) {

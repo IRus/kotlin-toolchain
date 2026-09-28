@@ -352,6 +352,7 @@ internal class MetadataCompileTask(
                     kotlinCompiler.compileMetadata(
                         compilerArgs = compilerArgs,
                         argsMode = ArgsMode.ArgFile(tempRoot = tempRoot),
+                        module = module,
                     )
                 }
                 if (result.exitCode.value != 0) {

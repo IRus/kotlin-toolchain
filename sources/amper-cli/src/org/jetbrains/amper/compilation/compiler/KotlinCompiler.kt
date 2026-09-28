@@ -7,6 +7,8 @@ package org.jetbrains.amper.compilation.compiler
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.ProcessRunner
 import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
+import org.jetbrains.amper.compilation.ProblemReportingCompilerOutputListener
+import org.jetbrains.amper.frontend.AmperModule
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.jdk.provisioning.Jdk
 import org.jetbrains.amper.jdk.provisioning.majorVersion
@@ -64,10 +66,13 @@ internal class KotlinCompiler(
         val FirstKotlinVersionWithoutUnsafeUsages = ComparableVersion("2.4.0")
     }
 
-    context(processRunner: ProcessRunner)
+    private val compilerWorkingDir = Path(".")
+
+    context(processRunner: ProcessRunner, problemReporter: ProblemReporter)
     suspend fun compileMetadata(
         compilerArgs: List<String>,
         argsMode: ArgsMode.ArgFile,
+        module: AmperModule,
     ): ProcessResult = compile(
         compilerArgs = compilerArgs,
         argsMode = argsMode,
@@ -82,13 +87,15 @@ internal class KotlinCompiler(
                 add("--sun-misc-unsafe-memory-access=allow")
             }
         },
+        module = module,
     )
 
-    context(processRunner: ProcessRunner)
+    context(processRunner: ProcessRunner, problemReporter: ProblemReporter)
     suspend fun compileWeb(
         compilerArgs: List<String>,
         argsMode: ArgsMode.ArgFile,
         webPlatform: Platform,
+        module: AmperModule,
     ): ProcessResult = compile(
         compilerArgs = compilerArgs,
         argsMode = argsMode,
@@ -103,22 +110,29 @@ internal class KotlinCompiler(
             }
             else -> error("Unsupported platform for web compilation: ${webPlatform.name}")
         },
+        module = module,
     )
 
-    context(processRunner: ProcessRunner)
+    context(processRunner: ProcessRunner, problemReporter: ProblemReporter)
     private suspend fun compile(
         compilerArgs: List<String>,
         argsMode: ArgsMode.ArgFile,
         entryPoint: CompilerEntryPoint,
         extraJvmArgs: List<String> = [],
+        module: AmperModule,
     ): ProcessResult = processRunner.runJava(
         jdk = jdk,
-        workingDir = Path("."),
+        workingDir = compilerWorkingDir,
         mainClass = entryPoint.mainClass,
         classpath = compilerJars,
         programArgs = compilerArgs,
         argsMode = argsMode,
-        outputMode = ProcessOutputMode.listen(LoggingProcessOutputListener(logger)),
+        outputMode = ProcessOutputMode.listen(ProblemReportingCompilerOutputListener(
+            reporter = problemReporter,
+            moduleName = module.userReadableName,
+            workingDir = compilerWorkingDir,
+            logger = logger,
+        )),
         jvmArgs = buildList {
             // The Kotlin compiler relies on Jansi (now Jline), which uses native calls:
             // "java.lang.System::load has been called by org.jetbrains.kotlin.org.fusesource.jansi.internal.JansiLoader"

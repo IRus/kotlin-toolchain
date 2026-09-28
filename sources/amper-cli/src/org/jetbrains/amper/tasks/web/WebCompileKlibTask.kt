@@ -238,6 +238,7 @@ internal abstract class WebCompileKlibTask(
                         compilerArgs = compilerArgs,
                         argsMode = ArgsMode.ArgFile(tempRoot = tempRoot),
                         webPlatform = expectedPlatform,
+                        module = module,
                     )
                 }
                 if (result.exitCode.value != 0) {

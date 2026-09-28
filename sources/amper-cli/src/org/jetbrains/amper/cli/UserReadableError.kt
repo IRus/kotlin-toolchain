@@ -11,6 +11,9 @@ class UserReadableError(
     override val message: String,
     val exitCode: Int,
     cause: Throwable? = null,
+    // TEMPORARY WORKAROUND. All user readable errors should ideally be properly formatted as Markdown
+    // (or a dedicated error type should be extracted).
+    val isMarkdown: Boolean = false,
 ): RuntimeException(message, cause)
 
 /**

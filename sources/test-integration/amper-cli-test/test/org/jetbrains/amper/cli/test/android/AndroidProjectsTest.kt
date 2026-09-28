@@ -143,11 +143,9 @@ class AndroidProjectsTest : CliTestBase() {
             assertEmptyStdErr = false,
         )
 
-        val sdkManagerPath = androidSdkHome / "cmdline-tools/latest/bin/sdkmanager"
         if ("preview" in result.stderr) {
             // As we fetch the latest cmdline-tools, we might get preview license for it.
             val expectedError = unacceptedLicenseMessage(
-                sdkManagerPath,
                 mapOf(
                     "android-sdk-license" to ["build-tools;37.0.0", "platform-tools", "platforms;android-37.0"],
                     "android-sdk-preview-license" to ["cmdline-tools;latest"]
@@ -156,20 +154,19 @@ class AndroidProjectsTest : CliTestBase() {
             result.assertStderrContains(expectedError)
         } else {
             val expectedError = unacceptedLicenseMessage(
-                sdkManagerPath,
                 mapOf("android-sdk-license" to ["build-tools;37.0.0", "cmdline-tools;latest", "platform-tools", "platforms;android-37.0"])
             )
             result.assertStderrContains(expectedError)
         }
     }
 
-    private fun unacceptedLicenseMessage(sdkManagerPath: Path, licenseMap: Map<String, List<String>>) = buildString {
+    private fun unacceptedLicenseMessage(licenseMap: Map<String, List<String>>) = buildString {
         appendLine("ERROR: Some licenses have not been accepted in the Android SDK:")
         for ([licenseKey, packages] in licenseMap) {
-            appendLine(" - `$licenseKey` (required by: `$packages`)")
+            appendLine(" • $licenseKey (required by: $packages)")
         }
         appendLine()
-        append("Run `$sdkManagerPath --licenses` to review and accept them")
+        append("These licenses are required to proceed with the command.")
     }
 
     @Test

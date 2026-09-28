@@ -7,11 +7,14 @@ package org.jetbrains.amper.cli
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.core.CliktError
 import com.github.ajalt.clikt.parsers.CommandLineParser
+import com.github.ajalt.mordant.markdown.Markdown
 import com.github.ajalt.mordant.terminal.Terminal
+import io.ktor.util.logging.*
 import org.jetbrains.amper.cli.commands.LogsDirAwareInternalError
 import org.jetbrains.amper.cli.commands.RootCommand
 import org.jetbrains.amper.cli.logging.withoutConsoleLogging
 import org.jetbrains.amper.cli.telemetry.TelemetryEnvironment
+import org.jetbrains.amper.cli.terminal.createMordantTerminal
 import org.jetbrains.amper.core.AmperUserCacheRoot
 import org.jetbrains.amper.telemetry.setListAttribute
 import org.jetbrains.amper.telemetry.spanBuilder
@@ -121,18 +124,31 @@ private suspend fun SuspendingCliktCommand.mainWithTelemetry(args: Array<String>
 private class ExitProcessButCloseTelemetrySpansException(val exitCode: Int) : RuntimeException()
 
 private fun handleUserError(e: UserReadableError): Nothing {
-    printUserError(e.message, e.cause)
     // See `resultsOrThrowCombinedError`
-    e.suppressedExceptions
-        .filterIsInstance<UserReadableError>()
-        .forEach { printUserError(it.message, it.cause) }
+    val otherException = e.suppressedExceptions.filterIsInstance<UserReadableError>()
+    try {
+        val terminal = createMordantTerminal()
+        terminal.printUserError(e)
+        otherException.forEach { terminal.printUserError(it) }
+    } catch (terminalException: Exception) {
+        logger.error(e)
+        otherException.forEach { logger.error(it) }
+        withoutConsoleLogging {
+            logger.error("Failed to create terminal", terminalException)
+        }
+    }
     exitProcess(e.exitCode)
 }
 
-private fun printUserError(message: String, cause: Throwable?) {
-    printRedToStderr("\nERROR: $message")
+private fun Terminal.printUserError(e: UserReadableError) {
+    if (e.isMarkdown) {
+        print(theme.danger("\nERROR: "), stderr = true)
+        println(Markdown(e.message), stderr = true)
+    } else {
+        println(theme.danger("\nERROR: ${e.message}"), stderr = true)
+    }
     withoutConsoleLogging {
-        logger.error(message, cause)
+        logger.error(e.message, e.cause)
     }
 }
 

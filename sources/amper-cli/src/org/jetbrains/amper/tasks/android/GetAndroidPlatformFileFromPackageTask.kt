@@ -4,6 +4,7 @@
 
 package org.jetbrains.amper.tasks.android
 
+import org.jetbrains.amper.android.sdk.provisioning.AndroidLicenseId
 import org.jetbrains.amper.android.sdk.provisioning.AndroidSdkPackageRequest
 import org.jetbrains.amper.android.sdk.provisioning.AndroidSdkProvider
 import org.jetbrains.amper.android.sdk.provisioning.AndroidSdkProvisioningBundle
@@ -18,7 +19,6 @@ import org.jetbrains.amper.engine.TaskGraphExecutionContext
 import org.jetbrains.amper.engine.TaskName
 import org.jetbrains.amper.tasks.TaskResult
 import java.nio.file.Path
-import kotlin.io.path.div
 
 class GetAndroidPlatformFileFromPackageTask(
     private val packageRequest: AndroidSdkPackageRequest,
@@ -38,8 +38,7 @@ class GetAndroidPlatformFileFromPackageTask(
                 if (!androidPackage.license.isAccepted()) {
                     // TODO: Support license acceptance in the interactive mode?
                     throw LicenseCheckException(
-                        sdkRoot = androidSdkProvider.sdkRoot,
-                        licenseId = androidPackage.license.id,
+                        licenseId = androidPackage.license.licenseId,
                         packagePath = androidPackage.packagePath,
                     )
                 }
@@ -55,8 +54,7 @@ class GetAndroidPlatformFileFromPackageTask(
 }
 
 private class LicenseCheckException(
-    val sdkRoot: Path,
-    val licenseId: String,
+    val licenseId: AndroidLicenseId,
     val packagePath: PackagePath
 ) : SoftTaskFailureException() {
     override val aggregator: SoftTaskFailureAggregator = LicenseCheckException
@@ -64,10 +62,6 @@ private class LicenseCheckException(
     companion object : SoftTaskFailureAggregator {
         override fun aggregate(exceptions: List<SoftTaskFailureException>): UserReadableError {
             val licenseCheckExceptions = exceptions.filterIsInstance<LicenseCheckException>()
-            val sdkRoots = licenseCheckExceptions.map { it.sdkRoot }.distinct()
-            if (sdkRoots.size != 1) error("License check exceptions have different SDK roots: $sdkRoots. Exceptions: $licenseCheckExceptions")
-            val sdkRoot = sdkRoots.single()
-
             val groupedByLicenseId = licenseCheckExceptions.groupBy { it.licenseId }
 
             return UserReadableError(
@@ -76,9 +70,9 @@ private class LicenseCheckException(
                     groupedByLicenseId.entries.joinToString("\n") { [licenseId, exceptions] ->
                         AndroidSdkProvisioningBundle.message("android.sdk.missing.license.entry", licenseId, exceptions.map { it.packagePath }.distinct().sortedBy { it.path })
                     },
-                    sdkRoot / "cmdline-tools" / "latest" / "bin" / "sdkmanager",
                 ),
                 exitCode = 1,
+                isMarkdown = true,
             )
         }
     }

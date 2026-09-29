@@ -103,11 +103,15 @@ mavenPlugins:
   maven-checkstyle-plugin.checkstyle:
     enabled: true
     dependencies:
+      # can also be a catalog references like $libs.nohttp.checkstyle
       - io.spring.nohttp:nohttp-checkstyle:0.0.11
     configuration:
       configLocation: ./nohttp-checkstyle.xml
       includes: "**/*"
 ```
+
+Each dependency can be either Maven coordinates, as above, or a reference to a
+[library catalog](../dependencies.md#library-catalogs) entry.
 
 # Source generation capability
 

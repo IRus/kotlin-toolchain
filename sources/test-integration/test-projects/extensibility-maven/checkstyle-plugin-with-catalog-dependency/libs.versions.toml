@@ -1,0 +1,7 @@
+[versions]
+
+nohttp = "0.0.11"
+
+[libraries]
+
+nohttp-checkstyle = { module = "io.spring.nohttp:nohttp-checkstyle", version.ref = "nohttp" }

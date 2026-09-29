@@ -8,6 +8,8 @@ import org.apache.maven.project.MavenProject
 import org.jetbrains.amper.engine.TaskName
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.schema.MavenMojoSettings
+import org.jetbrains.amper.frontend.schema.SchemaMavenCoordinates
+import org.jetbrains.amper.frontend.schema.UnscopedCatalogDependency
 import org.jetbrains.amper.frontend.schema.toMavenCoordinates
 import org.jetbrains.amper.frontend.tree.CompleteObjectNode
 import org.jetbrains.amper.frontend.tree.get
@@ -135,7 +137,12 @@ private fun ModuleSequenceCtx.setupMavenPluginTasks(sharedMavenProject: MavenPro
                 groupId = pluginDescription.groupId
                 version = pluginDescription.version
                 dependencies = mojoSettings.dependencies
-                    ?.map { it.toMavenCoordinates() }
+                    ?.map {
+                        when (it) {
+                            is SchemaMavenCoordinates -> it.toMavenCoordinates()
+                            is UnscopedCatalogDependency -> error("Catalog dependencies should be substituted earlier")
+                        }
+                    }
                     ?.map {
                         MavenDependency(
                             groupId = it.groupId,

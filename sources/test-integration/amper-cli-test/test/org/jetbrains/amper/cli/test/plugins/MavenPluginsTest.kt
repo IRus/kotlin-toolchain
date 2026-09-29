@@ -171,6 +171,22 @@ class MavenPluginsTest : CliTestBase() {
     }
 
     @Test
+    fun `checkstyle plugin with nohttp dependency from the version catalog performs a report`() = runSlowTest {
+        val testProject = "checkstyle-plugin-with-catalog-dependency"
+        val result = runTask(
+            projectWithMavenPath = testProject,
+            taskName = "maven-checkstyle-plugin.checkstyle",
+        )
+
+        val checkstyleResult = result.buildDir / "maven-target" / "checkstyle-result.xml"
+        assertExists(checkstyleResult)
+        val checkstyleResultText = checkstyleResult.readText()
+        val pathToJavaFile = emptyPath / testProject / "app" / "src" / "dummy.txt"
+        assertContains(checkstyleResultText, pathToJavaFile.toString())
+        assertContains(checkstyleResultText, "http:// URLs are not allowed but got &apos;http://not.allowed.com&apos;")
+    }
+
+    @Test
     fun `maven enforcer plugin invalid XML is validated`() = runSlowTest {
         val testProject = "enforce-plugin-invalid-rules"
         val result = runTask(

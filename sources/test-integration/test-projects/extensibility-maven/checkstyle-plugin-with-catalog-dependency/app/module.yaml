@@ -1,0 +1,11 @@
+product:
+  type: jvm/app
+
+mavenPlugins:
+  maven-checkstyle-plugin.checkstyle:
+    enabled: true
+    dependencies:
+      - $libs.nohttp.checkstyle
+    configuration:
+      includes: "**/*"
+      configLocation: ./nohttp-checkstyle.xml

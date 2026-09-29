@@ -31,6 +31,15 @@ internal class ProblemReportingCompilerMessageRenderer(
                     message = message,
                     level = level,
                 )
+            } else if (location.line <= 0 || location.column <= 0) {
+                // Sometimes the compiler reports the fully location-less diagnostics
+                // e.g. when the problem stems from the bytecode.
+                FileOnlyCompilerBuildProblem(
+                    moduleName = moduleName,
+                    message = message,
+                    level = level,
+                    source = CompilerBuildProblemFileOnlySource(Path(location.path)),
+                )
             } else {
                 FileCompilerBuildProblem(
                     moduleName = moduleName,

@@ -9,6 +9,7 @@ import org.jetbrains.amper.problems.reporting.BuildProblem
 import org.jetbrains.amper.problems.reporting.BuildProblemSource
 import org.jetbrains.amper.problems.reporting.BuildProblemType
 import org.jetbrains.amper.problems.reporting.DiagnosticId
+import org.jetbrains.amper.problems.reporting.FileBuildProblemSource
 import org.jetbrains.amper.problems.reporting.FileWithLineColumnProblemSource
 import org.jetbrains.amper.problems.reporting.GlobalBuildProblemSource
 import org.jetbrains.amper.problems.reporting.Level
@@ -39,8 +40,15 @@ data class GlobalCompilerBuildProblem(
     override val level: Level,
 ) : CompilerBuildProblem {
     override val source: BuildProblemSource = GlobalBuildProblemSource
-
 }
+
+@Serializable
+data class FileOnlyCompilerBuildProblem(
+    override val moduleName: String,
+    override val message: @Nls String,
+    override val level: Level,
+    override val source: CompilerBuildProblemFileOnlySource,
+): CompilerBuildProblem
 
 @Serializable
 data class FileCompilerBuildProblem(
@@ -49,6 +57,11 @@ data class FileCompilerBuildProblem(
     override val level: Level,
     override val source: CompilerBuildProblemSource,
 ): CompilerBuildProblem
+
+@Serializable
+data class CompilerBuildProblemFileOnlySource(
+    override val file: SerializablePath,
+) : FileBuildProblemSource
 
 /**
  * A location in source code associated with a compiler message

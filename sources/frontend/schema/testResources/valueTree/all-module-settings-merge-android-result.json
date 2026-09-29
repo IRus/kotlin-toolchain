@@ -7,7 +7,7 @@
       "IOS_ARM64"
     ]
   },
-  "layout" : "AMPER",
+  "layout" : "DEFAULT",
   "aliases" : {
     "jvmAndAndroid" : [
       "JVM",

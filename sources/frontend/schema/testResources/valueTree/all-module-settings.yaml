@@ -5,7 +5,7 @@ product:
     - android
     - iosArm64
 
-layout: amper
+layout: default
 
 aliases:
   - jvmAndAndroid: [ jvm, android ]

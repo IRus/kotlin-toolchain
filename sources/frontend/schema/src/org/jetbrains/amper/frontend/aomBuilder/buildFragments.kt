@@ -83,7 +83,7 @@ open class DefaultFragment(
 
     override val sourceRoots: List<Path> by lazy {
         when (module.layout) {
-            Layout.AMPER -> listOf(moduleFile.parent.toNioPath() / "${if (isTest) "test" else "src"}$modifier")
+            Layout.DEFAULT -> listOf(moduleFile.parent.toNioPath() / "${if (isTest) "test" else "src"}$modifier")
             Layout.MAVEN_LIKE -> {
                 val sourcesRoot = moduleFile.parent.toNioPath() / "src"
                 listOf(
@@ -96,7 +96,7 @@ open class DefaultFragment(
 
     override val resourcesPath: Path by lazy {
         when (module.layout) {
-            Layout.AMPER -> moduleFile.parent.toNioPath() / "${if (isTest) "testResources" else "resources"}$modifier"
+            Layout.DEFAULT -> moduleFile.parent.toNioPath() / "${if (isTest) "testResources" else "resources"}$modifier"
             Layout.MAVEN_LIKE -> {
                 moduleFile.parent.toNioPath() / "src" / (if (isTest) "test" else "main") / "resources"
             }
@@ -113,7 +113,7 @@ open class DefaultFragment(
 
     override val composeResourcesPath: Path by lazy {
         when (module.layout) {
-            Layout.AMPER -> moduleFile.parent.toNioPath().resolve("${if (isTest) "testComposeResources" else "composeResources"}$modifier")
+            Layout.DEFAULT -> moduleFile.parent.toNioPath().resolve("${if (isTest) "testComposeResources" else "composeResources"}$modifier")
             Layout.MAVEN_LIKE -> {
                 moduleFile.parent.toNioPath() / "src" / (if (isTest) "test" else "main") / "composeResources"
             }

@@ -17,5 +17,10 @@ class ModuleLayoutDiagnosticsTest: FrontendTestCaseBase(Path("testResources/diag
     fun `unsupported layout when it's not jvm-app or jvm-lib`() {
         diagnosticsTest("unsupported-layout")
     }
+
+    @Test
+    fun `the amper layout value was renamed to default`() {
+        diagnosticsTest("deprecated-layout-amper")
+    }
 }
 

@@ -8,6 +8,8 @@ import org.jetbrains.amper.frontend.EnumMap
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.SchemaEnum
 import org.jetbrains.amper.frontend.api.CanBeReferenced
+import org.jetbrains.amper.frontend.api.DeprecatedSchema
+import org.jetbrains.amper.frontend.api.EnumValueFilter
 import org.jetbrains.amper.frontend.api.HiddenFromCompletion
 import org.jetbrains.amper.frontend.api.Misnomers
 import org.jetbrains.amper.frontend.api.ModifierAware
@@ -59,7 +61,7 @@ abstract class Base : FragmentBase() {
     val tasks by nullableValue<Map<String, TaskSettings>>()
 
     @SchemaDoc("File layout of the module. [Read more]($userGuideUrl/advanced/maven-like-layout)")
-    val layout by value(AmperLayout.AMPER)
+    val layout by value(AmperLayout.DEFAULT)
 }
 
 class Template : Base()
@@ -131,16 +133,21 @@ class TaskSettings: SchemaNode() {
 }
 
 @SchemaDoc("File layout of the module. [Read more]($userGuideUrl/advanced/maven-like-layout)")
+@EnumValueFilter("outdated", isNegated = true)
 enum class AmperLayout(
     override val schemaValue: String,
     override val outdated: Boolean = false
 ) : SchemaEnum {
 
+    @SchemaDoc("The [default Kotlin project file layout]($userGuideUrl/basics/#project-layout) is used")
+    DEFAULT("default"),
+
     @SchemaDoc("Maven like layout. [Read more]($userGuideUrl/advanced/maven-like-layout)")
     MAVEN_LIKE("maven-like"),
 
+    @DeprecatedSchema("obsolete.module.layout.amper", isError = true)
     @SchemaDoc("The [default Kotlin project file layout]($userGuideUrl/basics/#project-layout) is used")
-    AMPER("amper"),;
+    AMPER("amper", outdated = true),;
 
     companion object : EnumMap<AmperLayout, String>(AmperLayout::values, AmperLayout::schemaValue)
 }

@@ -28,6 +28,7 @@ import org.jetbrains.amper.frontend.plugins.AmperMavenPluginDescription
 import org.jetbrains.amper.frontend.plugins.CheckFromPlugin
 import org.jetbrains.amper.frontend.plugins.CustomCommandFromPlugin
 import org.jetbrains.amper.frontend.plugins.TaskFromPluginDescription
+import org.jetbrains.amper.frontend.schema.AmperLayout
 import org.jetbrains.amper.frontend.schema.MavenPluginSettings
 import org.jetbrains.amper.frontend.schema.Module
 import org.jetbrains.amper.frontend.schema.ProductType
@@ -75,7 +76,11 @@ internal open class DefaultModule(
     }
 
     override val layout: Layout
-        get() = Layout.valueOf(commonModuleNode.layout.name)
+        get() = when (commonModuleNode.layout) {
+            AmperLayout.DEFAULT,
+            AmperLayout.AMPER -> Layout.DEFAULT
+            AmperLayout.MAVEN_LIKE -> Layout.MAVEN_LIKE
+        }
 
     override val description: @NlsSafe String?
         get() = commonModuleNode.description

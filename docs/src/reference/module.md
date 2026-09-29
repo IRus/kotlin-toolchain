@@ -131,10 +131,10 @@ For libraries, it is also used as a description in published metadata by default
 
 The `layout` defines the module file structure. Valid values:
 
-* `amper`: place your files in `src`, `test`, and `resources` directories 
+* `default`: place your files in `src`, `test`, and `resources` directories 
 * `maven-like`: just like Maven (`src/main/kotlin`, `src/main/java`, `src/test/kotlin`, `src/main/resources`)
 
-The default value is `amper`.
+The default value is `default`.
 
 !!! warning "The `maven-like` layout is only supported in modules with `jvm/app` or `jvm/lib` product type."
 

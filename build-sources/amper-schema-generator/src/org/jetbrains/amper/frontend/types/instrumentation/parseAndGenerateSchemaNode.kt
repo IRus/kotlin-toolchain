@@ -48,6 +48,7 @@ import org.jetbrains.amper.frontend.tree.ReferenceNode
 import org.jetbrains.amper.frontend.tree.TypeDescriptor
 import org.jetbrains.amper.frontend.tree.ValueSinkPoint
 import org.jetbrains.amper.frontend.types.BuiltinSchemaObjectDeclarationBase
+import org.jetbrains.amper.frontend.types.DeprecatedInfo
 import org.jetbrains.amper.frontend.types.SchemaObjectDeclaration
 import org.jetbrains.amper.plugins.schema.model.InputOutputMark
 import kotlin.reflect.KClass
@@ -147,7 +148,7 @@ internal fun <T : SchemaNode> parseAndGenerateSchemaNode(clazz: KClass<T>): Pars
                 prop.findAnnotation<DeprecatedSchema>()?.let {
                     add(
                         "deprecated = %T(message = %T.message(%S), isError = %L),\n",
-                        SchemaObjectDeclaration.Property.DeprecatedInfo::class,
+                        DeprecatedInfo::class,
                         SchemaBundle::class,
                         it.messageBundleId,
                         it.isError,

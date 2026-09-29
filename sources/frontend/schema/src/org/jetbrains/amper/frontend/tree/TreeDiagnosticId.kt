@@ -16,6 +16,7 @@ enum class TreeDiagnosticId : DiagnosticId {
     ConflictingProperties,
     ExpectedKeyValue,
     ExpectedSingleKeyValuePair,
+    DeprecatedEnumValue,
     DeprecatedProperty,
     InvalidPath,
     InvalidPathBackslash,

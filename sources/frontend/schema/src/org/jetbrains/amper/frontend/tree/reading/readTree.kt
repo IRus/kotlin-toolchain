@@ -20,7 +20,7 @@ import org.jetbrains.amper.frontend.project.AmperFrontendProjectRoot
 import org.jetbrains.amper.frontend.reportBundleError
 import org.jetbrains.amper.frontend.tree.MappingNode
 import org.jetbrains.amper.frontend.tree.TreeDiagnosticId
-import org.jetbrains.amper.frontend.tree.diagnoseDeprecatedProperties
+import org.jetbrains.amper.frontend.tree.diagnoseDeprecatedDeclarations
 import org.jetbrains.amper.frontend.tree.diagnoseUnknownProperties
 import org.jetbrains.amper.frontend.tree.swiftpm.diagnoseTestOnlySwiftPMDependencies
 import org.jetbrains.amper.frontend.types.SchemaObjectDeclaration
@@ -121,7 +121,7 @@ private fun parseFile(
     if (config.reportUnknownProperties) {
         diagnoseUnknownProperties(parsedNode)
     }
-    diagnoseDeprecatedProperties(parsedNode)
+    diagnoseDeprecatedDeclarations(parsedNode)
     return parsedNode as? MappingNode?
 }
 

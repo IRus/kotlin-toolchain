@@ -10,7 +10,7 @@ import org.jetbrains.amper.problems.reporting.ProblemReporter
  * Automatically called in [org.jetbrains.amper.frontend.tree.reading.readTree].
  */
 context(reporter: ProblemReporter)
-fun diagnoseDeprecatedProperties(tree: TreeNode) {
+fun diagnoseDeprecatedDeclarations(tree: TreeNode) {
     object : RecurringTreeVisitorUnit() {
         override fun visitMap(node: MappingNode) {
             for (keyValue in node.children) {
@@ -24,6 +24,18 @@ fun diagnoseDeprecatedProperties(tree: TreeNode) {
                 }
             }
             super.visitMap(node)
+        }
+
+        override fun visitScalar(node: ScalarNode) {
+            if (node !is EnumNode) return
+            node.declaration.getEntryByName(node.entryName)?.deprecated?.let { deprecatedInfo ->
+                reporter.reportMessage(
+                    DeprecatedEnumValueProblem(
+                        info = deprecatedInfo,
+                        value = node,
+                    )
+                )
+            }
         }
     }.visit(tree)
 }

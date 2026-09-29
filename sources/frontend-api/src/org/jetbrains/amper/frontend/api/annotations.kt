@@ -252,8 +252,11 @@ annotation class CustomSchemaDeclaration(
 annotation class NotBlank
 
 /**
- * Marks the property as deprecated.
+ * Marks the property or the enum entry as deprecated.
  * If it's used by the user (has non-default trace), then it's going to be diagnosed.
+ *
+ * A deprecated enum entry can also be hidden from completion and suggestions by marking it as
+ * [outdated][org.jetbrains.amper.frontend.SchemaEnum.outdated].
  */
 @Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
@@ -263,5 +266,8 @@ annotation class DeprecatedSchema(
      * Must be from [org.jetbrains.amper.frontend.SchemaBundle].
      */
     val messageBundleId: String,
+    /**
+     * Whether the deprecation should be reported as an error instead of a warning.
+     */
     val isError: Boolean = true,
 )

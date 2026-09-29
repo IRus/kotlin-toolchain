@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package org.jetbrains.amper.frontend.types
@@ -49,9 +49,17 @@ interface SchemaEnumDeclaration : SchemaTypeDeclaration {
          * Enum entry's text representation used in user-facing YAML configurations.
          */
         val schemaValue: String,
+
+        /**
+         * Whether this entry should be hidden from completion and suggestions.
+         */
         val isOutdated: Boolean = false,
         val isIncludedIntoJsonSchema: Boolean = true,
         val documentation: String? = null,
+        /**
+         * If non-null, this entry is considered deprecated, and usages should be reported.
+         */
+        val deprecated: DeprecatedInfo? = null,
         val origin: SchemaOrigin = SchemaOrigin.Builtin,
     )
 }

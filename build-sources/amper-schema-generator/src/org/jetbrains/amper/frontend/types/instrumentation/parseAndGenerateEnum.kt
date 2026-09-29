@@ -16,11 +16,14 @@ import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
+import org.jetbrains.amper.frontend.SchemaBundle
 import org.jetbrains.amper.frontend.SchemaEnum
+import org.jetbrains.amper.frontend.api.DeprecatedSchema
 import org.jetbrains.amper.frontend.api.EnumOrderSensitive
 import org.jetbrains.amper.frontend.api.EnumValueFilter
 import org.jetbrains.amper.frontend.api.SchemaDoc
 import org.jetbrains.amper.frontend.types.BuiltinSchemaEnumDeclarationBase
+import org.jetbrains.amper.frontend.types.DeprecatedInfo
 import org.jetbrains.amper.frontend.types.SchemaEnumDeclaration
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
@@ -70,6 +73,15 @@ internal fun <E : Enum<E>> parseAndGenerateEnum(clazz: KClass<E>): ParsedDeclara
                         }
                         annotationsByEntryName[entry.name]?.getDeclaredAnnotation(SchemaDoc::class.java)?.let {
                             add("documentation = %S,\n", it.doc)
+                        }
+                        annotationsByEntryName[entry.name]?.getDeclaredAnnotation(DeprecatedSchema::class.java)?.let {
+                            add(
+                                "deprecated = %T(message = %T.message(%S), isError = %L),\n",
+                                DeprecatedInfo::class,
+                                SchemaBundle::class,
+                                it.messageBundleId,
+                                it.isError,
+                            )
                         }
                         add("⇤),\n")
                     }

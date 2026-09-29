@@ -162,7 +162,7 @@ abstract class AmperCliWithWrapperTestBase {
                         this["KOTLIN_CLI_BOOTSTRAP_CACHE_DIR"] = it.pathString
                     }
                     buildDir?.let {
-                        this["AMPER_BUILD_DIR"] = it.pathString
+                        this["KOTLIN_TOOLCHAIN_BUILD_DIR"] = it.pathString
                     }
 
                     setJavaHomeVar("JAVA_HOME", javaHomeMode)

@@ -15,8 +15,9 @@ internal class ProjectLayoutOptions : OptionGroup("Project layout options") {
      */
     val explicitProjectDir by option(
         PROJECT_DIR_OPTION_NAME,
-        help = "The root directory of the project. By default, this is discovered automatically by looking up the " +
-                "file tree starting from the current directory.",
+        help = "The root directory of the project, either absolute or relative to the current working dir. " +
+                "By default, this is discovered automatically by looking up the file tree starting from the current " +
+                "directory.",
     ).path(mustExist = true, canBeFile = false, canBeDir = true)
 
     /**
@@ -25,9 +26,9 @@ internal class ProjectLayoutOptions : OptionGroup("Project layout options") {
      */
     val explicitBuildDir by option(
         BUILD_DIR_OPTION_NAME,
-        help = "The root directory for all build outputs. " +
+        help = "The root directory for all build outputs, either absolute or relative to the current working dir. " +
                 "By default, this is the `build` directory under the project root.",
-        envvar = "AMPER_BUILD_DIR",
+        envvar = "KOTLIN_TOOLCHAIN_BUILD_DIR",
     )
         .path(mustExist = false, canBeFile = false, canBeDir = true)
 

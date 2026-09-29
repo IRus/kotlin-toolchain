@@ -123,7 +123,7 @@ abstract class AmperCliWithWrapperTestBase {
         amperJavaHomeMode: JavaHomeMode = JavaHomeMode.ForceUnset,
         customAmperScriptPath: Path? = null,
         stdin: ProcessInput = ProcessInput.Empty,
-        outputListener: ProcessOutputListener = TestReporterProcessOutputListener("amper", testReporter)
+        outputListener: ProcessOutputListener = TestReporterProcessOutputListener("ktc", testReporter)
     ): AmperCliResult {
         check(workingDir.exists()) { "Cannot run Kotlin CLI: the specified working directory $workingDir does not exist." }
         check(workingDir.isDirectory()) { "Cannot run Kotlin CLI: the specified working directory $workingDir is not a directory." }
@@ -255,8 +255,8 @@ abstract class AmperCliWithWrapperTestBase {
     }
 
     private fun ProcessResult.WithOutputs.relevantOutput(expectedExitCode: Int): String {
-        val stdout = stdout.prependIndentWithEmptyMark("[amper out] ")
-        val stderr = stderr.prependIndentWithEmptyMark("[amper err] ")
+        val stdout = stdout.prependIndentWithEmptyMark("[ktc out] ")
+        val stderr = stderr.prependIndentWithEmptyMark("[ktc err] ")
         return if (expectedExitCode == 0) stderr else "$stdout\n$stderr"
     }
 }

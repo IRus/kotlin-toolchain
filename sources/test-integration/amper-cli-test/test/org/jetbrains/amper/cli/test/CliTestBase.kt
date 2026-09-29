@@ -94,7 +94,7 @@ abstract class CliTestBase : AmperCliWithWrapperTestBase() {
         assertEmptyStdErr: Boolean = true,
         modifyProjectBeforeRun: (projectDir: Path) -> Unit = {},
         stdin: ProcessInput = ProcessInput.Empty,
-        outputListener: ProcessOutputListener = TestReporterProcessOutputListener("amper", testReporter),
+        outputListener: ProcessOutputListener = TestReporterProcessOutputListener("ktc", testReporter),
         amperJvmArgs: List<String> = emptyList(),
         amperJavaHomeMode: JavaHomeMode = JavaHomeMode.ForceUnset,
         configureAndroidHome: Boolean = false,

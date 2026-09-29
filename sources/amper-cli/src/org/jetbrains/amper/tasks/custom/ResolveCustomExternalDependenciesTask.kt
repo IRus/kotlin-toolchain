@@ -224,7 +224,7 @@ internal class ResolveCustomExternalDependenciesTask(
         val requestedLocalModuleDependencies = localDependencies
         val requestedExternalDependencies = externalDependencies
 
-        val moduleName = "${module.userReadableName}:$taskName:classpath"
+        val moduleName = "${module.userReadableName}:${taskName.id}:classpath"
         val hostModule = module
 
         val syntheticModule = object : AmperModule by module {

@@ -33,7 +33,9 @@ class TaskName(
      * TODO: Maybe use Bundle here somehow?
      */
     val spec: TaskMonikerSpec,
-)
+) {
+    override fun toString(): String = "TaskName(id=${id.value}, spec=$spec)"
+}
 
 /**
  * Constructs a project-scoped (global) task name.

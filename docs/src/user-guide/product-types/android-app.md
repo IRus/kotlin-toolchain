@@ -54,8 +54,28 @@ present (you will need to accept licenses).
 
 You can use the `build` command to create an APK, or the `package` command to create an Android Application Bundle (AAB).
 
-The `package` command will not only build the AAB, but also minify/obfuscate it with R8, and sign it.
-See the dedicated [signing](#signing) and [code shrinking](#code-shrinking) sections below to learn how to configure this.
+The `package` command will not only build the AAB, but also minify/obfuscate it with R8, and sign it when signing is
+enabled. See the dedicated [signing](#signing) and [code shrinking](#code-shrinking) sections below to learn how to
+configure this.
+
+For example, build an AAB for the `android-app` module with:
+
+```bash
+kotlin package -m android-app
+```
+
+For an `android/app` module, the Android platform, AAB format, and release variant are selected automatically. The
+command prints the path to the generated AAB. For a module named `android-app`, the default path, relative to the
+project root, is:
+
+```text
+build/tasks/_android-app_bundleAndroid/gradle-project-release.aab
+```
+
+!!! note
+
+    This path is temporary: the build artifact layout will be revised in a future release. Use the path printed by the
+    command to locate your bundle.
 
 ### Resolving duplicate Java resources
 
@@ -145,6 +165,105 @@ It is automatically used by the Kotlin Toolchain if present.
 
 An example of how to add custom R8 rules can be found [in the android-app module]({{ examples_base_url }}/compose-multiplatform/android-app/proguard-rules.pro) of the `compose-multiplatform` example project.
 
+## Signing
+
+Enable signing in `android-app/module.yaml` to sign the release AAB during `kotlin package -m android-app`:
+
+```yaml title="android-app/module.yaml"
+settings:
+  android:
+    signing: enabled
+```
+
+Create `android-app/keystore.properties` next to `android-app/module.yaml`:
+
+```text
+android-app/
+├─ module.yaml
+╰─ keystore.properties  # create this file
+```
+
+Add the signing details to that file. Set `storeFile` to the name of the keystore to create in the same module directory:
+
+```properties title="android-app/keystore.properties"
+storeFile=release.keystore
+storePassword=REPLACE_WITH_STRONG_STORE_PASSWORD
+keyAlias=alias
+keyPassword=REPLACE_WITH_STRONG_KEY_PASSWORD
+```
+
+Replace both password placeholders with your own strong passwords before generating the keystore.
+
+From the `android-app` directory, generate the keystore using the values in `keystore.properties`:
+
+```bash
+kotlin tool generate-keystore --properties-file keystore.properties
+```
+
+The tool creates `android-app/release.keystore`; do not create it beforehand. When you build the AAB, the signing
+configuration reads `android-app/keystore.properties` and uses `android-app/release.keystore` to sign the bundle. A
+relative `storeFile` path is resolved from the module directory, so run `generate-keystore` from there as shown above.
+
+!!! warning "Keep the signing files secure"
+
+    Add `release.keystore` and `keystore.properties` to your Git ignore rules. Never commit either file to version
+    control. Back up both files in a secure location.
+    Losing the upload key requires an upload-key reset in Google Play Console.
+
+!!! note
+
+    You can also pass in these details to `generate-keystore` as command line arguments. Invoke the tool with `--help`
+    to learn more.
+
+## Publishing
+
+Publish an `android/app` module to Google Play as a signed Android App Bundle (AAB). You need a Google Play Console
+developer account.
+
+### Configure the application
+
+Set a unique application ID and an initial version in `android-app/module.yaml`:
+
+```yaml title="android-app/module.yaml"
+product: android/app
+
+settings:
+  android:
+    applicationId: com.example.myapp
+    versionCode: 1
+    versionName: "1.0"
+```
+
+The `applicationId` uniquely identifies the application in Google Play and cannot be changed after you upload the
+first artifact.
+
+Before uploading the application:
+
+1. [Prepare signing](#signing): create `android-app/keystore.properties` and generate the upload key in
+   `android-app/release.keystore`.
+2. [Package the application](#packaging) with `kotlin package -m android-app`. This produces a signed release AAB and
+   prints its path. Use that AAB for the upload.
+
+### Upload the bundle
+
+If you haven't created the application yet, open [Google Play Console](https://play.google.com/console/) and select
+**Create app** to set it up before uploading your first bundle.
+
+Open the application in Google Play Console, go to **Test and release**, and select the appropriate testing or
+production track. Create a release and upload the generated `.aab` file.
+
+Google Play validates and processes the bundle before making the release available to testers or users.
+
+!!! note "For future uploads"
+
+    Increase `versionCode` in `android-app/module.yaml` before every new upload: Google Play rejects bundles with a
+    previously used version code. Update the user-facing `versionName` when publishing a new application version.
+
+### Build from IntelliJ IDEA or Android Studio
+
+Generating a signed bundle from **Build | Generate Signed App Bundle or APK** is not supported for Kotlin Toolchain
+projects yet. Use the Kotlin CLI to create the AAB.
+
 ## Parcelize
 
 If you want to automatically generate your `Parcelable` implementations, you can enable
@@ -220,106 +339,3 @@ your `google-services.json` file in the module containing an `android/app` produ
 ```
 
 This file will be found and consumed automatically.
-
-## Publishing
-
-Publish an `android/app` module to Google Play as a signed Android App Bundle (AAB). You need a Google Play Console
-developer account.
-
-### Configure the application
-
-Set a unique application ID and an initial version in `android-app/module.yaml`, and enable
-[signing](#signing):
-
-```yaml title="android-app/module.yaml"
-product: android/app
-
-settings:
-  android:
-    applicationId: com.example.myapp
-    versionCode: 1
-    versionName: "1.0"
-    signing: enabled
-```
-
-The `applicationId` uniquely identifies the application in Google Play and cannot be changed after you upload the
-first artifact.
-
-### Signing
-
-With `signing: enabled` in `android-app/module.yaml` as shown above, `kotlin package -m android-app` signs the release
-AAB during the build. First, create `android-app/keystore.properties` next to `android-app/module.yaml`:
-
-```text
-android-app/
-├─ module.yaml
-╰─ keystore.properties  # create this file
-```
-
-Add the signing details to that file. Set `storeFile` to the name of the keystore to create in the same module directory:
-
-```properties title="android-app/keystore.properties"
-storeFile=release.keystore
-storePassword=REPLACE_WITH_STRONG_STORE_PASSWORD
-keyAlias=alias
-keyPassword=REPLACE_WITH_STRONG_KEY_PASSWORD
-```
-
-Replace both password placeholders with your own strong passwords before generating the keystore.
-
-From the `android-app` directory, generate the keystore using the values in `keystore.properties`:
-
-```bash
-kotlin tool generate-keystore --properties-file keystore.properties
-```
-
-The tool creates `android-app/release.keystore`; do not create it beforehand. When you build the AAB, the signing
-configuration reads `android-app/keystore.properties` and uses `android-app/release.keystore` to sign the bundle. A
-relative `storeFile` path is resolved from the module directory, so run `generate-keystore` from there as shown above.
-
-!!! warning "Keep the signing files secure"
-
-    Add `release.keystore` and `keystore.properties` to your Git ignore rules. Never commit either file to version
-    control. Back up both files in a secure location.
-    Losing the upload key requires an upload-key reset in Google Play Console.
-
-!!! note
-
-    You can also pass in these details to `generate-keystore` as command line arguments. Invoke the tool with `--help`
-    to learn more.
-
-### Build a signed bundle
-
-Build the signed AAB with:
-
-```bash
-kotlin package -m android-app
-```
-
-For an `android/app` module, the Android platform, AAB format, and release variant are selected automatically. The
-command prints the path to the generated AAB. For a module named `android-app`, the default path, relative to the
-project root, is:
-
-```text
-build/tasks/_android-app_bundleAndroid/gradle-project-release.aab
-```
-
-### Upload the bundle
-
-If you haven't created the application yet, open [Google Play Console](https://play.google.com/console/) and select
-**Create app** to set it up before uploading your first bundle.
-
-Open the application in Google Play Console, go to **Test and release**, and select the appropriate testing or
-production track. Create a release and upload the generated `.aab` file.
-
-Google Play validates and processes the bundle before making the release available to testers or users.
-
-!!! note "For future uploads"
-
-    Increase `versionCode` in `android-app/module.yaml` before every new upload: Google Play rejects bundles with a
-    previously used version code. Update the user-facing `versionName` when publishing a new application version.
-
-### Build from IntelliJ IDEA or Android Studio
-
-Generating a signed bundle from **Build | Generate Signed App Bundle or APK** is not supported for Kotlin Toolchain
-projects yet. Use the Kotlin CLI to create the AAB.

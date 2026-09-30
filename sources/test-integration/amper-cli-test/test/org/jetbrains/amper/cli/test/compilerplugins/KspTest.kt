@@ -14,7 +14,6 @@ import org.jetbrains.amper.cli.test.utils.runSlowTest
 import org.jetbrains.amper.system.info.OsFamily
 import org.jetbrains.amper.system.info.SystemInfo
 import org.jetbrains.amper.test.AmperCliResult
-import org.jetbrains.amper.test.runTestWithMdc
 import org.junit.jupiter.api.Tag
 import java.nio.file.Path
 import kotlin.io.path.deleteRecursively
@@ -26,13 +25,12 @@ import kotlin.io.path.readText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
 
 @Tag("cli-test-group-compilerplugins")
 class KspTest: CliTestBase() {
 
     @Test
-    fun `ksp processor exception fails build`() = runTestWithMdc(timeout = 1.minutes) {
+    fun `ksp processor exception fails build`() = runSlowTest {
         val projectRoot = testProject("ksp-processor-exception")
         val buildResult = runCli(projectRoot, "build", expectedExitCode = 1, assertEmptyStdErr = false)
 

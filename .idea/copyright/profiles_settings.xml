@@ -13,6 +13,9 @@
     <LanguageOptions name="SPI">
       <option name="fileTypeOverride" value="1" />
     </LanguageOptions>
+    <LanguageOptions name="Shell Script">
+      <option name="fileTypeOverride" value="1" />
+    </LanguageOptions>
     <LanguageOptions name="XML">
       <option name="fileTypeOverride" value="1" />
       <option name="prefixLines" value="false" />

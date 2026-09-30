@@ -21,6 +21,7 @@ download_and_extract() {
   short_sha=$(echo "$file_sha" | cut -c1-32) # cannot use the ${short_sha:0:32} syntax in regular /bin/sh
   download_lock_file="$cache_dir/download-${short_sha}.lock"
   process_lock_file="$cache_dir/download-${short_sha}.$$.lock"
+  temp_file="$cache_dir/download-${short_sha}.$$.bin"
   echo $$ >"$process_lock_file"
   while ! ln "$process_lock_file" "$download_lock_file" 2>/dev/null; do
     lock_owner=$(cat "$download_lock_file" 2>/dev/null || true)
@@ -38,8 +39,14 @@ download_and_extract() {
     fi
   done
 
-  # shellcheck disable=SC2064
-  trap "rm -f \"$download_lock_file\"" EXIT
+
+  # An extraction left half-done must never keep the .flag file, which marks $extract_dir as complete: subsequent runs
+  # would skip the extraction and use the broken directory.
+  cleanup_incomplete_provisioning() {
+    rm -f "$download_lock_file" "$temp_file"
+    rm -rf "$extract_dir"
+  }
+  trap cleanup_incomplete_provisioning EXIT
   rm -f "$process_lock_file"
 
   unlock_and_cleanup() {
@@ -79,7 +86,6 @@ EOF
 
   echo "Downloading $moniker..."
 
-  temp_file="$cache_dir/download-file-$$.bin"
   rm -f "$temp_file"
   if command -v curl >/dev/null 2>&1; then
     if [ -t 1 ]; then CURL_PROGRESS="--progress-bar"; else CURL_PROGRESS="--silent --show-error"; fi

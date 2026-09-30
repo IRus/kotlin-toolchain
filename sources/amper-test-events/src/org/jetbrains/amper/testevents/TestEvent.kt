@@ -9,6 +9,7 @@ import org.jetbrains.amper.events.OperationScopedEvent
 import org.jetbrains.amper.serialization.paths.SerializablePath
 import kotlin.time.Duration
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 /**
  * An event emitted while a test run is executing.
@@ -42,11 +43,19 @@ sealed interface TestEventWithDescriptor : TestEventWithId {
 }
 
 /**
- * A non-blank identifier that __uniquely__ identifies a test or test suite within a test run.
+ * Globally identifies a test or test suite, including across test runs and CLI invocations.
  */
-@JvmInline
 @Serializable
-value class TestId(val value: String) {
+data class TestId(
+    /**
+     * Unique ID of the test run, generated once by the event producer and shared by all tests and suites in that run.
+     */
+    val runId: Uuid,
+    /**
+     * Non-blank identifier that uniquely identifies a test or test suite within [runId].
+     */
+    val value: String,
+) {
     init {
         require(value.isNotBlank()) { "Test ID must not be blank" }
     }

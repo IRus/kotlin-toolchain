@@ -28,8 +28,8 @@ import org.jetbrains.amper.testevents.TestSuiteFailed
 import org.jetbrains.amper.testevents.TestSuiteFinished
 import org.jetbrains.amper.testevents.TestSuiteSkipped
 import org.jetbrains.amper.testevents.TestSuiteStarted
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.invariantSeparatorsPathString
-import kotlin.uuid.Uuid
 import jetbrains.buildServer.messages.serviceMessages.TestFinished as TeamCityTestFinished
 import jetbrains.buildServer.messages.serviceMessages.TestStarted as TeamCityTestStarted
 import jetbrains.buildServer.messages.serviceMessages.TestSuiteFinished as TeamCitySuiteFinished
@@ -43,13 +43,7 @@ import jetbrains.buildServer.messages.serviceMessages.TestSuiteStarted as TeamCi
 internal class TeamCityRenderer(
     private val terminal: Terminal,
 ) : EventSink<TestEvent> {
-    private val descriptors = mutableMapOf<TestId, TestDescriptor>()
-    /**
-     * This ID is added to the flow ID to guarantee the uniqueness of IDs across multiple runs under single CLI invocation.
-     *
-     * @see TestId.flowId
-     */
-    private val testRunId = Uuid.random()
+    private val descriptors = ConcurrentHashMap<TestId, TestDescriptor>()
 
     override fun emit(event: TestEvent) = render(event)
 
@@ -85,7 +79,7 @@ internal class TeamCityRenderer(
             is TestSuiteAborted -> finishIgnoredSuite(event.testId, event.abortMessage)
             is TestSuiteFailed -> {
                 val syntheticTest = TestDescriptor(
-                    id = TestId("${event.testId.value}/<suite>"),
+                    id = event.testId.copy(value = "${event.testId.value}/<suite>"),
                     parentId = event.testId,
                     displayName = "<suite>",
                     teamCityName = "${name(event.testId)}: <suite>",
@@ -290,7 +284,7 @@ internal class TeamCityRenderer(
         },
     ) {}
 
-    private fun TestId.flowId(): String = "$value-$testRunId"
+    private fun TestId.flowId(): String = "$value-$runId"
 
     /**
      * This format is based on the one expected by `com.intellij.execution.testframework.JavaLocator` from IntelliJ.

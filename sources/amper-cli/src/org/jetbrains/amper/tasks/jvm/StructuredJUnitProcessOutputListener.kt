@@ -24,6 +24,7 @@ import org.jetbrains.amper.testevents.TestSuiteSkipped
 import org.jetbrains.amper.testevents.TestSuiteStarted
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 /**
  * Translates private JUnit records to Kotlin Toolchain events.
@@ -31,6 +32,8 @@ import kotlin.time.Instant
 internal class StructuredJUnitProcessOutputListener(
     private val eventSink: EventSink<TestEvent>,
 ) : ProcessOutputListener {
+    private val testRunId = Uuid.random()
+
     override fun onStdoutLine(line: String, pid: Long) {
         JUnitEventProtocol.decode(line)?.let(::emit) ?: emit(TestStdoutEvent(null, "$line${System.lineSeparator()}"))
     }
@@ -119,4 +122,6 @@ internal class StructuredJUnitProcessOutputListener(
         is JUnitEventProtocol.Location.Method -> TestLocationHint.Method(className, methodName, methodParameterTypes)
         is JUnitEventProtocol.Location.Uri -> TestLocationHint.Uri(uri)
     }
+
+    private fun TestId(id: String) = TestId(testRunId, id)
 }

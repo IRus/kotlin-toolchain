@@ -33,6 +33,7 @@ import org.jetbrains.amper.testevents.TestSuiteStarted as AmperTestSuiteStarted
 class StructuredNativeTestProcessOutputListenerTest {
     private val renderer = RecordingRenderer()
     private val listener = StructuredNativeTestProcessOutputListener(TeamCityMessageProcessor(renderer))
+    private val runId get() = renderer.events.firstNotNullOf { it.testId }.runId
 
     @Test
     fun `translates TeamCity test messages into Amper test events`() {
@@ -48,8 +49,8 @@ class StructuredNativeTestProcessOutputListenerTest {
             TestSuiteFinished("SampleTest"),
         ].forEach { listener.onStdoutLine(it.asString(), pid = 1) }
 
-        val suiteId = TestId("SampleTest")
-        val testId = TestId("SampleTest.works")
+        val suiteId = TestId(runId, "SampleTest")
+        val testId = TestId(runId, "SampleTest.works")
         assertEquals(
             [
                 AmperTestSuiteStarted(TestDescriptor(suiteId, null, "SampleTest")),
@@ -76,7 +77,7 @@ class StructuredNativeTestProcessOutputListenerTest {
         ].forEach { listener.onStdoutLine(it.asString(), pid = 1) }
 
         assertEquals(
-            AmperTestStarted(TestDescriptor(TestId("test-a"), TestId("suite-a"), "test A")),
+            AmperTestStarted(TestDescriptor(TestId(runId, "test-a"), TestId(runId, "suite-a"), "test A")),
             renderer.events.last(),
         )
     }
@@ -94,12 +95,12 @@ class StructuredNativeTestProcessOutputListenerTest {
 
         assertEquals(
             [
-                AmperTestSuiteStarted(TestDescriptor(TestId("First"), null, "First")),
-                AmperTestStarted(TestDescriptor(TestId("First.same"), TestId("First"), "same")),
-                AmperTestFinished.Succeeded(TestId("First.same"), duration = 0.milliseconds),
-                AmperTestSuiteFinished(TestId("First")),
-                AmperTestSuiteStarted(TestDescriptor(TestId("Second"), null, "Second")),
-                AmperTestStarted(TestDescriptor(TestId("Second.same"), TestId("Second"), "same")),
+                AmperTestSuiteStarted(TestDescriptor(TestId(runId, "First"), null, "First")),
+                AmperTestStarted(TestDescriptor(TestId(runId, "First.same"), TestId(runId, "First"), "same")),
+                AmperTestFinished.Succeeded(TestId(runId, "First.same"), duration = 0.milliseconds),
+                AmperTestSuiteFinished(TestId(runId, "First")),
+                AmperTestSuiteStarted(TestDescriptor(TestId(runId, "Second"), null, "Second")),
+                AmperTestStarted(TestDescriptor(TestId(runId, "Second.same"), TestId(runId, "Second"), "same")),
             ],
             renderer.events,
         )
@@ -116,7 +117,7 @@ class StructuredNativeTestProcessOutputListenerTest {
             [
                 AmperTestSuiteStarted(
                     TestDescriptor(
-                        TestId("CommonKotlinTest"),
+                        TestId(runId, "CommonKotlinTest"),
                         null,
                         "CommonKotlinTest",
                         TestLocationHint.Class("CommonKotlinTest")
@@ -124,8 +125,8 @@ class StructuredNativeTestProcessOutputListenerTest {
                 ),
                 AmperTestStarted(
                     TestDescriptor(
-                        TestId("CommonKotlinTest.first"),
-                        TestId("CommonKotlinTest"),
+                        TestId(runId, "CommonKotlinTest.first"),
+                        TestId(runId, "CommonKotlinTest"),
                         "first",
                         TestLocationHint.Method("CommonKotlinTest", "first")
                     ),
@@ -147,7 +148,7 @@ class StructuredNativeTestProcessOutputListenerTest {
         ].forEach { listener.onStdoutLine(it.asString(), pid = 1) }
 
         assertEquals(
-            AmperTestStarted(TestDescriptor(TestId("later-test"), null, "later test")),
+            AmperTestStarted(TestDescriptor(TestId(runId, "later-test"), null, "later test")),
             renderer.events.last(),
         )
     }

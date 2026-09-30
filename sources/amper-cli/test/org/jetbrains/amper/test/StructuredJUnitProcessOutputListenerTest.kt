@@ -37,8 +37,8 @@ class StructuredJUnitProcessOutputListenerTest {
 
         assertEquals(
             [
-                TestStdoutEvent(TestId("test"), "protocol stdout"),
-                TestStderrEvent(TestId("test"), "protocol stderr"),
+                TestStdoutEvent(TestId(renderer.runId, "test"), "protocol stdout"),
+                TestStderrEvent(TestId(renderer.runId, "test"), "protocol stderr"),
                 TestStdoutEvent(null, "unattributed stdout"),
                 TestStdoutEvent(null, "regular stdout${System.lineSeparator()}"),
                 TestStderrEvent(null, "regular stderr${System.lineSeparator()}"),
@@ -67,7 +67,7 @@ class StructuredJUnitProcessOutputListenerTest {
 
         val expected = [
             TestReportEvent(
-                testId = TestId("test"),
+                testId = TestId(renderer.runId, "test"),
                 key = "attachment",
                 value = "/tmp/result.png",
                 mediaType = "image/png",
@@ -83,8 +83,6 @@ class StructuredJUnitProcessOutputListenerTest {
     fun `converts aborted and skipped protocol events`() {
         val renderer = RecordingRenderer()
         val listener = StructuredJUnitProcessOutputListener(eventSink = renderer)
-        val descriptor = TestDescriptor(TestId("test"), TestId("suite"), "Skipped test")
-        val suiteDescriptor = TestDescriptor(TestId("suite"), null, "Skipped suite")
 
         [
             JUnitEventProtocol.Event.SuiteAborted("suite", 10, "suite aborted"),
@@ -99,11 +97,13 @@ class StructuredJUnitProcessOutputListenerTest {
             JUnitEventProtocol.Event.TestSkipped("test", "suite", "Skipped test", null, reason = "test skipped"),
         ].forEach { listener.onStdoutLine(JUnitEventProtocol.encode(it), pid = 1) }
 
+        val descriptor = TestDescriptor(TestId(renderer.runId, "test"), TestId(renderer.runId, "suite"), "Skipped test")
+        val suiteDescriptor = TestDescriptor(TestId(renderer.runId, "suite"), null, "Skipped suite")
         assertEquals(
             [
-                TestSuiteAborted(TestId("suite"), 10.milliseconds, "suite aborted"),
-                TestSuiteSkipped(suiteDescriptor.copy(id = TestId("skippedSuite")), "suite skipped"),
-                TestFinished.Aborted(TestId("test"), 20.milliseconds, "test aborted"),
+                TestSuiteAborted(TestId(renderer.runId, "suite"), 10.milliseconds, "suite aborted"),
+                TestSuiteSkipped(suiteDescriptor.copy(id = TestId(renderer.runId, "skippedSuite")), "suite skipped"),
+                TestFinished.Aborted(TestId(renderer.runId, "test"), 20.milliseconds, "test aborted"),
                 TestSkipped(descriptor, "test skipped"),
             ],
             renderer.events,
@@ -113,6 +113,8 @@ class StructuredJUnitProcessOutputListenerTest {
     private class RecordingRenderer : EventSink<TestEvent> {
         val events: List<TestEvent>
          field = mutableListOf()
+
+        val runId get() = events.firstNotNullOf { it.testId }.runId
 
         override fun emit(event: TestEvent) {
             events += event

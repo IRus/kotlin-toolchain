@@ -30,6 +30,7 @@ import org.jetbrains.amper.testevents.TestStdoutEvent
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.uuid.Uuid
 import org.jetbrains.amper.testevents.TestFinished as AmperTestFinished
 import org.jetbrains.amper.testevents.TestStarted as AmperTestStarted
 import org.jetbrains.amper.testevents.TestSuiteFinished as AmperTestSuiteFinished
@@ -40,6 +41,7 @@ class TeamCityMessageProcessor(
     private val onTestFailed: (id: TestId, message: TestFailed) -> Unit = { _, _ -> },
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
+    private val testRunId = Uuid.random()
 
     private val smParser = ServiceMessagesParser()
     private val flows = mutableMapOf<FlowId, Flow>()
@@ -330,7 +332,10 @@ class TeamCityMessageProcessor(
 
     private fun emit(event: TestEvent) = eventSink.emit(event)
 
-    private fun TestId?.child(name: String): TestId = if (this != null) TestId("$value.$name") else TestId(name)
+    private fun TestId?.child(name: String): TestId =
+        this?.copy(value = "$value.$name") ?: TestId(name)
+
+    private fun TestId(id: String) = TestId(testRunId, id)
 
     @JvmInline
     private value class FlowId(val value: String)

@@ -45,7 +45,7 @@ systemstubs = "2.1.8"
 teamcity-servicemessages = "2026.3"
 tinylog = "2.8.0"
 xmlutil-serialization = "0.86.2"
-xz = "1.11"
+xz = "1.12"
 
 
 # Naming convention: https://blog.gradle.org/best-practices-naming-version-catalog-entries

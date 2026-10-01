@@ -40,7 +40,7 @@ internal fun checkAndIntegrateXcodeProjectWithSwiftPMPackageIfNeeded(
             "Please rebuild the project",
         )
 
-        integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, project = xcodeProject, terminal = terminal)
+        integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, project = xcodeProject)
 
         xcodeProject.saveProperly()
 

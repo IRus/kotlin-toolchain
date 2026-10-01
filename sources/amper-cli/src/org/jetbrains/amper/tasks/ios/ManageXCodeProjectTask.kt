@@ -147,7 +147,7 @@ class ManageXCodeProjectTask(
             true
         } else false
 
-        val integratedSwiftPMPackage = integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, pbxProjectFile, terminal)
+        val integratedSwiftPMPackage = integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, pbxProjectFile)
 
         if (updatedAmperPhase || integratedSwiftPMPackage) {
             logger.warn("Kotlin Toolchain Phase is invalid, updating")
@@ -307,7 +307,7 @@ class ManageXCodeProjectTask(
             manipulator.addConfiguration(buildType.name, settings, pbxTarget)
         }
 
-        integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, pbxProjectFile, terminal)
+        integrateSwiftPMPackageIfNeeded(swiftPMDependenciesArtifact, pbxProjectFile)
 
         pbxProjectFile.saveProperly()
 

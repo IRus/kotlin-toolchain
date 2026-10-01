@@ -72,6 +72,7 @@ class KotlinSettings : SchemaNode() {
     @PlatformAgnostic
     @Misnomers("api-version", "sdkVersion", "sdk")
     @SchemaDoc("Allow using declarations only from the specified version of Kotlin bundled libraries")
+    @KnownStringValues("2.5", "2.4", "2.3", "2.2", "2.1", "2.0")
     val apiVersion by referenceValue(::languageVersion)
 
     class DefaultIncrementalCompilationTransform : ReferenceNode.TransformFunction<Boolean> {

@@ -6,7 +6,7 @@ agp = "9.3.1"
 # (e.g. repository2/04 needs sdklib >= 32.x, which ships sdk-repository-04.xsd). An older sdklib makes
 # SchemaModuleUtil warn "only understands SDK XML versions up to N but ... version N+1 was encountered".
 android-tools = "32.3.1"
-apache-commons = "1.27.1"
+apache-commons = "1.28.0"
 asm = "9.10.1"
 bouncycastle = "1.84"
 clikt = "5.1.0"

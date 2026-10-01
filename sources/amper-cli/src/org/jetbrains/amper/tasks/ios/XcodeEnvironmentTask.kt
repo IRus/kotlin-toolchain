@@ -108,7 +108,7 @@ private suspend fun selectedDeveloperDirectory(): Path {
     val path = result.stdout.trim()
     if (result.exitCode.value != 0 || !path.endsWith("/Contents/Developer")) {
         reportXcodeEnvironmentError(
-            "Xcode installation is not detected. Xcode is required to build iOS apps.\n$INSTALL_XCODE_HINT",
+            "Xcode installation is not detected. Xcode is required to build iOS apps.\n$INSTALL_XCODE_HINT\n\n$POST_INSTALL_XCODE_STEPS",
         )
     }
     return Path(path)
@@ -141,7 +141,8 @@ context(problemReporter: ProblemReporter, _: ProcessRunner, _: XcodeEnvironment)
 private suspend fun checkXcodeLicense() {
     if (runCommand("xcodebuild", "-license", "check").exitCode.value != 0) {
         reportXcodeEnvironmentError(
-            "The Xcode license has not been accepted. Run `sudo xcodebuild -license` to review and accept it.",
+            "The Xcode license has not been accepted. Run `sudo xcodebuild -runFirstLaunch` CLI command " +
+                    "or simply launch the Xcode application to do it via its UI.",
         )
     }
 }
@@ -150,7 +151,7 @@ context(problemReporter: ProblemReporter, _: ProcessRunner, _: XcodeEnvironment)
 private suspend fun checkFirstLaunch() {
     if (runCommand("xcodebuild", "-checkFirstLaunchStatus").exitCode.value != 0) {
         reportXcodeEnvironmentError(
-            "Xcode first-launch setup could not be completed. Run `sudo xcodebuild -runFirstLaunch` and try again.",
+            "Xcode \"first launch\" setup was not completed. Run `sudo xcodebuild -runFirstLaunch` and try again.",
         )
     }
 }
@@ -172,7 +173,12 @@ You can either
   - download Xcode from https://developer.apple.com/xcode/resources/ then select its Developer directory with `sudo xcode-select --switch <path-to-Xcode.app>`.
 
 *Apple ID is required to download and install Xcode.*
-"""
+""".trimIndent()
+
+private const val POST_INSTALL_XCODE_STEPS = """
+If you have never installed Xcode on this machine before, you may also need to ensure the "first launch" is done (`sudo xcodebuild -runFirstLaunch`) after the installation.
+You can also do this via the Xcode's UI when you launch it for the first time.
+""".trimIndent()
 
 @OptIn(NonIdealDiagnostic::class)
 context(problemReporter: ProblemReporter)

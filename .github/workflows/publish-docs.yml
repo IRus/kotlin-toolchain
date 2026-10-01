@@ -7,10 +7,10 @@ on:
       - 'release/*'
     paths:
       - 'docs/**'
-  create:
-    branches:
-      - 'release/*' # the push trigger is not enough because of the docs/** filter
-  workflow_dispatch:
+  # We want to trigger on release/* branch creation, and the push trigger is not enough because of the docs/** filter.
+  # The create event doesn't support ref filters, so we filter at the job level.
+  create: {}
+  workflow_dispatch: {}
 
 permissions:
   contents: write # allow pushing commits to gh-pages
@@ -18,7 +18,12 @@ permissions:
 jobs:
   docs:
     runs-on: ubuntu-latest
-    if: github.event.repository.fork == false
+    # We need to make sure we're dealing with the branches we expect, because the 'create' event triggers on any branch
+    # or tag creation without ref filters.
+    if: >-
+      github.event.repository.fork == false
+      && github.ref_type == 'branch'
+      && (github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
     steps:
       - uses: actions/checkout@v5
         with:

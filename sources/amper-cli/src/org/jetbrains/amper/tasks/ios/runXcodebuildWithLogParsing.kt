@@ -8,6 +8,7 @@ import com.github.ajalt.mordant.rendering.Theme
 import com.github.ajalt.mordant.terminal.Terminal
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.jetbrains.amper.cli.terminal.filterAnsiCodes
 import org.jetbrains.amper.core.AmperUserCacheRoot
 import org.jetbrains.amper.core.downloader.Downloader
 import org.jetbrains.amper.core.extract.extractFileToCacheLocation
@@ -15,6 +16,7 @@ import org.jetbrains.amper.events.sink.OperationEventSink
 import org.jetbrains.amper.events.sink.operationEventScope
 import org.jetbrains.amper.processes.LoggingProcessOutputListener
 import org.jetbrains.amper.processes.PrintToTerminalProcessOutputListener
+import org.jetbrains.amper.processes.output.FilteringProcessOutputListener
 import org.jetbrains.amper.processes.output.ProcessOutputListener
 import org.jetbrains.amper.processes.output.ProcessOutputMode
 import org.jetbrains.amper.processes.pipe.ProcessPipe
@@ -69,7 +71,10 @@ suspend fun <R> runXcodebuildWithLogParsing(
             ],
             outputMode = ProcessOutputMode.listen(
                 listener = packageResolutionErrorWorkaround.wrapBeautifiedLogPrinter(
-                    printer = PrintToTerminalProcessOutputListener(terminal),
+                    printer = FilteringProcessOutputListener(
+                        delegate = PrintToTerminalProcessOutputListener(terminal),
+                        filterStdout = { line, _ -> line.filterAnsiCodes() != "Build Succeeded" },
+                    ),
                 ),
             ),
             input = pipe,

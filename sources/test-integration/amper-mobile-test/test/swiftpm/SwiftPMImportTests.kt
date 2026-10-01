@@ -527,8 +527,8 @@ open class SwiftPMImportTests : IOSBaseTest() {
                 args = listOf("build"),
                 assertEmptyStdErr = false,
                 expectedExitCode = 1,
-            ).stderr,
-            "ERROR product 'nonExistingProduct' required by package 'kotlinmultiplatformlinkedpackagedylib' target 'KotlinMultiplatformLinkedPackageDylib' not found in package 'packageDependency'",
+            ).stdout,
+            "product 'nonExistingProduct' required by package 'kotlinmultiplatformlinkedpackagedylib' target 'KotlinMultiplatformLinkedPackageDylib' not found in package 'packageDependency'",
         )
     }
 

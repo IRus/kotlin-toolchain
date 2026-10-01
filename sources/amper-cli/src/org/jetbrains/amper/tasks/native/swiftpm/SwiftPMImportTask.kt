@@ -5,12 +5,9 @@
 package org.jetbrains.amper.tasks.native.swiftpm
 
 import com.github.ajalt.mordant.terminal.Terminal
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import org.apache.maven.artifact.versioning.ComparableVersion
 import org.jetbrains.amper.cli.context.AmperBuildOutputRoot
 import org.jetbrains.amper.cli.telemetry.setAmperModule
 import org.jetbrains.amper.cli.userReadableError
@@ -23,11 +20,6 @@ import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.schema.KotlinVersion
 import org.jetbrains.amper.incrementalcache.IncrementalCache
 import org.jetbrains.amper.incrementalcache.executeForFiles
-import org.jetbrains.amper.processes.LoggingProcessOutputListener
-import org.jetbrains.amper.processes.PrintToTerminalProcessOutputListener
-import org.jetbrains.amper.processes.output.ProcessOutputListener
-import org.jetbrains.amper.processes.output.ProcessOutputMode
-import org.jetbrains.amper.processes.pipe.ProcessPipe
 import org.jetbrains.amper.processes.runProcess
 import org.jetbrains.amper.swiftpm.swiftPMJson
 import org.jetbrains.amper.tasks.EmptyTaskResult
@@ -39,9 +31,9 @@ import org.jetbrains.amper.tasks.artifacts.api.Artifact
 import org.jetbrains.amper.tasks.artifacts.api.ArtifactSelector
 import org.jetbrains.amper.tasks.artifacts.api.ArtifactType
 import org.jetbrains.amper.tasks.artifacts.api.Quantifier
-import org.jetbrains.amper.tasks.ios.IosBuildTask
 import org.jetbrains.amper.tasks.ios.XCRUN_EXECUTABLE
 import org.jetbrains.amper.tasks.ios.XcodeEnvironment
+import org.jetbrains.amper.tasks.ios.runXcodebuildWithLogParsing
 import org.jetbrains.amper.tasks.ios.xcodeEnvironment
 import org.jetbrains.amper.tasks.native.NativeCInteropGenerateKlibTask
 import org.jetbrains.amper.tasks.native.swiftpm.GenerateSwiftPMImportPackageTask.Companion.SYNTHETIC_IMPORT_DYLIB
@@ -50,7 +42,6 @@ import org.jetbrains.amper.tasks.native.swiftpm.XcodebuildDefFileUtils.DUMP_FILE
 import org.jetbrains.amper.telemetry.spanBuilder
 import org.jetbrains.amper.telemetry.use
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteRecursively
@@ -183,39 +174,13 @@ internal class SwiftPMImportTask(
             "SWIFT_INDEX_STORE_ENABLE=NO",
         )
 
-        val xcbeautyCli = IosBuildTask.prepareLogParsingUtility(userCacheRoot, sink = executionContext.eventSink)
-        val pipe = ProcessPipe(
-            includeStderr = true,
-            eavesDroppingListener = LoggingProcessOutputListener(
-                logger = logger,
-                prefix = "SwiftPM import xcodebuild/out",
-                stdErrPrefix = "SwiftPM import xcodebuild/err",
-                stdoutLoggingLevel = Level.DEBUG,
-                stderrLoggingLevel = Level.DEBUG,
-            ) + object : ProcessOutputListener {
-                override fun onStdoutLine(line: String, pid: Long) {
-                    if ("not found in package" in line) {
-                        logger.error(line)
-                    }
-                }
-                override fun onStderrLine(line: String, pid: Long) {}
-            },
-        )
-
-        coroutineScope {
-            val parserProcessJob = launch {
-                runProcess(
-                    command = [
-                        xcbeautyCli.pathString,
-                        "--disable-logging",
-                        "--quiet",
-                    ],
-                    outputMode = ProcessOutputMode.listen(PrintToTerminalProcessOutputListener(terminal)),
-                    input = pipe,
-                )
-            }
-
-            val xcodebuildResult = runProcess(
+        val xcodebuildResult = runXcodebuildWithLogParsing(
+            userCacheRoot = userCacheRoot,
+            terminal = terminal,
+            debugLogPrefix = "SwiftPM import xcodebuild",
+            sink = executionContext.eventSink,
+        ) { pipe ->
+            runProcess(
                 workingDir = syntheticImportProjectRoot,
                 command = args,
                 configureEnvironment = {
@@ -231,11 +196,9 @@ internal class SwiftPMImportTask(
                 },
                 outputMode = pipe,
             )
-
-            parserProcessJob.join()
-            if (xcodebuildResult.exitCode.value != 0) {
-                userReadableError("xcodebuild failed with exit code ${xcodebuildResult.exitCode}")
-            }
+        }
+        if (xcodebuildResult.exitCode.value != 0) {
+            userReadableError("xcodebuild failed with exit code ${xcodebuildResult.exitCode}")
         }
 
         targetFragments.forEach { fragment ->

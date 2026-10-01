@@ -43,7 +43,7 @@ playwright = "1.61.0"
 slf4j = "2.0.20"
 systemstubs = "2.1.8"
 teamcity-servicemessages = "2026.3"
-tinylog = "2.7.0"
+tinylog = "2.8.0"
 xmlutil-serialization = "0.86.2"
 xz = "1.11"
 

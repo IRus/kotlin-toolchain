@@ -4,7 +4,9 @@
 
 package org.jetbrains.amper.cli.commands
 
+import com.github.ajalt.clikt.core.CliktError
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import io.ktor.utils.io.CancellationException
 import org.jetbrains.amper.cli.context.GlobalCliContext
 import org.jetbrains.amper.cli.context.ProjectCliContext
 import org.jetbrains.amper.cli.options.ProjectLayoutOptions
@@ -27,6 +29,10 @@ internal abstract class AmperProjectAwareCommand(name: String) : AmperSubcommand
                 setProjectSpecificState(cliContext)
                 try {
                     run(cliContext)
+                } catch (e: CancellationException) { // not an internal error, just normal stuff
+                    throw e
+                } catch (e: CliktError) { // handled by Clikt in a special way, let it bubble up
+                    throw e
                 } catch (e: Exception) {
                     throw LogsDirAwareInternalError(logsDir = cliContext.currentLogsRoot.path, cause = e)
                 }

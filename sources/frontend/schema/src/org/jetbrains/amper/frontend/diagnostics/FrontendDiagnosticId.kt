@@ -27,6 +27,7 @@ enum class FrontendDiagnosticId : DiagnosticId {
     CredentialsFileDoesNotHaveKey,
     DependencyResolutionProblem,
     DependencyVersionIsOverridden,
+    DottedCatalogAlias,
     IncorrectSettingsSection,
     InvalidKotlinCompilerVersion,
     InvalidXmlForPlexusConfiguration,

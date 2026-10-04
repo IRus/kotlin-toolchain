@@ -7,11 +7,18 @@ package org.jetbrains.amper.frontend.catalogs
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.childrenOfType
+import org.jetbrains.amper.frontend.CompositeVersionCatalog
 import org.jetbrains.amper.frontend.FileVersionCatalog
 import org.jetbrains.amper.frontend.FrontendPathResolver
+import org.jetbrains.amper.frontend.SchemaBundle
 import org.jetbrains.amper.frontend.VersionCatalog
 import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.api.asTrace
+import org.jetbrains.amper.frontend.diagnostics.FrontendDiagnosticId
+import org.jetbrains.amper.frontend.messages.PsiBuildProblem
+import org.jetbrains.amper.problems.reporting.BuildProblemType
+import org.jetbrains.amper.problems.reporting.Level
+import org.jetbrains.amper.problems.reporting.ProblemReporter
 import org.toml.lang.psi.TomlFile
 import org.toml.lang.psi.TomlInlineTable
 import org.toml.lang.psi.TomlKey
@@ -29,6 +36,9 @@ private val TomlKeyValue.keyText: String
 private val TomlKey.keyText: String
     get() = segments.joinToString(".") { it.text }
 
+private val TomlKey.isDotted: Boolean
+    get() = segments.size > 1
+
 private fun TomlKeyValueOwner.getStringValueOrNull(key: String): String? {
     val keyValue = entries.find { it.keyText == key } ?: return null
     return keyValue.value?.takeIf { it is TomlLiteral }?.text?.removeSurrounding("\"")
@@ -45,12 +55,35 @@ private data class TomlLibraryDefinition(
 private class TomlCatalog(
     override val location: VirtualFile,
     private val libraries: Map<String, TomlLibraryDefinition>,
+    val invalidAliases: List<TomlKey>,
 ) : FileVersionCatalog {
     override val entries: Map<String, TraceableString>
         get() = libraries.map {
             val definition = it.value
             it.key to TraceableString(definition.libraryString, trace = definition.element.asTrace())
         }.toMap()
+}
+
+private class DottedCatalogAlias(
+    override val element: TomlKey,
+) : PsiBuildProblem(Level.Error, BuildProblemType.Generic) {
+    override val diagnosticId = FrontendDiagnosticId.DottedCatalogAlias
+    override val message: String
+        get() = SchemaBundle.message(
+            "catalog.library.alias.dotted",
+            element.text,
+            element.segments.joinToString("-") { it.name.orEmpty() },
+        )
+}
+
+/** Reports invalid aliases once when the project model is read, including unused entries. */
+context(problemReporter: ProblemReporter)
+internal fun VersionCatalog?.reportCatalogProblems() {
+    when (this) {
+        is TomlCatalog -> invalidAliases.forEach { problemReporter.reportMessage(DottedCatalogAlias(it)) }
+        is CompositeVersionCatalog -> catalogs.forEach { it.reportCatalogProblems() }
+        else -> Unit
+    }
 }
 
 /**
@@ -62,25 +95,29 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
     catalogFile: VirtualFile
 ): VersionCatalog? {
     val psiFile = toPsiFile(catalogFile) as? TomlFile ?: return null
-    val libraries = psiFile.parseCatalogLibraries() ?: return null
-    return TomlCatalog(catalogFile, libraries)
+    val librariesTable = psiFile.findTableOrNull("libraries") ?: return null
+    return TomlCatalog(
+        location = catalogFile,
+        libraries = librariesTable.parseCatalogLibraries(),
+        invalidAliases = librariesTable.entries.map { it.key }.filter { it.isDotted },
+    )
 }
 
 /**
  * Get `[libraries]` table, parse it and normalize libraries aliases
  * to match "libs.my.lib" format.
  */
-private fun TomlFile.parseCatalogLibraries(): Map<String, TomlLibraryDefinition>? {
+private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition> {
     fun String.normalizeLibraryKey() = "libs." + replace("-", ".").replace("_", ".")
 
-    val librariesTable = findTableOrNull("libraries") ?: return null
-    val librariesAliases = librariesTable.entries
+    val librariesAliases = entries
     return buildMap {
-        librariesAliases.forEach { entry ->
+        for (entry in librariesAliases) {
+            if (entry.key.isDotted) continue
             val aliasKey = entry.keyText.normalizeLibraryKey()
 
             // my-lib = "com.mycompany:mylib:1.4"
-            val value = getInlineNotation(entry) ?: return@forEach
+            val value = getInlineNotation(entry) ?: continue
             put(aliasKey, TomlLibraryDefinition(value, entry))
         }
     }

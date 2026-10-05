@@ -142,6 +142,33 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertEquals("io.ktor:ktor-core", catalog.findInCatalog("libs.ktor.core")?.value)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version = { strictly = \"3.6.0\" } }",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version.prefer = \"3.6.0\" }",
+        "[versions]\nktor = { require = \"3.6.0\" }\n[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version.ref = \"ktor\" }",
+        "[versions]\nunused = { rejectAll = true }\n[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"",
+    ])
+    fun `unsupported version constraints produce an explicit diagnostic`(text: String) {
+        val [_, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "UnsupportedCatalogVersionConstraint" })
+        assertTrue(reporter.problems.none { it.diagnosticId.toString() == "UnresolvedCatalogVersion" })
+    }
+
+    @Test
+    fun `nested version reference table is not a version constraint`() {
+        val [catalog, reporter] = parse("""
+            [versions]
+            ktor = "3.6.0"
+            [libraries]
+            ktor-core = { module = "io.ktor:ktor-core", version = { ref = "ktor" } }
+        """.trimIndent())
+
+        assertTrue(reporter.problems.isEmpty())
+        assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

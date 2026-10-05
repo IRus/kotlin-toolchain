@@ -76,6 +76,7 @@ enum class FrontendDiagnosticId : DiagnosticId {
     UnresolvedModuleDeclaration,
     UnresolvedModuleDependency,
     UnresolvedTemplate,
+    UnsupportedCatalogVersionConstraint,
     UnsupportedLayout,
     @Deprecated(
         message = "The corresponding diagnostic no longer exists, remove the support.",

@@ -16,6 +16,7 @@ import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.api.asTrace
 import org.jetbrains.amper.frontend.diagnostics.FrontendDiagnosticId
 import org.jetbrains.amper.frontend.messages.PsiBuildProblem
+import org.jetbrains.amper.frontend.tree.reading.maven.validateAndReportMavenCoordinates
 import org.jetbrains.amper.problems.reporting.BuildProblem
 import org.jetbrains.amper.problems.reporting.CollectingProblemReporter
 import org.jetbrains.amper.problems.reporting.BuildProblemType
@@ -146,6 +147,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
 
             // my-lib = "com.mycompany:mylib:1.4"
             val value = getInlineNotation(entry) ?: continue
+            if (!validateCatalogCoordinates(entry.value ?: entry, value)) continue
             put(aliasKey, TomlLibraryDefinition(value, entry))
         }
     }
@@ -169,7 +171,10 @@ private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
                 else -> null
             } ?: return null
 
-            // The version might come from BOM (currently supported only with Gradle)
+            val moduleOrigin = libraryValue.entries.firstOrNull { it.keyText == "module" }?.value ?: libraryValue
+            if (!validateCatalogCoordinates(moduleOrigin, finalModuleName, moduleOnly = true)) return null
+
+            // The version might come from BOM
             if (version == null && versionRef == null && module != null) return finalModuleName
 
             val finalVersion = when {
@@ -197,4 +202,23 @@ private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
 
         else -> null
     }
+}
+
+context(problemReporter: ProblemReporter)
+private fun validateCatalogCoordinates(origin: PsiElement, coordinates: String, moduleOnly: Boolean = false): Boolean {
+    if (!validateAndReportMavenCoordinates(origin, coordinates)) return false
+    val notation = coordinates.split('@')
+    val parts = notation.first().split(':')
+    if (notation.size > 2 || notation.any { it.isBlank() } || parts.any { it.isBlank() } ||
+        (moduleOnly && (parts.size != 2 || notation.size != 1))) {
+        problemReporter.reportMessage(CatalogProblem(
+            origin,
+            FrontendDiagnosticId.InvalidCatalogCoordinates,
+            "catalog.coordinates.invalid",
+            coordinates,
+            if (moduleOnly) "group:artifact" else "group:artifact[:version[:classifier]][@packaging]",
+        ))
+        return false
+    }
+    return true
 }

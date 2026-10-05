@@ -58,6 +58,39 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertEquals("\"missing\"", assertIs<PsiBuildProblemSource>(problem.source).psiElement.text)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "\"io.ktor\"",
+        "\"io.ktor::3.6.0\"",
+        "\"io.ktor:ktor-core:\"",
+        "\"io.ktor:ktor-core:3:classifier:extra\"",
+        "\"io.ktor:ktor core:3.6.0\"",
+        "{ module = \"io.ktor\", version = \"3.6.0\" }",
+        "{ module = \"io.ktor:ktor-core:3.6.0\", version = \"3.6.0\" }",
+        "{ group = \"io.ktor\", name = \"\", version = \"3.6.0\" }",
+    ])
+    fun `invalid coordinates are diagnosed before catalog substitution`(definition: String) {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = $definition\n")
+
+        assertTrue(reporter.problems.isNotEmpty(), "Invalid coordinates must report a TOML error")
+        assertNull(catalog.findInCatalog("libs.ktor.core"))
+        val source = assertIs<PsiBuildProblemSource>(reporter.problems.first().source)
+        assertEquals(buildDir / "libs.versions.toml", source.file)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "\"io.ktor:ktor-core:3.6.0\"",
+        "{ module = \"io.ktor:ktor-core\" }",
+        "{ module = \"io.ktor:ktor-core\", version = \"3.6.0\" }",
+    ])
+    fun `valid coordinates including versionless modules remain available`(definition: String) {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = $definition\n")
+
+        assertTrue(reporter.problems.isEmpty())
+        assertNotNull(catalog.findInCatalog("libs.ktor.core"))
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

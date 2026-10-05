@@ -46,16 +46,20 @@ internal fun validateCatalogToml(file: TomlFile) {
     val declaredTables = mutableSetOf<List<String?>>()
     for (table in tables) {
         val key = table.header.key ?: continue
-        if (!declaredTables.add(key.segments.map { it.name })) {
+        if (!declaredTables.add(key.segments.map { it.name }) && !key.isCatalogKey()) {
             reporter.reportMessage(InvalidCatalogToml(key, "Table ${key.text} is already defined"))
         }
     }
     validateCrossTableDefinitions(file)
-    validateKeys(file.childrenOfType<TomlKeyValue>())
+    validateKeys(file.childrenOfType<TomlKeyValue>().filterNot { it.key.isCatalogKey() })
     for (owner in PsiTreeUtil.collectElementsOfType(file, TomlKeyValueOwner::class.java)) {
+        // Catalog table definitions are already checked with their full paths, across table boundaries.
+        if (owner is TomlTable && owner.header.key?.isCatalogKey() == true) continue
         validateKeys(owner.entries)
     }
 }
+
+private fun TomlKey.isCatalogKey(): Boolean = segments.firstOrNull()?.name in ["libraries", "versions"]
 
 context(reporter: ProblemReporter)
 private fun validateString(element: PsiElement): Boolean {

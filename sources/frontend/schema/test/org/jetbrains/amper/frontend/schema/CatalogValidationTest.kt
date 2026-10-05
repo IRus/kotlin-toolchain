@@ -356,6 +356,18 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertTrue(reporter.problems.isEmpty())
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"\nktor-core = \"other:other:1\"",
+        "[libraries]\n[libraries]",
+    ])
+    fun `the same TOML definition error is not reported twice`(text: String) {
+        val [_, reporter] = parse(text)
+
+        assertEquals(1, reporter.problems.size)
+        assertEquals("InvalidCatalogToml", reporter.problems.single().diagnosticId.toString())
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

@@ -217,6 +217,34 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertTrue(gradleCatalog.toString() in problem.message)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "\"ktor-core\" = \"io.ktor:ktor-core:3.6.0\"",
+        "'ktor-core' = 'io.ktor:ktor-core:3.6.0'",
+        "\"ktor\\u002dcore\" = \"io.ktor:ktor-core:3.6.0\"",
+        "ktor-core = \"io.ktor:ktor-core:3.6\\u002e0\"",
+        "ktor-core = { 'module' = 'io.ktor:ktor-core', 'version' = '3.6.0' }",
+    ])
+    fun `TOML aliases and string values are decoded rather than retaining quotes`(definition: String) {
+        val [catalog, reporter] = parse("[libraries]\n$definition\n")
+
+        assertTrue(reporter.problems.isEmpty())
+        assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
+    }
+
+    @Test
+    fun `quoted version aliases and literal string version refs are decoded`() {
+        val [catalog, reporter] = parse("""
+            [versions]
+            "ktor" = '3.6.0'
+            [libraries]
+            "ktor-core" = { module = 'io.ktor:ktor-core', version.ref = 'ktor' }
+        """.trimIndent())
+
+        assertTrue(reporter.problems.isEmpty())
+        assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

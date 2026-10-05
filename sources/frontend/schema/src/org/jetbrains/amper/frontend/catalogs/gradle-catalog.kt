@@ -39,14 +39,14 @@ private val TomlKeyValue.keyText: String
     get() = key.keyText
 
 private val TomlKey.keyText: String
-    get() = segments.joinToString(".") { it.text }
+    get() = segments.joinToString(".") { it.name.orEmpty() }
 
 private val TomlKey.hasDots: Boolean
     get() = segments.size > 1 || segments.any { '.' in it.name.orEmpty() }
 
 private fun TomlKeyValueOwner.getStringValueOrNull(key: String): String? {
     val keyValue = findField(key) ?: return null
-    return keyValue.value?.takeIf { it.isTomlString() }?.text?.removeSurrounding("\"")
+    return keyValue.value.stringValueOrNull()
 }
 
 private fun TomlKeyValueOwner.findField(key: String): TomlKeyValue? {
@@ -184,7 +184,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
 context(problemReporter: ProblemReporter)
 private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
     return when (val libraryValue = catalogEntry.value) {
-        is TomlLiteral -> libraryValue.text.removeSurrounding("\"")
+        is TomlLiteral -> libraryValue.stringValueOrNull()
         is TomlInlineTable -> {
             val version = libraryValue.getStringValueOrNull("version")
             val versionRef = libraryValue.getStringValueOrNull("version.ref")
@@ -252,6 +252,9 @@ private fun validateCatalogCoordinates(origin: PsiElement, coordinates: String, 
 }
 
 private fun PsiElement?.isTomlString(): Boolean = this is TomlLiteral && kind is TomlLiteralKind.String
+
+private fun PsiElement?.stringValueOrNull(): String? =
+    ((this as? TomlLiteral)?.kind as? TomlLiteralKind.String)?.value
 
 context(problemReporter: ProblemReporter)
 private fun reportInvalidType(entry: TomlKeyValue, expected: String) {

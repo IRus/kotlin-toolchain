@@ -16,6 +16,8 @@ import org.jetbrains.amper.frontend.api.TraceableString
 import org.jetbrains.amper.frontend.api.asTrace
 import org.jetbrains.amper.frontend.diagnostics.FrontendDiagnosticId
 import org.jetbrains.amper.frontend.messages.PsiBuildProblem
+import org.jetbrains.amper.problems.reporting.BuildProblem
+import org.jetbrains.amper.problems.reporting.CollectingProblemReporter
 import org.jetbrains.amper.problems.reporting.BuildProblemType
 import org.jetbrains.amper.problems.reporting.Level
 import org.jetbrains.amper.problems.reporting.ProblemReporter
@@ -55,7 +57,7 @@ private data class TomlLibraryDefinition(
 private class TomlCatalog(
     override val location: VirtualFile,
     private val libraries: Map<String, TomlLibraryDefinition>,
-    val invalidAliases: List<TomlKey>,
+    val problems: List<BuildProblem>,
 ) : FileVersionCatalog {
     override val entries: Map<String, TraceableString>
         get() = libraries.map {
@@ -76,11 +78,20 @@ private class DottedCatalogAlias(
         )
 }
 
+private class CatalogProblem(
+    override val element: PsiElement,
+    override val diagnosticId: FrontendDiagnosticId,
+    messageKey: String,
+    vararg parameters: Any,
+) : PsiBuildProblem(Level.Error, BuildProblemType.Generic) {
+    override val message: String = SchemaBundle.message(messageKey, *parameters)
+}
+
 /** Reports invalid aliases once when the project model is read, including unused entries. */
 context(problemReporter: ProblemReporter)
 internal fun VersionCatalog?.reportCatalogProblems() {
     when (this) {
-        is TomlCatalog -> invalidAliases.forEach { problemReporter.reportMessage(DottedCatalogAlias(it)) }
+        is TomlCatalog -> problems.forEach(problemReporter::reportMessage)
         is CompositeVersionCatalog -> catalogs.forEach { it.reportCatalogProblems() }
         else -> Unit
     }
@@ -96,10 +107,12 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
 ): VersionCatalog? {
     val psiFile = toPsiFile(catalogFile) as? TomlFile ?: return null
     val librariesTable = psiFile.findTableOrNull("libraries") ?: return null
+    val reporter = CollectingProblemReporter()
+    val libraries = with(reporter) { librariesTable.parseCatalogLibraries() }
     return TomlCatalog(
         location = catalogFile,
-        libraries = librariesTable.parseCatalogLibraries(),
-        invalidAliases = librariesTable.entries.map { it.key }.filter { it.hasDots },
+        libraries = libraries,
+        problems = librariesTable.entries.map { it.key }.filter { it.hasDots }.map(::DottedCatalogAlias) + reporter.problems,
     )
 }
 
@@ -107,14 +120,29 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
  * Get `[libraries]` table, parse it and normalize libraries aliases
  * to match "libs.my.lib" format.
  */
+context(problemReporter: ProblemReporter)
 private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition> {
     fun String.normalizeLibraryKey() = "libs." + replace("-", ".").replace("_", ".")
 
-    val librariesAliases = entries
+    val librariesAliases = entries.filterNot { it.key.hasDots }
+    val aliasesByKey = librariesAliases.groupBy { it.keyText.normalizeLibraryKey() }
+    for ([key, aliases] in aliasesByKey) {
+        if (aliases.size > 1) {
+            for (alias in aliases) {
+                problemReporter.reportMessage(CatalogProblem(
+                    alias.key,
+                    FrontendDiagnosticId.CatalogAliasCollision,
+                    "catalog.library.alias.collision",
+                    aliases.joinToString(", ") { it.key.text },
+                    key,
+                ))
+            }
+        }
+    }
     return buildMap {
         for (entry in librariesAliases) {
-            if (entry.key.hasDots) continue
             val aliasKey = entry.keyText.normalizeLibraryKey()
+            if (aliasesByKey.getValue(aliasKey).size > 1) continue
 
             // my-lib = "com.mycompany:mylib:1.4"
             val value = getInlineNotation(entry) ?: continue

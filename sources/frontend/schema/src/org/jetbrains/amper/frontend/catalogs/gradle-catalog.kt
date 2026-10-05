@@ -115,10 +115,20 @@ internal fun VersionCatalog?.reportCatalogProblems() {
  * 2. versions or version refs, no version constraints
  */
 internal fun FrontendPathResolver.parseGradleVersionCatalog(
-    catalogFile: VirtualFile
+    catalogFile: VirtualFile,
+    conflictingCatalogFile: VirtualFile? = null,
 ): VersionCatalog? {
     val psiFile = toPsiFile(catalogFile) as? TomlFile ?: return null
     val reporter = CollectingProblemReporter()
+    if (conflictingCatalogFile != null) {
+        reporter.reportMessage(CatalogProblem(
+            toPsiFile(conflictingCatalogFile) ?: psiFile,
+            FrontendDiagnosticId.MultipleCatalogFiles,
+            "catalog.files.multiple",
+            catalogFile.path,
+            conflictingCatalogFile.path,
+        ))
+    }
     with(reporter) { validateCatalogToml(psiFile) }
     if (reporter.problems.isNotEmpty()) return TomlCatalog(catalogFile, emptyMap(), reporter.problems)
     val librariesTable = psiFile.findTableOrNull("libraries")

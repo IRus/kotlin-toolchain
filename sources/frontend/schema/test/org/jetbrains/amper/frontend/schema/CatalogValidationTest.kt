@@ -5,15 +5,18 @@
 package org.jetbrains.amper.frontend.schema
 
 import org.jetbrains.amper.frontend.VersionCatalog
+import org.jetbrains.amper.frontend.aomBuilder.readProjectModel
 import org.jetbrains.amper.frontend.catalogs.parseGradleVersionCatalog
 import org.jetbrains.amper.frontend.catalogs.reportCatalogProblems
 import org.jetbrains.amper.frontend.helpers.FrontendTestCaseBase
 import org.jetbrains.amper.frontend.helpers.TestFrontendPathResolver
+import org.jetbrains.amper.frontend.helpers.readProjectContextWithTestFrontendResolver
 import org.jetbrains.amper.frontend.messages.PsiBuildProblemSource
 import org.jetbrains.amper.problems.reporting.CollectingProblemReporter
 import org.jetbrains.amper.problems.reporting.Level
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.io.path.createDirectories
 import kotlin.io.path.Path
 import kotlin.io.path.div
 import kotlin.io.path.writeText
@@ -187,6 +190,31 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
 
         assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogToml" })
         assertTrue(catalog.entries.isEmpty())
+    }
+
+    @Test
+    fun `two catalog files are reported once in a multi-module project`() {
+        (buildDir / "project.yaml").writeText("modules: [app, lib]\n")
+        for (module in ["app", "lib"]) {
+            val moduleDir = (buildDir / module).createDirectories()
+            (moduleDir / "module.yaml").writeText("product: jvm/lib\n")
+        }
+        val rootCatalog = buildDir / "libs.versions.toml"
+        val gradleCatalog = (buildDir / "gradle").createDirectories() / "libs.versions.toml"
+        for (catalog in [rootCatalog, gradleCatalog]) {
+            catalog.writeText("[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"\n")
+        }
+        val reporter = CollectingProblemReporter()
+        with(reporter) {
+            readProjectContextWithTestFrontendResolver(buildDir)
+                .readProjectModel(pluginData = [], mavenPluginXmls = [])
+        }
+
+        val problem = reporter.problems.single()
+        assertEquals("MultipleCatalogFiles", problem.diagnosticId.toString())
+        assertEquals(Level.Error, problem.level)
+        assertTrue(rootCatalog.toString() in problem.message)
+        assertTrue(gradleCatalog.toString() in problem.message)
     }
 
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {

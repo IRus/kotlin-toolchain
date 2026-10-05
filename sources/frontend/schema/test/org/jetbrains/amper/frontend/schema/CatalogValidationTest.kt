@@ -335,6 +335,27 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[versions]\nunused = \"\\q\"",
+        "[versions]\nunused = \"\\uD800\"",
+        "[versions]\nunused = \"\\u001\"",
+        "[libraries]\n\"ktor\\qcore\" = \"io.ktor:ktor-core:3.6.0\"",
+    ])
+    fun `invalid TOML string escapes are reported even in unused keys and versions`(text: String) {
+        val [catalog, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogToml" })
+        assertTrue(catalog.entries.isEmpty())
+    }
+
+    @Test
+    fun `literal TOML strings do not interpret backslashes as escapes`() {
+        val [_, reporter] = parse("[versions]\nunused = '\\q'\n")
+
+        assertTrue(reporter.problems.isEmpty())
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

@@ -14,14 +14,17 @@ import org.jetbrains.amper.frontend.messages.PsiBuildProblem
 import org.jetbrains.amper.problems.reporting.BuildProblemType
 import org.jetbrains.amper.problems.reporting.Level
 import org.jetbrains.amper.problems.reporting.ProblemReporter
+import org.toml.lang.lexer.parseTomlStringCharacters
+import org.toml.lang.psi.TOML_BASIC_STRINGS
+import org.toml.lang.psi.TOML_STRING_LITERALS
 import org.toml.lang.psi.TomlFile
 import org.toml.lang.psi.TomlKey
+import org.toml.lang.psi.TomlKeySegment
 import org.toml.lang.psi.TomlKeyValue
-import org.toml.lang.psi.TomlLiteral
-import org.toml.lang.psi.ext.TomlLiteralKind
-import org.toml.lang.psi.ext.kind
 import org.toml.lang.psi.TomlKeyValueOwner
+import org.toml.lang.psi.TomlLiteral
 import org.toml.lang.psi.TomlTable
+import org.toml.lang.psi.ext.TomlLiteralKind
 
 private class InvalidCatalogToml(
     override val element: PsiElement,
@@ -33,15 +36,12 @@ private class InvalidCatalogToml(
 
 context(reporter: ProblemReporter)
 internal fun validateCatalogToml(file: TomlFile) {
-    for (error in PsiTreeUtil.collectElementsOfType(file, PsiErrorElement::class.java)) {
-        reporter.reportMessage(InvalidCatalogToml(error, error.errorDescription))
-    }
-    for (literal in PsiTreeUtil.collectElementsOfType(file, TomlLiteral::class.java)) {
-        val string = literal.kind as? TomlLiteralKind.String ?: continue
-        if (string.offsets.closeDelim == null) {
-            reporter.reportMessage(InvalidCatalogToml(literal, "Unterminated string"))
-        }
-    }
+    val errors = PsiTreeUtil.collectElementsOfType(file, PsiErrorElement::class.java)
+    for (error in errors) reporter.reportMessage(InvalidCatalogToml(error, error.errorDescription))
+    val strings: List<PsiElement> = PsiTreeUtil.collectElementsOfType(file, TomlLiteral::class.java).toList() +
+            PsiTreeUtil.collectElementsOfType(file, TomlKeySegment::class.java)
+    val stringsValid = strings.map { validateString(it) }.all { it }
+    if (errors.isNotEmpty() || !stringsValid) return
     val tables = file.childrenOfType<TomlTable>()
     val declaredTables = mutableSetOf<List<String?>>()
     for (table in tables) {
@@ -55,6 +55,24 @@ internal fun validateCatalogToml(file: TomlFile) {
     for (owner in PsiTreeUtil.collectElementsOfType(file, TomlKeyValueOwner::class.java)) {
         validateKeys(owner.entries)
     }
+}
+
+context(reporter: ProblemReporter)
+private fun validateString(element: PsiElement): Boolean {
+    val node = element.node.findChildByType(TOML_STRING_LITERALS) ?: return true
+    val string = TomlLiteralKind.fromAstNode(node) as? TomlLiteralKind.String ?: return true
+    if (string.offsets.closeDelim == null) {
+        reporter.reportMessage(InvalidCatalogToml(element, "Unterminated string"))
+        return false
+    }
+    if (node.elementType in TOML_BASIC_STRINGS) {
+        val contents = string.offsets.value?.substring(node.text).orEmpty()
+        if (!parseTomlStringCharacters(node.elementType, contents, StringBuilder()).second) {
+            reporter.reportMessage(InvalidCatalogToml(element, "Invalid string escape"))
+            return false
+        }
+    }
+    return true
 }
 
 context(reporter: ProblemReporter)

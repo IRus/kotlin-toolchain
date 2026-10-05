@@ -150,7 +150,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
             val aliasKey = entry.keyText.normalizeLibraryKey()
             if (aliasesByKey.getValue(aliasKey).size > 1) continue
 
-            if (!validateLibraryTypes(entry)) continue
+            if (!validateLibraryTypes(entry) || !validateLibraryFields(entry)) continue
             // my-lib = "com.mycompany:mylib:1.4"
             val value = getInlineNotation(entry) ?: continue
             if (!validateCatalogCoordinates(entry.value ?: entry, value)) continue
@@ -181,7 +181,7 @@ private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
             if (!validateCatalogCoordinates(moduleOrigin, finalModuleName, moduleOnly = true)) return null
 
             // The version might come from BOM
-            if (version == null && versionRef == null && module != null) return finalModuleName
+            if (version == null && versionRef == null) return finalModuleName
 
             val finalVersion = when {
                 version != null -> version
@@ -265,4 +265,30 @@ private fun validateLibraryTypes(entry: TomlKeyValue): Boolean {
     }
     for (field in invalidFields) reportInvalidType(field, "a string")
     return invalidFields.isEmpty()
+}
+
+context(problemReporter: ProblemReporter)
+private fun validateLibraryFields(entry: TomlKeyValue): Boolean {
+    val table = entry.value as? TomlInlineTable ?: return true
+    val allowedFields: Set<String> = ["module", "group", "name", "version", "version.ref"]
+    val unknownFields = table.entries.filter { it.keyText !in allowedFields }
+    for (field in unknownFields) {
+        problemReporter.reportMessage(CatalogProblem(
+            field.key,
+            FrontendDiagnosticId.UnknownCatalogField,
+            "catalog.field.unknown",
+            field.key.text,
+        ))
+    }
+    val keys = table.entries.map { it.keyText }.toSet()
+    val hasModule = "module" in keys || ("group" in keys && "name" in keys)
+    if (!hasModule) {
+        problemReporter.reportMessage(CatalogProblem(
+            entry.value ?: entry,
+            FrontendDiagnosticId.MissingCatalogModule,
+            "catalog.library.module.missing",
+            entry.key.text,
+        ))
+    }
+    return unknownFields.isEmpty() && hasModule
 }

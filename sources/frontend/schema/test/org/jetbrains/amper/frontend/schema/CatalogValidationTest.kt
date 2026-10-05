@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import kotlin.io.path.Path
 import kotlin.io.path.div
 import kotlin.io.path.writeText
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -107,6 +108,38 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         val [_, reporter] = parse(text)
 
         assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogValueType" })
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "{ version = \"3.6.0\" }",
+        "{ group = \"io.ktor\", version = \"3.6.0\" }",
+        "{ name = \"ktor-core\", version = \"3.6.0\" }",
+    ])
+    fun `library tables require module or both group and name`(definition: String) {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = $definition\n")
+
+        assertEquals("MissingCatalogModule", reporter.problems.single().diagnosticId.toString())
+        assertNull(catalog.findInCatalog("libs.ktor.core"))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["verison", "classifier", "unknown"])
+    fun `unknown library fields are reported at the field key`(field: String) {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", $field = \"value\" }\n")
+
+        val problem = reporter.problems.single()
+        assertEquals("UnknownCatalogField", problem.diagnosticId.toString())
+        assertEquals(field, assertIs<PsiBuildProblemSource>(problem.source).psiElement.text)
+        assertNull(catalog.findInCatalog("libs.ktor.core"))
+    }
+
+    @Test
+    fun `versionless group and name notation is supported`() {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = { group = \"io.ktor\", name = \"ktor-core\" }\n")
+
+        assertTrue(reporter.problems.isEmpty())
+        assertEquals("io.ktor:ktor-core", catalog.findInCatalog("libs.ktor.core")?.value)
     }
 
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {

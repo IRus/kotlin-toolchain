@@ -169,6 +169,26 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core =",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version = \"3.6.0\"",
+        "[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\n",
+        "[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"\nktor-core = \"other:other:1\"",
+        "[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"\n\"ktor-core\" = \"other:other:1\"",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version = \"3.6.0\", version = \"1\" }",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version = \"3.6.0\", version.ref = \"ktor\" }",
+        "[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"\n[libraries]\nother = \"other:other:1\"",
+        "[versions]\nktor = \"3.6.0\"\n[versions]\nother = \"1\"\n[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"",
+        "[versions]\nktor =",
+    ])
+    fun `invalid TOML and repeated definitions are reported before reading libraries`(text: String) {
+        val [catalog, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogToml" })
+        assertTrue(catalog.entries.isEmpty())
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

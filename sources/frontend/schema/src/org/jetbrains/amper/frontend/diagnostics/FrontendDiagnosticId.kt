@@ -31,6 +31,7 @@ enum class FrontendDiagnosticId : DiagnosticId {
     DottedCatalogAlias,
     IncorrectSettingsSection,
     InvalidCatalogCoordinates,
+    InvalidCatalogToml,
     InvalidCatalogValueType,
     InvalidKotlinCompilerVersion,
     InvalidXmlForPlexusConfiguration,

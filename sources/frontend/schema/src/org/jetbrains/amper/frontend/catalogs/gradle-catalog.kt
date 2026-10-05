@@ -118,17 +118,19 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
     catalogFile: VirtualFile
 ): VersionCatalog? {
     val psiFile = toPsiFile(catalogFile) as? TomlFile ?: return null
-    val librariesTable = psiFile.findTableOrNull("libraries") ?: return null
     val reporter = CollectingProblemReporter()
+    with(reporter) { validateCatalogToml(psiFile) }
+    if (reporter.problems.isNotEmpty()) return TomlCatalog(catalogFile, emptyMap(), reporter.problems)
+    val librariesTable = psiFile.findTableOrNull("libraries")
     val libraries = with(reporter) {
         psiFile.findTableOrNull("versions")?.validateVersionTypes()
         psiFile.findTableOrNull("versions")?.validateVersionConstraints()
-        librariesTable.parseCatalogLibraries()
+        librariesTable?.parseCatalogLibraries().orEmpty()
     }
     return TomlCatalog(
         location = catalogFile,
         libraries = libraries,
-        problems = librariesTable.entries.map { it.key }.filter { it.hasDots }.map(::DottedCatalogAlias) + reporter.problems,
+        problems = librariesTable?.entries.orEmpty().map { it.key }.filter { it.hasDots }.map(::DottedCatalogAlias) + reporter.problems,
     )
 }
 

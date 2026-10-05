@@ -36,8 +36,8 @@ private val TomlKeyValue.keyText: String
 private val TomlKey.keyText: String
     get() = segments.joinToString(".") { it.text }
 
-private val TomlKey.isDotted: Boolean
-    get() = segments.size > 1
+private val TomlKey.hasDots: Boolean
+    get() = segments.size > 1 || segments.any { '.' in it.name.orEmpty() }
 
 private fun TomlKeyValueOwner.getStringValueOrNull(key: String): String? {
     val keyValue = entries.find { it.keyText == key } ?: return null
@@ -72,7 +72,7 @@ private class DottedCatalogAlias(
         get() = SchemaBundle.message(
             "catalog.library.alias.dotted",
             element.text,
-            element.segments.joinToString("-") { it.name.orEmpty() },
+            element.segments.joinToString("-") { it.name.orEmpty().replace('.', '-') },
         )
 }
 
@@ -99,7 +99,7 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
     return TomlCatalog(
         location = catalogFile,
         libraries = librariesTable.parseCatalogLibraries(),
-        invalidAliases = librariesTable.entries.map { it.key }.filter { it.isDotted },
+        invalidAliases = librariesTable.entries.map { it.key }.filter { it.hasDots },
     )
 }
 
@@ -113,7 +113,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
     val librariesAliases = entries
     return buildMap {
         for (entry in librariesAliases) {
-            if (entry.key.isDotted) continue
+            if (entry.key.hasDots) continue
             val aliasKey = entry.keyText.normalizeLibraryKey()
 
             // my-lib = "com.mycompany:mylib:1.4"

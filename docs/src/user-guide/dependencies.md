@@ -287,8 +287,9 @@ the catalog name of the project catalog, and `<key>` is defined according to the
 [Gradle name mapping rules](https://docs.gradle.org/current/userguide/version_catalogs.html#sec:mapping-aliases-to-accessors).
 
 Use hyphens or underscores to separate words in TOML library aliases: for example, `ktor-core` or `ktor_core` is
-referenced as `$libs.ktor.core` in YAML. Unquoted dots in TOML keys, such as `ktor.core = ...`, define nested keys
-and are rejected as library aliases. This restriction does not apply to `version.ref` inside a library definition.
+referenced as `$libs.ktor.core` in YAML. Dots are rejected in library aliases, both in unquoted keys such as
+`ktor.core = ...` and quoted keys such as `"ktor.core" = ...` or `'ktor.core' = ...`.
+This restriction does not apply to `version.ref` inside a library definition.
 
 Example:
 

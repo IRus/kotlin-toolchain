@@ -245,6 +245,96 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core.module = \"io.ktor:ktor-core\"\nktor-core.version = \"3.6.0\"",
+        "[libraries]\nktor-core.group = \"io.ktor\"\nktor-core.name = \"ktor-core\"\nktor-core.version.ref = \"ktor\"",
+        "[libraries]\n\"ktor-core\".module = 'io.ktor:ktor-core'\n\"ktor-core\".version.ref = 'ktor'",
+        "[libraries.ktor-core]\nmodule = \"io.ktor:ktor-core\"\nversion.ref = \"ktor\"",
+    ])
+    fun `dots separating an alias from its definition fields are supported`(definition: String) {
+        val [catalog, reporter] = parse("[versions]\nktor = \"3.6.0\"\n$definition\n")
+
+        assertTrue(reporter.problems.isEmpty(), reporter.problems.joinToString { it.message })
+        assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core.module = \"io.ktor:ktor-core\"\nktor-core.version.ref = \"missing\"",
+        "[libraries]\nktor-core.module = true",
+        "[libraries]\nktor-core.module = \"io.ktor\"",
+        "[libraries]\nktor-core.version = \"3.6.0\"",
+        "[libraries]\nktor-core.module = \"io.ktor:ktor-core\"\nktor-core.version.strictly = \"3.6.0\"",
+        "[libraries.ktor-core]\nmodule = \"io.ktor:ktor-core\"\nverison = \"3.6.0\"",
+    ])
+    fun `expanded library definitions receive the same validation as inline tables`(text: String) {
+        val [catalog, reporter] = parse(text)
+
+        assertTrue(reporter.problems.isNotEmpty())
+        assertTrue(reporter.problems.none { it.diagnosticId.toString() == "DottedCatalogAlias" })
+        assertNull(catalog.findInCatalog("libs.ktor.core"))
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\n\"ktor.core\".module = \"io.ktor:ktor-core\"",
+        "[libraries.\"ktor.core\"]\nmodule = \"io.ktor:ktor-core\"",
+    ])
+    fun `expanded definitions cannot hide a dot inside the alias`(text: String) {
+        val [catalog, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "DottedCatalogAlias" })
+        assertTrue(catalog.entries.isEmpty())
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\" }\n[libraries.ktor-core]\nversion = \"3.6.0\"",
+        "[libraries.ktor-core]\nmodule = \"io.ktor:ktor-core\"\n[libraries]\nktor-core = { module = \"other:other\" }",
+        "[libraries]\nktor-core.module = \"io.ktor:ktor-core\"\n[libraries.ktor-core]\nversion = \"3.6.0\"",
+    ])
+    fun `a library cannot be redefined through a different TOML notation`(text: String) {
+        val [catalog, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogToml" })
+        assertTrue(catalog.entries.isEmpty())
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[versions.ktor]\nstrictly = \"3.6.0\"",
+        "[versions]\nktor.strictly = \"3.6.0\"",
+    ])
+    fun `expanded version constraints are not silently ignored`(text: String) {
+        val [_, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "UnsupportedCatalogVersionConstraint" })
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["[[libraries]]\nmodule = \"io.ktor:ktor-core\"", "[[versions]]\nktor = \"3.6.0\""])
+    fun `catalog sections cannot be arrays of tables`(text: String) {
+        val [_, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogValueType" })
+    }
+
+    @Test
+    fun `nested version table can provide a ref for a library table`() {
+        val [catalog, reporter] = parse("""
+            [versions]
+            ktor = "3.6.0"
+            [libraries.ktor-core]
+            module = "io.ktor:ktor-core"
+            [libraries.ktor-core.version]
+            ref = "ktor"
+        """.trimIndent())
+
+        assertTrue(reporter.problems.isEmpty())
+        assertEquals("io.ktor:ktor-core:3.6.0", catalog.findInCatalog("libs.ktor.core")?.value)
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

@@ -22,44 +22,47 @@ import org.jetbrains.amper.problems.reporting.CollectingProblemReporter
 import org.jetbrains.amper.problems.reporting.BuildProblemType
 import org.jetbrains.amper.problems.reporting.Level
 import org.jetbrains.amper.problems.reporting.ProblemReporter
+import org.toml.lang.psi.TomlArrayTable
 import org.toml.lang.psi.TomlFile
 import org.toml.lang.psi.TomlInlineTable
 import org.toml.lang.psi.TomlKey
 import org.toml.lang.psi.TomlKeyValue
-import org.toml.lang.psi.TomlKeyValueOwner
 import org.toml.lang.psi.TomlLiteral
 import org.toml.lang.psi.TomlTable
 import org.toml.lang.psi.ext.TomlLiteralKind
 import org.toml.lang.psi.ext.kind
 
-private val TomlTable.headerText: String?
-    get() = header.key?.keyText
+private val TomlKey.path: List<String>
+    get() = segments.map { it.name.orEmpty() }
 
-private val TomlKeyValue.keyText: String
-    get() = key.keyText
+private fun TomlFile.findTableOrNull(name: String): TomlTable? =
+    childrenOfType<TomlTable>().firstOrNull { it.header.key?.path == [name] }
 
-private val TomlKey.keyText: String
-    get() = segments.joinToString(".") { it.name.orEmpty() }
+private data class LibraryField(val path: List<String>, val entry: TomlKeyValue)
 
-private val TomlKey.hasDots: Boolean
-    get() = segments.size > 1 || segments.any { '.' in it.name.orEmpty() }
-
-private fun TomlKeyValueOwner.getStringValueOrNull(key: String): String? {
-    val keyValue = findField(key) ?: return null
-    return keyValue.value.stringValueOrNull()
+private data class CatalogLibrary(
+    val alias: String,
+    val aliasElement: PsiElement,
+    val element: PsiElement,
+    val notation: TomlKeyValue? = null,
+    val fields: List<LibraryField> = [],
+) {
+    fun field(name: String): TomlKeyValue? = fields.firstOrNull { it.path == name.split('.') }?.entry
+    fun string(name: String): String? = field(name)?.value.stringValueOrNull()
+    val catalogKey: String get() = "libs." + alias.replace('-', '.').replace('_', '.')
 }
 
-private fun TomlKeyValueOwner.findField(key: String): TomlKeyValue? {
-    val direct = entries.firstOrNull { it.keyText == key }
-    if (direct != null) return direct
-    val path = key.split('.', limit = 2)
-    if (path.size != 2) return null
-    val parent = entries.firstOrNull { it.keyText == path.first() }?.value as? TomlInlineTable ?: return null
-    return parent.findField(path.last())
-}
+private fun libraryFields(entries: List<TomlKeyValue>, prefix: List<String> = []): List<LibraryField> =
+    entries.flatMap { libraryFields(it, prefix + it.key.path) }
 
-private fun TomlFile.findTableOrNull(headerText: String): TomlTable? =
-    childrenOfType<TomlTable>().firstOrNull { it.headerText == headerText }
+private fun libraryFields(entry: TomlKeyValue, path: List<String>): List<LibraryField> {
+    val versionTable = entry.value as? TomlInlineTable
+    return if (path == ["version"] && versionTable != null && versionTable.entries.isNotEmpty()) {
+        libraryFields(versionTable.entries, path)
+    } else {
+        [LibraryField(path, entry)]
+    }
+}
 
 private data class TomlLibraryDefinition(
     val libraryString: String,
@@ -79,14 +82,15 @@ private class TomlCatalog(
 }
 
 private class DottedCatalogAlias(
-    override val element: TomlKey,
+    override val element: PsiElement,
+    private val replacement: String,
 ) : PsiBuildProblem(Level.Error, BuildProblemType.Generic) {
     override val diagnosticId = FrontendDiagnosticId.DottedCatalogAlias
     override val message: String
         get() = SchemaBundle.message(
             "catalog.library.alias.dotted",
             element.text,
-            element.segments.joinToString("-") { it.name.orEmpty().replace('.', '-') },
+            replacement,
         )
 }
 
@@ -131,105 +135,135 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
     }
     with(reporter) { validateCatalogToml(psiFile) }
     if (reporter.problems.isNotEmpty()) return TomlCatalog(catalogFile, emptyMap(), reporter.problems)
-    val librariesTable = psiFile.findTableOrNull("libraries")
     val libraries = with(reporter) {
+        psiFile.validateExpandedSections()
         psiFile.findTableOrNull("versions")?.validateVersionTypes()
         psiFile.findTableOrNull("versions")?.validateVersionConstraints()
-        librariesTable?.parseCatalogLibraries().orEmpty()
+        psiFile.parseCatalogLibraries()
     }
     return TomlCatalog(
         location = catalogFile,
         libraries = libraries,
-        problems = librariesTable?.entries.orEmpty().map { it.key }.filter { it.hasDots }.map(::DottedCatalogAlias) + reporter.problems,
+        problems = reporter.problems,
     )
 }
 
-/**
- * Get `[libraries]` table, parse it and normalize libraries aliases
- * to match "libs.my.lib" format.
- */
+/** Reads inline, dotted-property, and table definitions while preserving their original PSI sources. */
 context(problemReporter: ProblemReporter)
-private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition> {
-    fun String.normalizeLibraryKey() = "libs." + replace("-", ".").replace("_", ".")
-
-    val librariesAliases = entries.filterNot { it.key.hasDots }
-    val aliasesByKey = librariesAliases.groupBy { it.keyText.normalizeLibraryKey() }
-    for ([key, aliases] in aliasesByKey) {
-        if (aliases.size > 1) {
-            for (alias in aliases) {
-                problemReporter.reportMessage(CatalogProblem(
-                    alias.key,
-                    FrontendDiagnosticId.CatalogAliasCollision,
-                    "catalog.library.alias.collision",
-                    aliases.joinToString(", ") { it.key.text },
-                    key,
-                ))
-            }
+private fun TomlFile.readLibraries(): List<CatalogLibrary> {
+    val entries = findTableOrNull("libraries")?.entries.orEmpty()
+    val simple = entries.filter { it.key.path.size == 1 }.mapNotNull { entry ->
+        val alias = entry.key.path.single()
+        if ('.' in alias) {
+            reportDottedAlias(entry.key)
+            null
+        } else {
+            val table = entry.value as? TomlInlineTable
+            if (table == null) CatalogLibrary(alias, entry.key, entry, notation = entry)
+            else CatalogLibrary(alias, entry.key, entry, fields = libraryFields(table.entries))
         }
     }
-    return buildMap {
-        for (entry in librariesAliases) {
-            val aliasKey = entry.keyText.normalizeLibraryKey()
-            if (aliasesByKey.getValue(aliasKey).size > 1) continue
+    val properties = entries.filter { it.key.path.size > 1 && isLibraryProperty(it.key) }
+    for (entry in entries.filter { it.key.path.size > 1 && !isLibraryProperty(it.key) }) {
+        reportDottedAlias(entry.key)
+    }
+    val expanded = properties.groupBy { it.key.path.first() }.map { [alias, fields] ->
+        CatalogLibrary(
+            alias, fields.first().key.segments.first(), fields.first(),
+            fields = fields.flatMap { libraryFields(it, it.key.path.drop(1)) },
+        )
+    }
+    val tables = childrenOfType<TomlTable>().filter { it.header.key?.path?.firstOrNull() == "libraries" }
+    val nested = tables.filter { it.header.key?.path?.size != 1 }.mapNotNull { readLibraryTable(it) }
+    return simple + expanded + nested
+}
 
-            if (!validateLibraryConstraints(entry) || !validateLibraryTypes(entry) || !validateLibraryFields(entry)) continue
-            // my-lib = "com.mycompany:mylib:1.4"
-            val value = getInlineNotation(entry) ?: continue
-            if (!validateCatalogCoordinates(entry.value ?: entry, value)) continue
-            put(aliasKey, TomlLibraryDefinition(value, entry))
+context(_: ProblemReporter)
+private fun readLibraryTable(table: TomlTable): CatalogLibrary? {
+    val key = table.header.key ?: return null
+    val path = key.path.drop(1)
+    if ('.' in path.first() || path.size > 2 || (path.size == 2 && path.last() != "version")) {
+        reportDottedAlias(key, skip = 1)
+        return null
+    }
+    return CatalogLibrary(path.first(), key.segments[1], table, fields = libraryFields(table.entries, path.drop(1)))
+}
+
+private fun isLibraryProperty(key: TomlKey): Boolean {
+    val path = key.path
+    if (path.any { '.' in it }) return false
+    val field = path.drop(1)
+    return (field.size == 1 && field.single() in ["module", "group", "name", "version"]) ||
+            (field.size == 2 && field.first() == "version")
+}
+
+context(problemReporter: ProblemReporter)
+private fun reportDottedAlias(key: TomlKey, skip: Int = 0) {
+    val aliasSegments = key.segments.drop(skip)
+    val segments = if ('.' in aliasSegments.first().name.orEmpty()) [aliasSegments.first()] else aliasSegments
+    val element = if (segments.size == 1) segments.single() else key
+    problemReporter.reportMessage(DottedCatalogAlias(
+        element,
+        segments.joinToString("-") { it.name.orEmpty().replace('.', '-') },
+    ))
+}
+
+context(problemReporter: ProblemReporter)
+private fun TomlFile.parseCatalogLibraries(): Map<String, TomlLibraryDefinition> {
+    val aliasesByKey = readLibraries().groupBy { it.catalogKey }
+    return buildMap {
+        for ([key, libraries] in aliasesByKey) {
+            val aliases = libraries.map { it.alias }.distinct()
+            if (aliases.size > 1) {
+                for (library in libraries) {
+                    problemReporter.reportMessage(CatalogProblem(
+                        library.aliasElement,
+                        FrontendDiagnosticId.CatalogAliasCollision,
+                        "catalog.library.alias.collision",
+                        aliases.joinToString(", "),
+                        key,
+                    ))
+                }
+                continue
+            }
+            val library = libraries.first().copy(fields = libraries.flatMap { it.fields })
+            if (!validateLibraryConstraints(library) || !validateLibraryTypes(library) || !validateLibraryFields(library)) continue
+            val value = getInlineNotation(library) ?: continue
+            if (!validateCatalogCoordinates(library.notation?.value ?: library.element, value)) continue
+            put(key, TomlLibraryDefinition(value, library.element))
         }
     }
 }
 
 context(problemReporter: ProblemReporter)
-private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
-    return when (val libraryValue = catalogEntry.value) {
-        is TomlLiteral -> libraryValue.stringValueOrNull()
-        is TomlInlineTable -> {
-            val version = libraryValue.getStringValueOrNull("version")
-            val versionRef = libraryValue.getStringValueOrNull("version.ref")
+private fun getInlineNotation(library: CatalogLibrary): String? {
+    if (library.notation != null) return library.notation.value.stringValueOrNull()
+    val module = library.string("module")
+    val group = library.string("group")
+    val name = library.string("name")
+    val moduleName = module ?: if (group != null && name != null) "$group:$name" else return null
+    if (!validateCatalogCoordinates(library.field("module")?.value ?: library.element, moduleName, moduleOnly = true)) return null
 
-            val module = libraryValue.getStringValueOrNull("module")
-            val group = libraryValue.getStringValueOrNull("group")
-            val name = libraryValue.getStringValueOrNull("name")
+    val version = library.string("version")
+    val versionRef = library.string("version.ref")
+    if (version == null && versionRef == null) return moduleName // The version may come from a BOM.
+    val finalVersion = version ?: resolveVersion(library, versionRef ?: return null) ?: return null
+    return "$moduleName:$finalVersion"
+}
 
-            val finalModuleName = when {
-                module != null -> module
-                group != null && name != null -> "$group:$name"
-                else -> null
-            } ?: return null
-
-            val moduleOrigin = libraryValue.entries.firstOrNull { it.keyText == "module" }?.value ?: libraryValue
-            if (!validateCatalogCoordinates(moduleOrigin, finalModuleName, moduleOnly = true)) return null
-
-            // The version might come from BOM
-            if (version == null && versionRef == null) return finalModuleName
-
-            val finalVersion = when {
-                version != null -> version
-                versionRef != null -> {
-                    val file = catalogEntry.containingFile as TomlFile
-                    val versions = file.findTableOrNull("versions")
-                    val resolvedVersion = versions?.getStringValueOrNull(versionRef)
-                    if (resolvedVersion == null && versions?.entries?.none { it.keyText == versionRef } != false) {
-                        problemReporter.reportMessage(CatalogProblem(
-                            libraryValue.findField("version.ref")?.value ?: catalogEntry,
-                            FrontendDiagnosticId.UnresolvedCatalogVersion,
-                            "catalog.version.ref.unresolved",
-                            versionRef,
-                        ))
-                    }
-                    resolvedVersion
-                }
-
-                else -> null
-            } ?: return null
-
-            "$finalModuleName:$finalVersion"
-        }
-
-        else -> null
+context(problemReporter: ProblemReporter)
+private fun resolveVersion(library: CatalogLibrary, versionRef: String): String? {
+    val file = library.element.containingFile as TomlFile
+    val version = file.findTableOrNull("versions")?.entries?.firstOrNull { it.key.path == [versionRef] }
+    if (version == null) {
+        problemReporter.reportMessage(CatalogProblem(
+            library.field("version.ref")?.value ?: library.element,
+            FrontendDiagnosticId.UnresolvedCatalogVersion,
+            "catalog.version.ref.unresolved",
+            versionRef,
+        ))
     }
+    return version?.value.stringValueOrNull()
 }
 
 context(problemReporter: ProblemReporter)
@@ -276,45 +310,41 @@ private fun TomlTable.validateVersionTypes() {
     }
 }
 
+private val libraryFieldPaths: List<List<String>> =
+    [["module"], ["group"], ["name"], ["version"], ["version", "ref"]]
+
 context(_: ProblemReporter)
-private fun validateLibraryTypes(entry: TomlKeyValue): Boolean {
-    val value = entry.value
-    if (value.isTomlString()) return true
-    if (value !is TomlInlineTable) {
-        reportInvalidType(entry, "a string or a library table")
+private fun validateLibraryTypes(library: CatalogLibrary): Boolean {
+    val notation = library.notation
+    if (notation != null) {
+        if (notation.value.isTomlString()) return true
+        reportInvalidType(notation, "a string or a library table")
         return false
     }
-    val stringFields: Set<String> = ["module", "group", "name", "version", "version.ref"]
-    val invalidFields = value.entries.filter {
-        it.keyText in stringFields && !it.value.isTomlString() && !(it.keyText == "version" && it.value is TomlInlineTable)
-    }
-    val versionTable = value.findField("version")?.value as? TomlInlineTable
-    val invalidRefs = versionTable?.entries.orEmpty().filter { it.keyText == "ref" && !it.value.isTomlString() }
-    for (field in invalidFields + invalidRefs) reportInvalidType(field, "a string")
-    return invalidFields.isEmpty() && invalidRefs.isEmpty()
+    val invalidFields = library.fields.filter { it.path in libraryFieldPaths && !it.entry.value.isTomlString() }
+    for (field in invalidFields) reportInvalidType(field.entry, "a string")
+    return invalidFields.isEmpty()
 }
 
 context(problemReporter: ProblemReporter)
-private fun validateLibraryFields(entry: TomlKeyValue): Boolean {
-    val table = entry.value as? TomlInlineTable ?: return true
-    val allowedFields: Set<String> = ["module", "group", "name", "version", "version.ref"]
-    val unknownFields = table.entries.filter { it.keyText !in allowedFields }
+private fun validateLibraryFields(library: CatalogLibrary): Boolean {
+    if (library.notation != null) return true
+    val unknownFields = library.fields.filter { it.path !in libraryFieldPaths }
     for (field in unknownFields) {
         problemReporter.reportMessage(CatalogProblem(
-            field.key,
+            field.entry.key,
             FrontendDiagnosticId.UnknownCatalogField,
             "catalog.field.unknown",
-            field.key.text,
+            field.entry.key.text,
         ))
     }
-    val keys = table.entries.map { it.keyText }.toSet()
-    val hasModule = "module" in keys || ("group" in keys && "name" in keys)
+    val hasModule = library.field("module") != null || (library.field("group") != null && library.field("name") != null)
     if (!hasModule) {
         problemReporter.reportMessage(CatalogProblem(
-            entry.value ?: entry,
+            library.element,
             FrontendDiagnosticId.MissingCatalogModule,
             "catalog.library.module.missing",
-            entry.key.text,
+            library.alias,
         ))
     }
     return unknownFields.isEmpty() && hasModule
@@ -332,21 +362,36 @@ private fun reportUnsupportedConstraint(element: PsiElement) {
 context(_: ProblemReporter)
 private fun TomlTable.validateVersionConstraints() {
     for (entry in entries) {
-        if (entry.value is TomlInlineTable) reportUnsupportedConstraint(entry.value ?: entry)
+        if (entry.value is TomlInlineTable || entry.key.path.size > 1) reportUnsupportedConstraint(entry.value ?: entry)
     }
 }
 
 context(_: ProblemReporter)
-private fun validateLibraryConstraints(entry: TomlKeyValue): Boolean {
-    val table = entry.value as? TomlInlineTable ?: return true
-    val constraints = table.entries.filter {
-        it.keyText.startsWith("version.") && it.keyText != "version.ref"
+private fun validateLibraryConstraints(library: CatalogLibrary): Boolean {
+    val constraints = library.fields.filter {
+        (it.path.firstOrNull() == "version" && it.path.size > 1 && it.path != ["version", "ref"]) ||
+                (it.path == ["version"] && it.entry.value is TomlInlineTable)
     }
-    val version = table.findField("version")
-    val versionTable = version?.value as? TomlInlineTable
-    val unsupportedTable = versionTable != null &&
-            (versionTable.entries.isEmpty() || versionTable.entries.any { it.keyText != "ref" })
-    for (constraint in constraints) reportUnsupportedConstraint(constraint.key)
-    if (unsupportedTable) reportUnsupportedConstraint(versionTable)
-    return constraints.isEmpty() && !unsupportedTable
+    for (constraint in constraints) reportUnsupportedConstraint(constraint.entry.key)
+    return constraints.isEmpty()
+}
+
+context(problemReporter: ProblemReporter)
+private fun TomlFile.validateExpandedSections() {
+    for (table in childrenOfType<TomlTable>()) {
+        val key = table.header.key ?: continue
+        if (key.path.firstOrNull() == "versions" && key.path.size > 1) reportUnsupportedConstraint(key)
+    }
+    for (table in childrenOfType<TomlArrayTable>()) {
+        val key = table.header.key ?: continue
+        if (key.path.firstOrNull() in ["libraries", "versions"]) {
+            problemReporter.reportMessage(CatalogProblem(
+                key,
+                FrontendDiagnosticId.InvalidCatalogValueType,
+                "catalog.value.type.invalid",
+                key.text,
+                "a table, not an array of tables",
+            ))
+        }
+    }
 }

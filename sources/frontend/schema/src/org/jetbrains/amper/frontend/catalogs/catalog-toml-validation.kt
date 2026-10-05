@@ -50,6 +50,7 @@ internal fun validateCatalogToml(file: TomlFile) {
             reporter.reportMessage(InvalidCatalogToml(key, "Table ${key.text} is already defined"))
         }
     }
+    validateCrossTableDefinitions(file)
     validateKeys(file.childrenOfType<TomlKeyValue>())
     for (owner in PsiTreeUtil.collectElementsOfType(file, TomlKeyValueOwner::class.java)) {
         validateKeys(owner.entries)
@@ -69,5 +70,60 @@ private fun validateKeys(entries: List<TomlKeyValue>) {
         }
         declared[path] = entry.key
         for (length in 1 until path.size) descendants.putIfAbsent(path.take(length), entry.key)
+    }
+}
+
+/** Checks definitions across table boundaries without treating a table's implicit parents as redefinitions. */
+context(reporter: ProblemReporter)
+private fun validateCrossTableDefinitions(file: TomlFile) {
+    val definitions = CatalogTomlDefinitions(reporter)
+    for (entry in file.childrenOfType<TomlKeyValue>()) {
+        if (entry.key.segments.firstOrNull()?.name in ["libraries", "versions"]) definitions.addEntry(entry, [])
+    }
+    for (table in file.childrenOfType<TomlTable>()) {
+        val key = table.header.key ?: continue
+        val path = key.segments.map { it.name.orEmpty() }
+        if (path.firstOrNull() !in ["libraries", "versions"]) continue
+        definitions.addTable(key, path)
+        for (entry in table.entries) definitions.addEntry(entry, path)
+    }
+}
+
+private enum class DefinitionKind { ImplicitTable, ExplicitTable, DottedTable, Value }
+
+private data class TomlDefinition(val kind: DefinitionKind, val key: TomlKey)
+
+private class CatalogTomlDefinitions(private val reporter: ProblemReporter) {
+    private val definitions = mutableMapOf<List<String>, TomlDefinition>()
+
+    fun addTable(key: TomlKey, path: List<String>) {
+        for (length in 1 until path.size) {
+            val prefix = path.take(length)
+            val existing = definitions[prefix]
+            if (existing?.kind == DefinitionKind.Value) reportConflict(key, existing.key)
+            if (existing == null) definitions[prefix] = TomlDefinition(DefinitionKind.ImplicitTable, key)
+        }
+        val existing = definitions[path]
+        if (existing != null && existing.kind != DefinitionKind.ImplicitTable) reportConflict(key, existing.key)
+        definitions[path] = TomlDefinition(DefinitionKind.ExplicitTable, key)
+    }
+
+    fun addEntry(entry: TomlKeyValue, tablePath: List<String>) {
+        val path = tablePath + entry.key.segments.map { it.name.orEmpty() }
+        for (length in tablePath.size + 1 until path.size) {
+            val prefix = path.take(length)
+            val existing = definitions[prefix]
+            if (existing != null && existing.kind in [DefinitionKind.Value, DefinitionKind.ExplicitTable]) {
+                reportConflict(entry.key, existing.key)
+            }
+            if (existing == null) definitions[prefix] = TomlDefinition(DefinitionKind.DottedTable, entry.key)
+        }
+        val existing = definitions[path]
+        if (existing != null) reportConflict(entry.key, existing.key)
+        definitions[path] = TomlDefinition(DefinitionKind.Value, entry.key)
+    }
+
+    private fun reportConflict(key: TomlKey, previous: TomlKey) {
+        reporter.reportMessage(InvalidCatalogToml(key, "Definition ${key.text} conflicts with ${previous.text}"))
     }
 }

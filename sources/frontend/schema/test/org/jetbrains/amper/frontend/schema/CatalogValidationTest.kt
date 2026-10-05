@@ -91,6 +91,24 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         assertNotNull(catalog.findInCatalog("libs.ktor.core"))
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "[libraries]\nktor-core = 123",
+        "[libraries]\nktor-core = true",
+        "[libraries]\nktor-core = []",
+        "[libraries]\nktor-core = { module = true, version = \"3.6.0\" }",
+        "[libraries]\nktor-core = { group = \"io.ktor\", name = 123, version = \"3.6.0\" }",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version = 123 }",
+        "[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version.ref = 123 }",
+        "[versions]\nktor = 123\n[libraries]\nktor-core = { module = \"io.ktor:ktor-core\", version.ref = \"ktor\" }",
+        "[versions]\nunused = true\n[libraries]\nktor-core = \"io.ktor:ktor-core:3.6.0\"",
+    ])
+    fun `catalog fields must have their declared TOML types`(text: String) {
+        val [_, reporter] = parse(text)
+
+        assertTrue(reporter.problems.any { it.diagnosticId.toString() == "InvalidCatalogValueType" })
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

@@ -29,6 +29,8 @@ import org.toml.lang.psi.TomlKeyValue
 import org.toml.lang.psi.TomlKeyValueOwner
 import org.toml.lang.psi.TomlLiteral
 import org.toml.lang.psi.TomlTable
+import org.toml.lang.psi.ext.TomlLiteralKind
+import org.toml.lang.psi.ext.kind
 
 private val TomlTable.headerText: String?
     get() = header.key?.keyText
@@ -44,7 +46,7 @@ private val TomlKey.hasDots: Boolean
 
 private fun TomlKeyValueOwner.getStringValueOrNull(key: String): String? {
     val keyValue = entries.find { it.keyText == key } ?: return null
-    return keyValue.value?.takeIf { it is TomlLiteral }?.text?.removeSurrounding("\"")
+    return keyValue.value?.takeIf { it.isTomlString() }?.text?.removeSurrounding("\"")
 }
 
 private fun TomlFile.findTableOrNull(headerText: String): TomlTable? =
@@ -109,7 +111,10 @@ internal fun FrontendPathResolver.parseGradleVersionCatalog(
     val psiFile = toPsiFile(catalogFile) as? TomlFile ?: return null
     val librariesTable = psiFile.findTableOrNull("libraries") ?: return null
     val reporter = CollectingProblemReporter()
-    val libraries = with(reporter) { librariesTable.parseCatalogLibraries() }
+    val libraries = with(reporter) {
+        psiFile.findTableOrNull("versions")?.validateVersionTypes()
+        librariesTable.parseCatalogLibraries()
+    }
     return TomlCatalog(
         location = catalogFile,
         libraries = libraries,
@@ -145,6 +150,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
             val aliasKey = entry.keyText.normalizeLibraryKey()
             if (aliasesByKey.getValue(aliasKey).size > 1) continue
 
+            if (!validateLibraryTypes(entry)) continue
             // my-lib = "com.mycompany:mylib:1.4"
             val value = getInlineNotation(entry) ?: continue
             if (!validateCatalogCoordinates(entry.value ?: entry, value)) continue
@@ -183,7 +189,7 @@ private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
                     val file = catalogEntry.containingFile as TomlFile
                     val versions = file.findTableOrNull("versions")
                     val resolvedVersion = versions?.getStringValueOrNull(versionRef)
-                    if (resolvedVersion == null) {
+                    if (resolvedVersion == null && versions?.entries?.none { it.keyText == versionRef } != false) {
                         problemReporter.reportMessage(CatalogProblem(
                             libraryValue.entries.first { it.keyText == "version.ref" }.value ?: catalogEntry,
                             FrontendDiagnosticId.UnresolvedCatalogVersion,
@@ -221,4 +227,42 @@ private fun validateCatalogCoordinates(origin: PsiElement, coordinates: String, 
         return false
     }
     return true
+}
+
+private fun PsiElement?.isTomlString(): Boolean = this is TomlLiteral && kind is TomlLiteralKind.String
+
+context(problemReporter: ProblemReporter)
+private fun reportInvalidType(entry: TomlKeyValue, expected: String) {
+    problemReporter.reportMessage(CatalogProblem(
+        entry.value ?: entry,
+        FrontendDiagnosticId.InvalidCatalogValueType,
+        "catalog.value.type.invalid",
+        entry.key.text,
+        expected,
+    ))
+}
+
+context(_: ProblemReporter)
+private fun TomlTable.validateVersionTypes() {
+    for (entry in entries) {
+        if (!entry.value.isTomlString() && entry.value !is TomlInlineTable) {
+            reportInvalidType(entry, "a string")
+        }
+    }
+}
+
+context(_: ProblemReporter)
+private fun validateLibraryTypes(entry: TomlKeyValue): Boolean {
+    val value = entry.value
+    if (value.isTomlString()) return true
+    if (value !is TomlInlineTable) {
+        reportInvalidType(entry, "a string or a library table")
+        return false
+    }
+    val stringFields: Set<String> = ["module", "group", "name", "version", "version.ref"]
+    val invalidFields = value.entries.filter {
+        it.keyText in stringFields && !it.value.isTomlString() && !(it.keyText == "version" && it.value is TomlInlineTable)
+    }
+    for (field in invalidFields) reportInvalidType(field, "a string")
+    return invalidFields.isEmpty()
 }

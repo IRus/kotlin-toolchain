@@ -151,6 +151,7 @@ private fun TomlTable.parseCatalogLibraries(): Map<String, TomlLibraryDefinition
     }
 }
 
+context(problemReporter: ProblemReporter)
 private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
     return when (val libraryValue = catalogEntry.value) {
         is TomlLiteral -> libraryValue.text.removeSurrounding("\"")
@@ -176,7 +177,16 @@ private fun getInlineNotation(catalogEntry: TomlKeyValue): String? {
                 versionRef != null -> {
                     val file = catalogEntry.containingFile as TomlFile
                     val versions = file.findTableOrNull("versions")
-                    versions?.getStringValueOrNull(versionRef)
+                    val resolvedVersion = versions?.getStringValueOrNull(versionRef)
+                    if (resolvedVersion == null) {
+                        problemReporter.reportMessage(CatalogProblem(
+                            libraryValue.entries.first { it.keyText == "version.ref" }.value ?: catalogEntry,
+                            FrontendDiagnosticId.UnresolvedCatalogVersion,
+                            "catalog.version.ref.unresolved",
+                            versionRef,
+                        ))
+                    }
+                    resolvedVersion
                 }
 
                 else -> null

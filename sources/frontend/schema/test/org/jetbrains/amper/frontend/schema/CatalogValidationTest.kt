@@ -43,6 +43,21 @@ internal class CatalogValidationTest : FrontendTestCaseBase(Path("testResources"
         }.toSet())
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = [
+        "{ module = \"io.ktor:ktor-client-core\", version.ref = \"missing\" }",
+        "{ group = \"io.ktor\", name = \"ktor-client-core\", version.ref = \"missing\" }",
+    ])
+    fun `undefined version refs report the reference instead of dropping the entry silently`(definition: String) {
+        val [catalog, reporter] = parse("[libraries]\nktor-core = $definition\n")
+
+        assertNull(catalog.findInCatalog("libs.ktor.core"))
+        val problem = reporter.problems.single()
+        assertEquals("UnresolvedCatalogVersion", problem.diagnosticId.toString())
+        assertTrue("missing" in problem.message)
+        assertEquals("\"missing\"", assertIs<PsiBuildProblemSource>(problem.source).psiElement.text)
+    }
+
     private fun parse(text: String): Pair<VersionCatalog, CollectingProblemReporter> {
         val catalogPath = buildDir / "libs.versions.toml"
         catalogPath.writeText(text)

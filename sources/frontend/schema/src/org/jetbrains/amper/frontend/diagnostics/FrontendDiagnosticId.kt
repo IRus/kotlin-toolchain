@@ -68,6 +68,7 @@ enum class FrontendDiagnosticId : DiagnosticId {
     UnknownProperty,
     UnknownPropertyInUserControlledType,
     UnknownQualifiers,
+    UnresolvedCatalogVersion,
     UnresolvedModuleDeclaration,
     UnresolvedModuleDependency,
     UnresolvedTemplate,

@@ -1,5 +1,6 @@
 dependencies:
   - org.apache.commons:commons-math3:3.6.1
+  - $kotlin.serialization.json
 
 test-dependencies:
   - org.jetbrains.kotlin:kotlin-test:1.8.20
@@ -12,4 +13,4 @@ product:
 settings:
   kotlin:
     languageVersion: 1.9
-    serialization: json
+    serialization: enabled

@@ -10,12 +10,13 @@ apply:
   - //sources/used-in-kotlin-notebook.module-template.yaml
 
 dependencies:
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core
   - ../libraries/serialization-extended
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
   publishing:
     enabled: true
   jvm:

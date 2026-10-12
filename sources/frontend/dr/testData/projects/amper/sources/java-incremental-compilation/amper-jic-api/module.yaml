@@ -8,8 +8,9 @@ apply:
 
 dependencies:
   - $kotlin.serialization.core
+  - $kotlin.serialization.json
   - ../../libraries/serialization-extended
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

@@ -7,6 +7,7 @@ apply:
   - ../../dr.amper.used-in-idea.module-template.yaml
 
 dependencies:
+  - $kotlin.serialization.json
   - $libs.ktor.client.core
   - $libs.xz
 
@@ -15,4 +16,4 @@ test-dependencies:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

@@ -24,11 +24,6 @@ class SettingsDiagnosticsTest : FrontendTestCaseBase(Path("testResources") / "di
     }
 
     @Test
-    fun `no redundancy for kotlin serialization format`() {
-        diagnosticsTest("setting-no-redundancy-kotlin-serialization")
-    }
-
-    @Test
     fun `setting overrides same value`() {
         diagnosticsTest("setting-overrides-same-value")
     }

@@ -12,6 +12,7 @@ dependencies:
   - //sources/amper-build-info
   - //sources/libraries/stdlib-extended
   - //sources/libraries/telemetry
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core
   - $libs.slf4j.api
   - $libs.opentelemetry.sdk.common
@@ -21,7 +22,7 @@ dependencies:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
   jvm:
     # Used in IDEA (max 21), JIC (max 16), and Android Gradle builds (max 17), so we take the lowest version 16
     release: 16

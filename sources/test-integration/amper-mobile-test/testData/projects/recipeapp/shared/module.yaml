@@ -8,11 +8,12 @@ dependencies:
   - $compose.runtime: exported
   - $compose.foundation: exported
   - $compose.material3: exported
+  - $kotlin.serialization.json
   - org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha04: exported
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
   android:
     minSdk: 24
   compose:

@@ -8,11 +8,12 @@ apply:
   - //sources/used-in-idea.module-template.yaml
 
 dependencies:
+  - $kotlin.serialization.cbor
   - $libs.xmlutil.serialization
 
 settings:
   kotlin:
-    serialization: cbor
+    serialization: enabled
   jvm:
     # Used in Android Gradle builds (max 17) and IDEA (max 21), so we pick 17
     release: 17

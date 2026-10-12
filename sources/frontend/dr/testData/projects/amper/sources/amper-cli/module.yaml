@@ -38,6 +38,7 @@ dependencies:
   - ../android-integration/amper-android-sdk-detector
   - ../java-incremental-compilation/amper-jic-api
   - ../amper-maven-plugins-compatibility
+  - $kotlin.serialization.json
   - $libs.bouncycastle.bcprov # for keystore generation
   - $libs.bouncycastle.bcpkix # for keystore generation
   - $libs.intellij.amper.xcodemodel
@@ -111,7 +112,7 @@ plugins:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
   internal:
     excludeDependencies:
       # This is excluded in the pom.xml of `doxia-integration-tools` but we don't yet support excludes in DR: AMPER-923

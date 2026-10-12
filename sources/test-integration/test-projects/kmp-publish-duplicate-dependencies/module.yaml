@@ -27,10 +27,10 @@ dependencies@jvm:
 
 settings:
   kotlin:
-    # This implicitly adds kotlinx-serialization-core AND kotlinx-serialization-json to every fragment.
-    # Neither of them is declared explicitly, so the implicit dependencies are added to both the common and the jvm
-    # fragments, and each of them must still appear only once in the pom.xml.
-    serialization: json
+    # This implicitly adds kotlinx-serialization-core to every fragment.
+    # It is not declared explicitly, so the implicit dependency is added to both the common and the jvm
+    # fragments, and it must still appear only once in the pom.xml.
+    serialization: enabled
   publishing:
     enabled: true
     group: "amper.test.kmp-publish-duplicate-dependencies"

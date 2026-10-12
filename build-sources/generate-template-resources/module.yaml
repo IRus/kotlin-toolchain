@@ -9,7 +9,8 @@ apply:
 
 dependencies:
   - //sources/amper-project-templates/amper-project-template-resources
+  - $kotlin.serialization.json
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

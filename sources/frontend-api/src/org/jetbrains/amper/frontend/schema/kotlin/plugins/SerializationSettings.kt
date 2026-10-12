@@ -5,6 +5,7 @@
 package org.jetbrains.amper.frontend.schema.kotlin.plugins
 
 import org.jetbrains.amper.frontend.api.CanBeReferenced
+import org.jetbrains.amper.frontend.api.DeprecatedSchema
 import org.jetbrains.amper.frontend.api.KnownStringValues
 import org.jetbrains.amper.frontend.api.NotBlank
 import org.jetbrains.amper.frontend.api.SchemaDoc
@@ -38,6 +39,7 @@ class SerializationSettings : SchemaNode() {
             "'exported' properties.")
     @KnownStringValues("json", "json-io", "json-okio", "hocon", "protobuf", "cbor", "properties", "none")
     @NotBlank
+    @DeprecatedSchema("serialization.format.deprecated", isError = false)
     val format by nullableValue<String>(default = null)
 
     @SchemaDoc("The version of the kotlinx.serialization core and format libraries to use.")

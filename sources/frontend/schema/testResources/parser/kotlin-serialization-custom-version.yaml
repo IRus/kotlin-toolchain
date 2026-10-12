@@ -3,9 +3,12 @@ product:
   platforms:
     - jvm
 
+dependencies:
+  - $kotlin.serialization.json
+
 settings:
   kotlin:
     languageVersion: 1.9
     serialization:
-      format: json
+      enabled: true
       version: 1.5.1

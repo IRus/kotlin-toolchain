@@ -12,10 +12,11 @@ dependencies:
   - //sources/frontend/schema
   - //sources/libraries/stdlib-extended
   - //sources/libraries/maven-central-configuration
+  - $kotlin.serialization.json
   - $libs.android.gradle.plugin
   - $libs.google.services.gradle.plugin: runtime-only
   - $libs.gradle.api: compile-only
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

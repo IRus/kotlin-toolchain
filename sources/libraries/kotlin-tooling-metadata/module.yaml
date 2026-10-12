@@ -5,6 +5,9 @@ description: Library represents the format of the Kotlin tooling metadata
 apply:
   - //sources/common.module-template.yaml
 
+dependencies:
+  - $kotlin.serialization.json
+
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

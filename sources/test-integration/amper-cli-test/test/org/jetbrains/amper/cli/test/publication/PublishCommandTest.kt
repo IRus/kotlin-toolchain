@@ -838,12 +838,6 @@ class PublishCommandTest : CliTestBase() {
                   <version>${DefaultVersions.kotlinxSerialization}</version>
                   <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                  <groupId>org.jetbrains.kotlinx</groupId>
-                  <artifactId>kotlinx-serialization-json-jvm</artifactId>
-                  <version>${DefaultVersions.kotlinxSerialization}</version>
-                  <scope>runtime</scope>
-                </dependency>
               </dependencies>
             </project>
         """.trimIndent(), pom.readText().trim())
@@ -861,7 +855,6 @@ class PublishCommandTest : CliTestBase() {
                     "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${DefaultVersions.kotlinxSerialization}",
                     "org.jetbrains.kotlin:kotlin-stdlib:${DefaultVersions.kotlin}",
                     "org.jetbrains.kotlinx:kotlinx-serialization-core:${DefaultVersions.kotlinxSerialization}",
-                    "org.jetbrains.kotlinx:kotlinx-serialization-json:${DefaultVersions.kotlinxSerialization}",
                 ),
             ),
             actual = jvmModuleFile.dependenciesPerVariant(),

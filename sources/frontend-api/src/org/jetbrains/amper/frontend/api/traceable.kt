@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package org.jetbrains.amper.frontend.api
@@ -118,9 +118,9 @@ data class BuiltinCatalogTrace(
  * settings:
  *   kotlin:
  *     serialization:
- *       format: json  # 'sourceValue' points here, to where the value comes from
+ *       version: 1.11.0  # 'sourceValue' points here, to where the value comes from
  *   myPlugin:
- *     someProp: ${settings.kotlin.serialization.format} # 'definitionTrace' points here, where the ref is defined
+ *     someProp: ${settings.kotlin.serialization.version} # 'definitionTrace' points here, where the ref is defined
  * ```
  *
  * @see ResolvedReferenceTrace

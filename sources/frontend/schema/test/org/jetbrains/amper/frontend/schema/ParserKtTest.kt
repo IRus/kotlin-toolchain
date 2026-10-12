@@ -137,16 +137,6 @@ internal class ParserKtTest : FrontendTestCaseBase(Path("testResources") / "pars
     }
 
     @Test
-    fun `check kotlin serialization settings with 'none' short form`() {
-        aomTest("kotlin-serialization-none")
-    }
-
-    @Test
-    fun `check kotlin serialization settings with enabled and format`() {
-        aomTest("kotlin-serialization-enabled-and-format")
-    }
-
-    @Test
     fun `check lombok settings with default version`() {
         aomTest("lombok-default-version")
     }

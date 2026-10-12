@@ -133,6 +133,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     dependencies:
       - $compose.foundation: exported
       - $compose.material3: exported
+      - $kotlin.serialization.json
 
     # Android-only dependencies
     dependencies@android:
@@ -143,7 +144,7 @@ Install the [Kotlin Toolchain plugin](https://plugins.jetbrains.com/plugin/31850
     settings:
       # Enable Kotlin serialization
       kotlin:
-        serialization: json
+        serialization: enabled
 
       # Enable the Compose Multiplatform framework
       compose: enabled

@@ -9,11 +9,12 @@ apply:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
 
 dependencies:
   - //sources/extensibility/amper-extensibility-schema-model: exported
   - //sources/libraries/stdlib-extended
+  - $kotlin.serialization.json
 
   - $libs.kotlin.analysis.api.for.ide: exported
   - $libs.kotlin.compiler: exported

@@ -12,4 +12,5 @@ settings@jvm:
 settings@android:
   kotlin:
     <![Error] Setting `serialization` can only be used without any @platform qualifier.!>serialization<!>:
-      format: json
+      enabled: true
+      version: 1.11.0

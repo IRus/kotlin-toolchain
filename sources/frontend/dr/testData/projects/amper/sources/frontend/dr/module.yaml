@@ -20,13 +20,13 @@ dependencies:
   - ../../libraries/telemetry
   - ../../libraries/incremental-cache
   - ../../libraries/maven-central-configuration
+  - $kotlin.serialization.json
   - $libs.slf4j.api
   - $libs.intellij.platform.util
 
 settings:
   kotlin:
-    serialization:
-      format: json
+    serialization: enabled
 
 test-settings:
   kotlin:

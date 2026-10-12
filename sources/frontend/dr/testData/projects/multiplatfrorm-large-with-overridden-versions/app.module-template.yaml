@@ -5,6 +5,7 @@ dependencies:
   - io.insert-koin:koin-compose-viewmodel: exported
   - io.insert-koin:koin-compose-viewmodel-navigation: exported
   - org.jetbrains.kotlinx:kotlinx-datetime:0.7.1
+  - $kotlin.serialization.json
 
 test-dependencies:
   - io.insert-koin:koin-test
@@ -15,5 +16,5 @@ test-dependencies@android:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
     freeCompilerArgs: [ -Xcontext-parameters ]

@@ -3,8 +3,9 @@ product: jvm/app
 settings:
   kotlin:
     serialization:
-      format: json
+      enabled: true
       version: 1.5.1
 
 dependencies:
   - $kotlin.serialization.cbor
+  - $kotlin.serialization.json

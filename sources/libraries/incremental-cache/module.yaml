@@ -12,6 +12,7 @@ dependencies:
   - //sources/libraries/nio-filechannels
   - //sources/libraries/stdlib-extended
   - //sources/libraries/telemetry: exported # OpenTelemetry is in the API
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core
   - $libs.slf4j.api
 
@@ -24,4 +25,4 @@ settings:
     # Used in IDEA (max 21) and Kotlin Notebook (max 11), so we take the lowest version 11
     release: 11
   kotlin:
-    serialization: json
+    serialization: enabled

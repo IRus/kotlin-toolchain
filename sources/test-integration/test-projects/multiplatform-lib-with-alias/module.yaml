@@ -7,6 +7,7 @@ aliases:
 
 dependencies:
   - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0
+  - $kotlin.serialization.json
 
 settings:
   jvm:
@@ -15,5 +16,5 @@ settings:
   kotlin:
     version: 2.3.21
     serialization:
+      enabled: true
       version: 1.11.0
-      format: json

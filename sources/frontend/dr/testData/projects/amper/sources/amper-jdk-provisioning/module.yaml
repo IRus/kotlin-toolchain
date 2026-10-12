@@ -16,6 +16,7 @@ dependencies:
   - ../libraries/serialization-extended
   - ../libraries/system-info
   - ../libraries/telemetry
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core
   - $libs.slf4j.api
 
@@ -25,4 +26,4 @@ test-dependencies:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

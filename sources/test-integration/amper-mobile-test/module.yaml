@@ -17,6 +17,9 @@ tasks:
     # To build&publish the CLI distribution and scripts required for wrapper-based tests
     dependsOn: [ :amper-cli:uploadLocal@amper-distribution ]
 
+dependencies:
+  - $kotlin.serialization.json
+
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

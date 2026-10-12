@@ -22,6 +22,7 @@ dependencies:
   - //sources/libraries/telemetry: exported
   - //sources/libraries/incremental-cache: exported
   - //sources/libraries/serialization-extended
+  - $kotlin.serialization.json
   - $libs.xmlutil.serialization
   - $libs.maven.artifact
   - $libs.kotlinx.coroutines.core
@@ -38,8 +39,7 @@ settings:
     # Used in IDEA (max 21) and Kotlin Notebook (max 11), so we take the lowest version 11
     release: 11
   kotlin:
-    serialization:
-      format: json
+    serialization: enabled
 
 plugins:
   generate-build-properties:

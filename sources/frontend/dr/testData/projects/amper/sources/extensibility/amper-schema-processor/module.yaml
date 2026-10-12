@@ -8,11 +8,12 @@ apply:
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled
 
 dependencies:
   - ../../amper-telemetry
   - ../amper-schema-processing
+  - $kotlin.serialization.json
   - $libs.kotlin.analysis.api.standalone.for.ide
 
 test-dependencies:

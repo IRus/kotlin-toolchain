@@ -9,9 +9,7 @@ apply:
 
 settings:
   kotlin:
-    serialization:
-      enabled: true
-      format: json
+    serialization: enabled
     optIns: [ org.jetbrains.amper.frontend.schema.DiscouragedDirectDefaultVersionAccess ]
   jvm:
     # Used in Android Gradle builds (max 17) and IDEA (max 21), so we pick 17
@@ -37,6 +35,7 @@ dependencies:
   - ../../libraries/system-info
   - ../../libraries/telemetry
   - ../../core-intellij
+  - $kotlin.serialization.json
   - $libs.maven.artifact
   - $libs.intellij.platform.core: exported # because we expose Project in public API
   - $libs.intellij.platform.coreImpl

@@ -14,7 +14,9 @@ apply:
 pluginInfo:
   settingsClass: org.jetbrains.amper.plugins.dokka.DokkaSettings
 
+dependencies:
+  - $kotlin.serialization.json
+
 settings:
   kotlin:
-    serialization:
-      format: json
+    serialization: enabled

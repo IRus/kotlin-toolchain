@@ -10,6 +10,7 @@ apply:
   - //sources/used-in-kotlin-notebook.module-template.yaml
 
 dependencies:
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core: exported # for CoroutineScope in the API
   - $libs.opentelemetry.api: exported
   - $libs.opentelemetry.kotlin: exported
@@ -17,8 +18,7 @@ dependencies:
 
 settings:
   kotlin:
-    serialization:
-      format: json
+    serialization: enabled
   jvm:
     # Used in Android Gradle builds (max 17), JIC (max 16), IDEA (max 21), and Notebooks (max 11), so we pick 11
     release: 11

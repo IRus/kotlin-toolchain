@@ -6,8 +6,9 @@ apply:
 dependencies:
   - //sources/libraries/async-processes
   - //sources/libraries/serialization-extended
+  - $kotlin.serialization.json
   - $libs.kotlinx.coroutines.core
 
 settings:
   kotlin:
-    serialization: json
+    serialization: enabled

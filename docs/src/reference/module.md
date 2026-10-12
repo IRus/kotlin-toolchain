@@ -584,64 +584,13 @@ Read more about [testing support](../user-guide/testing.md).
 | `suppressWarnings: boolean`      | `false`                       | Suppress the compiler from displaying warnings during compilation.                                                                                                                |
 | `verbose: boolean`               | `false`                       | Enable verbose logging output which includes details of the compilation process.                                                                                                  |
 
-The `serialization` attribute is an object with the following properties:
-
-| Attribute          | Default                       | Description                                                                                                                                                                           |
-|--------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `enabled: boolean` | (enabled if `format` is set)  | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. Automatically enabled when `format` is specified, `false` otherwise. |
-| `version: string`  | `1.11.0`                      | The version to use for the core serialization library and the serialization formats.                                                                                                  |
-| `format: string`   | `null` (only core lib)        | A shortcut for `enabled: true` and adding the given serialization format dependency. For instance, `json` adds the JSON format in addition to enabling serialization. Known formats: `json`, `json-io`, `json-okio`, `hocon`, `protobuf`, `cbor`, `properties`. |
-
-You can also use a short form and directly specify `serialization: enabled` or `serialization: json`.
-
 Examples:
 
-```yaml
-# Set Kotlin language version and opt-ins
+```yaml title="Set Kotlin language version and opt-ins"
 settings:
   kotlin:
     languageVersion: 2.3
     optIns: [ kotlin.io.path.ExperimentalPathApi ]
-```
-
-```yaml
-# Enable Kotlin Serialization with the JSON format
-settings:
-  kotlin:
-    serialization: json
-```
-
-```yaml
-# Enable Kotlin Serialization with the JSON format and a specific version 
-settings:
-  kotlin:
-    serialization: 
-      format: json
-      version: 1.9.0
-```
-
-```yaml
-# Enable Kotlin Serialization with multiple formats
-settings:
-  kotlin:
-    serialization: enabled
-
-dependencies:
-  - $kotlin.serialization.json
-  - $kotlin.serialization.protobuf
-```
-
-```yaml
-# Enable Kotlin Serialization with multiple formats and a specific version 
-settings:
-  kotlin:
-    serialization: 
-      enabled: true
-      version: 1.9.0
-
-dependencies:
-  - $kotlin.serialization.json
-  - $kotlin.serialization.protobuf
 ```
 
 #### `settings.kotlin.allOpen`
@@ -773,6 +722,54 @@ which enriches assertion failure messages with intermediate values.
 | `applyBom: boolean`                    | `true`   | Apply the kotlinx.rpc BOM to enforce dependency version alignment                                                                                        |  
 | `version: string`                      | `0.10.4` | The version of kotlinx.rpc to use                                                                                                                        |  
 | `annotationTypeSafetyEnabled: boolean` | `true`   | Controls `@Rpc` annotation type-safety compile-time checkers. Disabling is considered unsafe and is only needed when type-safety analysis fails on valid code. |  
+
+#### `settings.kotlin.serialization`
+
+`settings.kotlin.serialization` configures [Kotlin serialization](https://github.com/Kotlin/kotlinx.serialization).
+The value can be the simple `enabled` string, or an object with the following attributes:
+
+| Attribute          | Default  | Description                                                                                                                                                                           |
+|--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled: boolean` | `false`  | Enable the `@Serializable` annotation processing, and add the core serialization library. When enabled, a built-in catalog for kotlinx.serialization format dependencies is provided. |
+| `version: string`  | `1.11.0` | The version to use for the core serialization library and the serialization formats.                                                                                                  |
+
+!!! warning
+
+    The `serialization: json` shortcut and the `serialization.format` property are deprecated.
+    Use `serialization: enabled` with catalog dependencies instead.
+
+Examples:
+
+```yaml title="Short form with the JSON format"
+settings:
+  kotlin:
+    serialization: enabled
+
+dependencies:
+  - $kotlin.serialization.json
+```
+
+```yaml title="Multiple formats"
+settings:
+  kotlin:
+    serialization: enabled
+
+dependencies:
+  - $kotlin.serialization.json
+  - $kotlin.serialization.protobuf
+```
+
+```yaml title="Multiple formats and a specific version"
+settings:
+  kotlin:
+    serialization:
+      enabled: true
+      version: 1.11.0
+
+dependencies:
+  - $kotlin.serialization.json
+  - $kotlin.serialization.protobuf
+```
 
 ### `settings.ktor`
 

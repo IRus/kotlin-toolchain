@@ -17,6 +17,7 @@ import org.jetbrains.amper.compilation.KotlinUserSettings
 import org.jetbrains.amper.compilation.compiler.downloadKotlinCompiler
 import org.jetbrains.amper.compilation.downloadCompilerPlugins
 import org.jetbrains.amper.compilation.downloadNativeCompiler
+import org.jetbrains.amper.compilation.klibModuleName
 import org.jetbrains.amper.compilation.kotlinMetadataCompilerArgs
 import org.jetbrains.amper.compilation.kotlinModuleName
 import org.jetbrains.amper.compilation.kotlinNativeCompilerArgs
@@ -375,6 +376,7 @@ internal class MetadataCompileTask(
             "jdk.home" to jdk.homeDir.pathString,
             "user.settings" to Json.encodeToString(kotlinSettings),
             "task.output.root" to taskOutputRoot.path.pathString,
+            "klib.module.name" to module.klibModuleName(isTest, kotlinSettings.klibModuleName),
         )
 
         val sourceDirs =

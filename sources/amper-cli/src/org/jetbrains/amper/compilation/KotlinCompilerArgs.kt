@@ -274,12 +274,13 @@ internal fun kotlinNativeCompilerArgs(
         add("-friend-modules=${friendPaths.joinToString(File.pathSeparator)}")
     }
 
-    // TODO full module path including entire hierarchy? -Xshort-module-name)
+    val shortModuleName = compilationType.moduleName(task.module, task.isTest)
+    val klibModuleName = task.module.klibModuleName(task.isTest, kotlinUserSettings.klibModuleName)
     val isMetadataCompilation = fragmentPlatforms.size > 1 && fragments.size == 1
     if (isMetadataCompilation) {
-        val moduleName = "${compilationType.moduleName(task.module, task.isTest)}_${fragments.single().name}"
+        val moduleName = "${klibModuleName}_${fragments.single().name}"
         add("-module-name=$moduleName")
-        add("-Xshort-module-name=$moduleName")
+        add("-Xshort-module-name=${shortModuleName}_${fragments.single().name}")
 
         add("-Xmetadata-klib")
 
@@ -298,8 +299,11 @@ internal fun kotlinNativeCompilerArgs(
         add("-nopack")
         add("-nostdlib")
         add("-Xexport-kdoc")
+    } else if (compilationType == KotlinCompilationType.LIBRARY) {
+        add("-module-name=$klibModuleName")
+        add("-Xshort-module-name=$shortModuleName")
     } else {
-        add("-module-name=${compilationType.moduleName(task.module, task.isTest)}")
+        add("-module-name=$shortModuleName")
     }
 
 
@@ -379,6 +383,7 @@ internal fun kotlinWasmCompilerArgs(
     buildType: BuildType?,
     include: Path?,
     cacheDirectory: Path? = null,
+    klibModuleName: String,
 ): List<String> = buildList {
     if (!kotlinUserSettings.compilerVersion.hasSeparateWasmCompiler()) {
         add("-Xwasm")
@@ -400,6 +405,7 @@ internal fun kotlinWasmCompilerArgs(
             buildType,
             include,
             cacheDirectory,
+            klibModuleName,
         )
     )
 }
@@ -418,6 +424,7 @@ internal fun kotlinJsCompilerArgs(
     buildType: BuildType?,
     include: Path?,
     cacheDirectory: Path? = null,
+    klibModuleName: String,
 ): List<String> = buildList {
     add("-Xir-per-file")
     add("-Xir-minimized-member-names")
@@ -444,6 +451,7 @@ internal fun kotlinJsCompilerArgs(
             buildType,
             include,
             cacheDirectory,
+            klibModuleName,
         )
     )
 }
@@ -462,10 +470,17 @@ private fun kotlinWebCompilerArgs(
     buildType: BuildType?,
     include: Path?,
     cacheDirectory: Path?,
+    klibModuleName: String,
 ): List<String> = buildList {
 
     if (friendPaths.isNotEmpty()) {
         add("-Xfriend-modules=${friendPaths.joinToString(File.pathSeparator)}")
+    }
+
+    if (compilationType == KotlinCompilationType.LIBRARY &&
+        kotlinUserSettings.freeCompilerArgs.none { it.startsWith("-Xir-module-name") }
+    ) {
+        add("-Xir-module-name=$klibModuleName")
     }
 
     // Common args last, because they contain free compiler args

@@ -104,6 +104,18 @@ class KotlinSettings : SchemaNode() {
     @SchemaDoc("Pass any [compiler option](https://kotlinlang.org/docs/compiler-reference.html#compiler-options) directly")
     val freeCompilerArgs by nullableValue<List<TraceableString>>()
 
+    @SchemaDoc(
+        "Base module name stored as `unique_name` in Kotlin/Native, JS, and Wasm klibs. " +
+                "Defaults to `<publishing.group>:<publishing.artifactId>`, or the module name when no publishing group is set. " +
+                "An explicit value is used as-is, without adding the publishing group. " +
+                "Test klibs append `_test`; shared native metadata klibs append their fragment name. " +
+                "Set this to the previous release's `unique_name` to preserve binary compatibility when migrating build tools. " +
+                "This does not change output file names, JVM module names, or native binary and framework names."
+    )
+    @PlatformSpecific(Platform.NATIVE, Platform.JS, Platform.WASM_JS, Platform.WASM_WASI)
+    @NotBlank
+    val klibModuleName by nullableValue<String>()
+
     @Misnomers("nowarn")
     @SchemaDoc("Suppress the compiler from displaying warnings during compilation")
     val suppressWarnings by value(false)

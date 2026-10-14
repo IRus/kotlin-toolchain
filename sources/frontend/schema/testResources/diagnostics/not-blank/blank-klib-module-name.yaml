@@ -1,0 +1,11 @@
+product:
+  type: kmp/lib
+  platforms: [macosArm64]
+
+settings:
+  kotlin:
+    klibModuleName: <![Error] Blank value is unexpected here!>""<!>
+
+test-settings:
+  kotlin:
+    klibModuleName: <![Error] Blank value is unexpected here!>" "<!>

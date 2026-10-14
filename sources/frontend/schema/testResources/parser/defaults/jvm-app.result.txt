@@ -109,6 +109,7 @@ Fragments:
         jsPlainObjects: <default> {
           enabled: <default> false
         }
+        klibModuleName: <default> null
         ksp: <default> {
           processorOptions: <default> {
           }
@@ -309,6 +310,7 @@ Fragments:
         jsPlainObjects: <default> {
           enabled: <default> false
         }
+        klibModuleName: <default> null
         ksp: <default> {
           processorOptions: <default> {
           }

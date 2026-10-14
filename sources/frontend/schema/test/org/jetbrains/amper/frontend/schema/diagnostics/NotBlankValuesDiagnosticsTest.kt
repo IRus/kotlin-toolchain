@@ -47,6 +47,11 @@ class NotBlankValuesDiagnosticsTest : FrontendTestCaseBase(Path("testResources")
     }
 
     @Test
+    fun `blank klib module names`() {
+        diagnosticsTest("blank-klib-module-name") { it.assertAllBlankValueProblems(expectedCount = 2) }
+    }
+
+    @Test
     fun `blank android settings`() {
         diagnosticsTest("blank-android-settings")
     }

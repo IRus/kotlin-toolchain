@@ -15,6 +15,7 @@ import org.jetbrains.amper.cli.userReadableError
 import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
 import org.jetbrains.amper.compilation.KotlinCompilationType
 import org.jetbrains.amper.compilation.KotlinUserSettings
+import org.jetbrains.amper.compilation.klibModuleName
 import org.jetbrains.amper.compilation.ResolvedCompilerPlugin
 import org.jetbrains.amper.compilation.compiler.downloadKotlinCompiler
 import org.jetbrains.amper.compilation.downloadCompilerPlugins
@@ -151,6 +152,7 @@ internal abstract class WebCompileKlibTask(
             inputValues = mapOf(
                 "kotlin.settings" to Json.encodeToString(kotlinUserSettings),
                 "task.output.root" to taskOutputRoot.path.pathString,
+                "klib.module.name" to module.klibModuleName(isTest, kotlinUserSettings.klibModuleName),
             ),
             inputFiles = sources + libraryPaths,
         ) {

@@ -28,6 +28,35 @@ repositories. This includes Maven and Gradle, but also any build tools that unde
 
 Your consumers don't need to use the Kotlin Toolchain to depend on your published libraries.
 
+### Klib module identity
+
+Kotlin/Native, JS, and Wasm libraries store their module identity in the klib manifest's `unique_name` field.
+By default, the Kotlin Toolchain uses `<settings.publishing.group>:<settings.publishing.artifactId>`, with the
+module name as the default artifact ID. Without a publishing group, it uses the module name alone.
+The publication version and `publishing.enabled` do not affect this identity.
+
+Changing this name can break Kotlin/Native consumers compiled against an earlier release. When migrating build tools,
+preserve the `unique_name` from your previously published klib. The default matches conventional Gradle publications,
+but Gradle projects with a customized compiler module name may need an explicit override.
+
+Use `settings.kotlin.klibModuleName` to set the full identity. For example, to preserve the unqualified name of a library
+published by an earlier Kotlin Toolchain version:
+
+```yaml
+settings:
+  publishing:
+    group: io.heapy.kotaml
+    artifactId: kotaml
+  kotlin:
+    klibModuleName: kotaml
+```
+
+The main klib then uses `kotaml`, and its test klib automatically uses `kotaml_test`. An override such as
+`io.heapy.kotaml:legacy` similarly produces `io.heapy.kotaml:legacy` and `io.heapy.kotaml:legacy_test`.
+Shared native metadata klibs append their fragment name. The setting can be overridden per platform, for example in
+`settings@native`, and applies to klib identity independently of output file names, JVM module names, native binary
+and framework names, and cinterop klibs.
+
 ## Publishing to a regular Maven repository
 
 To publish to a Maven repository, you essentially need 3 things:

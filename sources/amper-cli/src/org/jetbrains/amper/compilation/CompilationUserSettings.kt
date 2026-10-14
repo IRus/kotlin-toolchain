@@ -37,6 +37,7 @@ internal data class KotlinUserSettings(
     val optIns: List<String>,
     val storeJavaParameterNames: Boolean,
     val freeCompilerArgs: List<String>,
+    val klibModuleName: String?,
     val compilerPlugins: List<SCompilerPluginConfig>,
 ) {
     val effectiveLanguageVersion get() = languageVersion ?: compilerVersion.languageVersion
@@ -99,6 +100,7 @@ internal fun Fragment.serializableKotlinSettings(): KotlinUserSettings = KotlinU
     storeJavaParameterNames = settings.jvm.storeParameterNames, // only valid for JVM anyway
     // We cannot know whether the free compiler args must be aligned, so let's not fail hastily.
     freeCompilerArgs = settings.kotlin.freeCompilerArgs?.values().orEmpty(),
+    klibModuleName = settings.kotlin.klibModuleName,
     compilerPlugins = compilerPluginConfigs(),
 )
 

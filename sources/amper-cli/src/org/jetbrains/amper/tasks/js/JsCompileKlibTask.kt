@@ -10,6 +10,7 @@ import org.jetbrains.amper.cli.context.AmperProjectTempRoot
 import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
 import org.jetbrains.amper.compilation.KotlinCompilationType
 import org.jetbrains.amper.compilation.KotlinUserSettings
+import org.jetbrains.amper.compilation.klibModuleName
 import org.jetbrains.amper.compilation.ResolvedCompilerPlugin
 import org.jetbrains.amper.compilation.kotlinJsCompilerArgs
 import org.jetbrains.amper.core.AmperUserCacheRoot
@@ -82,5 +83,6 @@ internal class JsCompileKlibTask(
         compilationType,
         buildType,
         include,
+        klibModuleName = module.klibModuleName(isTest, kotlinUserSettings.klibModuleName),
     )
 }

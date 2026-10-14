@@ -1,0 +1,8 @@
+product:
+  type: kmp/lib
+  platforms: [macosArm64, js, wasmJs, wasmWasi]
+
+settings:
+  publishing:
+    group: io.heapy.kotaml
+    artifactId: kotaml

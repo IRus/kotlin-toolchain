@@ -14,6 +14,7 @@ import org.jetbrains.amper.compilation.KotlinArtifactsDownloader
 import org.jetbrains.amper.compilation.KotlinCompilationType
 import org.jetbrains.amper.compilation.downloadCompilerPlugins
 import org.jetbrains.amper.compilation.downloadNativeCompiler
+import org.jetbrains.amper.compilation.klibModuleName
 import org.jetbrains.amper.compilation.kotlinNativeCompilerArgs
 import org.jetbrains.amper.compilation.serializableKotlinSettings
 import org.jetbrains.amper.compilation.singleLeafFragment
@@ -145,6 +146,7 @@ internal class NativeCompileKlibTask(
             inputValues = mapOf(
                 "kotlin.settings" to Json.encodeToString(kotlinUserSettings),
                 "task.output.root" to taskOutputRoot.path.pathString,
+                "klib.module.name" to module.klibModuleName(isTest, kotlinUserSettings.klibModuleName),
             ),
             inputFiles = sources + libraryPaths,
         ) {
